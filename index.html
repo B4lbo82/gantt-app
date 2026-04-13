@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Project Planner</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -914,36 +913,27 @@ function zoom(dir){DAY_W=Math.max(12,Math.min(60,DAY_W+dir*4));rerender()}
 function rerender(){const rows=buildRows();renderSidebar(rows);renderHeader();renderGantt(rows)}
 
 function exportXLSX(){
-  if(typeof XLSX==='undefined'){alert('Libreria XLSX non caricata. Verifica la connessione e ricarica la pagina.');return;}
   try {
     const rows=buildRows();
-    const data=[['Progetto','Task','Tipo','Icona','Inizio','Fine','Durata gg','Avanzamento %','Stato','Risorse','Subtask di','Colore']];
+    const cols=['Progetto','Task','Tipo','Icona','Inizio','Fine','Durata gg','Avanzamento %','Stato','Risorse','Subtask di','Colore'];
+    const csvRows=[cols];
     rows.forEach(r=>{
-      if(r.type!=='task')return;
+      if(r.type!=='task') return;
       const t=r.task;
       const proj=PROJECTS.find(p=>p.id===t.proj);
       const par=t.parentId?(getT(t.parentId)||{}).label||'':'';
       const tipo=t.isMilestone?'Milestone':t.parentId?'Subtask':'Task';
-      data.push([
-        proj?proj.label:'', t.label, tipo, t.icon||'',
-        fmtDate(t.start), fmtDate(t.end), diffDays(t.start,t.end),
-        t.progress, SL[t.status]||t.status,
-        (t.resources||[]).join(', '), par, t.color||''
-      ]);
+      csvRows.push([proj?proj.label:'',t.label,tipo,t.icon||'',fmtDate(t.start),fmtDate(t.end),diffDays(t.start,t.end),t.progress,SL[t.status]||t.status,(t.resources||[]).join('; '),par,t.color||'']);
     });
-    const ws=XLSX.utils.aoa_to_sheet(data);
-    ws['!cols']=[{wch:22},{wch:26},{wch:12},{wch:10},{wch:12},{wch:12},{wch:12},{wch:16},{wch:14},{wch:22},{wch:22},{wch:10}];
-    const wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,'Gantt',ws);
-    /* Metodo Blob — compatibile con tutti i browser moderni */
-    const wbOut=XLSX.write(wb,{bookType:'xlsx',type:'array'});
-    const blob=new Blob([wbOut],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const esc=v=>{const s=String(v==null?'':v);return(s.includes(',')||s.includes('"')||s.includes('\n'))?'"'+s.replace(/"/g,'""')+'"':s};
+    const csv=csvRows.map(row=>row.map(esc).join(',')).join('\r\n');
+    const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');
-    a.href=url; a.download='gantt_planner.xlsx';
-    document.body.appendChild(a); a.click();
+    a.href=url;a.download='gantt_planner.csv';
+    document.body.appendChild(a);a.click();
     setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},200);
-  } catch(e){ alert('Errore export Excel: '+e.message); }
+  } catch(e){alert('Errore export: '+e.message);}
 }
 
 /* Espande il Gantt all'intera larghezza della timeline, cattura, poi ripristina */
