@@ -131,13 +131,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .res-input-row{display:flex;gap:6px;margin-top:6px}
 .res-input-row input{flex:1}
 .res-input-row .btn{flex-shrink:0;height:34px}
-#legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--text2);align-items:center}
+#legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;font-size:11px;color:var(--text2);align-items:center}
 .leg-item{display:flex;align-items:center;gap:4px}
 .leg-sw{width:11px;height:11px;border-radius:2px}
 .leg-dia{width:9px;height:9px;transform:rotate(45deg)}
-#detail-panel{margin-top:12px;border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;display:none}
-#detail-panel h3{font-size:13px;font-weight:500;margin-bottom:8px}
-.dg{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:12px}
+/* Wrapper gantt + detail panel affiancati */
+#gantt-outer{display:flex;gap:0;align-items:stretch;position:relative}
+#gantt-outer #gantt-container{flex:1;min-width:0;border-radius:var(--radius-lg) 0 0 var(--radius-lg)}
+#gantt-outer #gantt-container.panel-open{border-radius:var(--radius-lg) 0 0 var(--radius-lg)}
+/* Detail panel slide-in a destra */
+#detail-panel{
+  flex-shrink:0;width:0;overflow:hidden;
+  background:var(--bg);
+  border:0 solid var(--border2);
+  border-radius:0 var(--radius-lg) var(--radius-lg) 0;
+  transition:width .25s ease, border-width .25s ease, padding .25s ease;
+  padding:0;
+  display:flex;flex-direction:column;
+}
+#detail-panel.open{
+  width:250px;
+  border-width:0.5px;
+  border-left:none;
+  padding:14px 14px;
+}
+#detail-panel .dp-inner{min-width:222px}
+#detail-panel h3{font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+#dp-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;line-height:1;padding:0;flex-shrink:0;margin-top:-1px}
+#dp-close:hover{color:var(--text)}
+.dg{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:12px}
 .dl{color:var(--text2)}.dv{font-weight:500}
 .pbw{background:var(--bg2);border-radius:3px;height:5px;overflow:hidden;margin-top:2px}
 .pbf{height:100%;border-radius:3px}
@@ -259,9 +281,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     Aggiungi task
   </button>
   <div class="btn-group">
-    <button class="btn" onclick="exportXLSX()">
-      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="2" stroke="#639922" stroke-width="1"/><path d="M3.5 4.5L6.5 8.5M9.5 4.5L6.5 8.5" stroke="#639922" stroke-width="1.2" stroke-linecap="round"/></svg>Excel
-    </button>
     <button class="btn" onclick="exportPDF()">
       <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="2" stroke="#E24B4A" stroke-width="1"/><path d="M4 4h3.5a1.5 1.5 0 010 3H4V4zM4 7h5" stroke="#E24B4A" stroke-width="1.1" stroke-linecap="round"/></svg>PDF
     </button>
@@ -272,6 +291,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <span style="font-size:11px;color:var(--text3);margin-left:auto">Trascina · Maniglie per ridimensionare</span>
 </div>
 
+<div id="legend">
+  <span style="font-weight:600">Legenda:</span>
+  <div class="leg-item"><div class="leg-sw" style="background:#378ADD"></div>On-going</div>
+  <div class="leg-item"><div class="leg-sw" style="background:#639922"></div>Done</div>
+  <div class="leg-item"><div class="leg-sw" style="background:#EF9F27"></div>Stand-by</div>
+  <div class="leg-item"><div class="leg-sw" style="background:#B4B2A9"></div>Not started</div>
+  <div class="leg-item"><div class="leg-dia" style="background:#534AB7"></div>Milestone</div>
+  <div class="leg-item"><div class="leg-sw" style="background:#C8DCEF;border:0.5px solid #aac"></div>Weekend</div>
+  <div class="leg-item"><div class="leg-sw" style="background:#fce8e8;border:0.5px solid #daa"></div>Festività</div>
+</div>
+
+<div id="gantt-outer">
 <div id="gantt-container">
   <div id="gantt-scroll">
     <div id="gantt-inner">
@@ -289,24 +320,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
 </div>
+<div id="detail-panel">
+  <div class="dp-inner">
+    <h3><span id="dp-title"></span><button id="dp-close" onclick="closeDetailPanel()" title="Chiudi">✕</button></h3>
+    <div class="dg" id="dp-grid"></div>
+  </div>
+</div>
+</div>
 
 <div id="tooltip"></div>
-
-<div id="legend">
-  <span style="font-weight:600">Legenda:</span>
-  <div class="leg-item"><div class="leg-sw" style="background:#378ADD"></div>On-going</div>
-  <div class="leg-item"><div class="leg-sw" style="background:#639922"></div>Done</div>
-  <div class="leg-item"><div class="leg-sw" style="background:#EF9F27"></div>Stand-by</div>
-  <div class="leg-item"><div class="leg-sw" style="background:#B4B2A9"></div>Not started</div>
-  <div class="leg-item"><div class="leg-dia" style="background:#534AB7"></div>Milestone</div>
-  <div class="leg-item"><div class="leg-sw" style="background:#C8DCEF;border:0.5px solid #aac"></div>Weekend</div>
-  <div class="leg-item"><div class="leg-sw" style="background:#fce8e8;border:0.5px solid #daa"></div>Festività</div>
-</div>
-
-<div id="detail-panel">
-  <h3 id="dp-title"></h3>
-  <div class="dg" id="dp-grid"></div>
-</div>
 
 <!-- ADD/EDIT MODAL -->
 <div class="modal-backdrop" id="modal-overlay">
@@ -792,9 +814,18 @@ function onDragMove(e){
 }
 function onDragEnd(){dragState=null;window.removeEventListener('mousemove',onDragMove);window.removeEventListener('mouseup',onDragEnd);window.removeEventListener('touchmove',onTM);window.removeEventListener('touchend',onDragEnd);if(selectedTask)selectTask(selectedTask)}
 
+function closeDetailPanel(){
+  selectedTask=null;
+  document.getElementById('detail-panel').classList.remove('open');
+  document.getElementById('gantt-container').style.borderRadius='';
+  rerender();
+}
+
 function selectTask(id){
   selectedTask=id;const t=getT(id);if(!t)return;
-  document.getElementById('detail-panel').style.display='block';
+  const panel=document.getElementById('detail-panel');
+  panel.classList.add('open');
+  document.getElementById('gantt-container').style.borderRadius='var(--radius-lg) 0 0 var(--radius-lg)';
   document.getElementById('dp-title').innerHTML=(t.icon&&t.icon!=='none'?iconSVG(t.icon,14,t.color)+' ':'')+t.label;
   const dur=diffDays(t.start,t.end);
   let g=`<span class="dl">Inizio</span><span class="dv">${fmtDate(t.start)}</span><span class="dl">Fine</span><span class="dv">${fmtDate(t.end)}</span><span class="dl">Durata</span><span class="dv">${dur} giorni</span><span class="dl">Stato</span><span class="dv">${SL[t.status]||t.status}</span>`;
@@ -806,7 +837,7 @@ function selectTask(id){
   rerender();
 }
 
-function deleteTask(id){tasks=tasks.filter(t=>t.id!==id&&t.parentId!==id);if(selectedTask===id){selectedTask=null;document.getElementById('detail-panel').style.display='none';}rerender()}
+function deleteTask(id){tasks=tasks.filter(t=>t.id!==id&&t.parentId!==id);if(selectedTask===id){selectedTask=null;document.getElementById('detail-panel').classList.remove('open');document.getElementById('gantt-container').style.borderRadius='';}rerender()}
 function promoteTask(id){const t=getT(id);if(t)t.parentId=null;rerender()}
 
 function buildIconGrid(){
