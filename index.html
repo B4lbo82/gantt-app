@@ -996,24 +996,20 @@ function exportPDF(){
   if(typeof html2canvas==='undefined'||typeof window.jspdf==='undefined'){
     alert('Librerie non ancora caricate. Ricarica la pagina e riprova.');return;
   }
-  captureFullGantt(1.8).then(canvas=>{
+  captureFullGantt(2).then(canvas=>{
     if(!canvas) return;
     const {jsPDF}=window.jspdf;
-    /* Imposta pagina A4 landscape con larghezza pari all'intera timeline */
-    const pxW=canvas.width, pxH=canvas.height;
-    const ratio=pxH/pxW;
-    const mmW=297; /* A4 landscape larghezza */
-    const mmH=mmW*ratio;
-    const pageH=210; /* A4 landscape altezza */
-    /* Se il Gantt è più largo che alto, lo adattiamo su più pagine verticali */
-    const pdf=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
-    const imgData=canvas.toDataURL('image/png');
-    let yOffset=0;
-    while(yOffset<mmH){
-      if(yOffset>0) pdf.addPage();
-      pdf.addImage(imgData,'PNG',0,-yOffset,mmW,mmH);
-      yOffset+=pageH;
-    }
+    /* Converti pixel canvas → mm (96dpi: 1 CSS px = 0.2646mm; scale=2 quindi /2) */
+    const PX_TO_MM=25.4/96;
+    const mmW=Math.ceil((canvas.width/2)*PX_TO_MM);
+    const mmH=Math.ceil((canvas.height/2)*PX_TO_MM);
+    /* Crea PDF con dimensioni esatte del Gantt — nessuno spazio bianco */
+    const pdf=new jsPDF({
+      orientation: mmW>=mmH ? 'landscape' : 'portrait',
+      unit:'mm',
+      format:[mmW, mmH]
+    });
+    pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,mmW,mmH);
     pdf.save('gantt_planner.pdf');
   });
 }
