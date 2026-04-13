@@ -933,12 +933,6 @@ function exportXLSX(){
     });
     const ws=XLSX.utils.aoa_to_sheet(data);
     ws['!cols']=[{wch:22},{wch:26},{wch:12},{wch:10},{wch:12},{wch:12},{wch:12},{wch:16},{wch:14},{wch:22},{wch:22},{wch:10}];
-    /* Intestazione in grassetto */
-    const range=XLSX.utils.decode_range(ws['!ref']);
-    for(let c=range.s.c;c<=range.e.c;c++){
-      const cell=ws[XLSX.utils.encode_cell({r:0,c})];
-      if(cell) cell.s={font:{bold:true}};
-    }
     const wb=XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb,'Gantt',ws);
     /* Metodo Blob — compatibile con tutti i browser moderni */
