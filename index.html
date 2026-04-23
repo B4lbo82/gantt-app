@@ -856,7 +856,20 @@ function addResource(){const inp=document.getElementById('f-res-input');const v=
 function removeResource(n){modalResources=modalResources.filter(r=>r!==n);renderResourceTags()}
 function renderResourceTags(){document.getElementById('res-tags').innerHTML=modalResources.map(r=>`<div class="res-tag"><div class="avatar" style="background:${avatarColor(r)};width:16px;height:16px;font-size:7px">${avatarInitials(r)}</div>${r}<span class="rm" onclick="removeResource('${r}')">&times;</span></div>`).join('')}
 
-function onTypeChange(){
+/* Colori automatici per stato */
+const STATUS_TO_COLOR={
+  todo:    '#B4B2A9',
+  active:  '#378ADD',
+  standby: '#EF9F27',
+  done:    '#639922',
+  milestone:'#534AB7'
+};
+
+function applyStatusColor(){
+  const status=document.getElementById('f-status').value;
+  const col=STATUS_TO_COLOR[status]||'#378ADD';
+  document.getElementById('f-color').value=col;
+}
   const type=document.getElementById('f-type').value;
   document.getElementById('f-parent-row').style.display=type==='subtask'?'block':'none';
   document.getElementById('f-end-row').style.display=type==='milestone'?'none':'block';
@@ -880,7 +893,7 @@ function openAddModal(projId){
   document.getElementById('f-end').value=toISO(addDays(TODAY,7));
   document.getElementById('f-prog').value=0;document.getElementById('f-prog-val').textContent='0%';
   document.getElementById('f-status').value='todo';
-  document.getElementById('f-color').value='#378ADD';
+  document.getElementById('f-color').value=STATUS_TO_COLOR['todo'];
   modalResources=[];selectedIcon='none';
   renderResourceTags();buildIconGrid();onTypeChange();
   document.getElementById('modal-overlay').classList.add('open');
@@ -896,7 +909,7 @@ function openEditModal(id){
   document.getElementById('f-end').value=toISO(t.end);
   document.getElementById('f-prog').value=t.progress;document.getElementById('f-prog-val').textContent=t.progress+'%';
   document.getElementById('f-status').value=t.status==='milestone'?'todo':t.status;
-  document.getElementById('f-color').value=t.color||'#378ADD';
+  document.getElementById('f-color').value=STATUS_TO_COLOR[t.status]||t.color||'#378ADD';
   modalResources=[...(t.resources||[])];selectedIcon=t.icon||'none';
   renderResourceTags();buildIconGrid();onTypeChange();updateParentOptions();
   if(t.parentId)document.getElementById('f-parent').value=t.parentId;
@@ -912,7 +925,7 @@ function saveModal(){
   const endVal=type==='milestone'?new Date(startVal):fromISO(document.getElementById('f-end').value);
   const progress=parseInt(document.getElementById('f-prog').value)||0;
   const status=type==='milestone'?'milestone':document.getElementById('f-status').value;
-  const color=document.getElementById('f-color').value;
+  const color=STATUS_TO_COLOR[status]||document.getElementById('f-color').value;
   const icon=selectedIcon;const resources=[...modalResources];
   if(!name){document.getElementById('f-name').focus();return;}
   if(editingId){const t=getT(editingId);if(t)Object.assign(t,{label:name,proj,parentId,start:startVal,end:endVal,progress,status,color,icon,resources,isMilestone:type==='milestone'});}
@@ -1048,6 +1061,7 @@ function exportPDF(){
 document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
 document.getElementById('demote-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeDemote()});
 document.getElementById('f-proj').addEventListener('change',updateParentOptions);
+document.getElementById('f-status').addEventListener('change',applyStatusColor);
 </script>
 </body>
 </html>
