@@ -1342,23 +1342,25 @@ function onSearchKey(e){
 }
 
 function jumpToTask(id){
-  /* Chiudi suggerimenti */
   document.getElementById('sb-suggestions').classList.remove('open');
   document.getElementById('sb-search').value = getT(id)?.label || '';
   document.getElementById('sb-search-clear').style.display = 'block';
 
-  /* Trova la riga nella sidebar */
-  rerender(); /* assicura che la riga esista */
-  const row = document.querySelector(`.sb-row[data-sb-id="${id}"]`);
-  if(row){
-    /* Scroll nella sidebar fino alla riga */
-    row.scrollIntoView({block:'center', behavior:'smooth'});
-    /* Effetto flash */
-    row.classList.add('search-match');
-    setTimeout(()=>row.classList.remove('search-match'), 2600);
-  }
-  /* Seleziona il task per mostrare il dettaglio */
+  /* selectTask chiama rerender — va chiamato prima, poi aggiungiamo la classe */
   selectTask(id);
+
+  /* requestAnimationFrame garantisce che il DOM sia già aggiornato */
+  requestAnimationFrame(()=>{
+    const row = document.querySelector(`.sb-row[data-sb-id="${id}"]`);
+    if(row){
+      row.scrollIntoView({block:'center', behavior:'smooth'});
+      /* Forza reflow per far ripartire l'animazione anche se la classe era già presente */
+      row.classList.remove('search-match');
+      void row.offsetWidth;
+      row.classList.add('search-match');
+      setTimeout(()=>row.classList.remove('search-match'), 2600);
+    }
+  });
 }
 
 function clearSearch(){
