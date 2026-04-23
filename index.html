@@ -101,19 +101,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sb-sug-mark{color:var(--blue);font-weight:600}
 .sb-sug-meta{font-size:10px;color:var(--text3);margin-left:auto;white-space:nowrap}
 /* Evidenzia riga trovata */
-.sb-row.search-match{animation:searchPulse 3.5s ease forwards}
+.sb-row.search-match{animation:searchPulse 2.5s ease forwards}
 @keyframes searchPulse{
-  0%   {background:transparent;              box-shadow:inset 4px 0 0 transparent}
-  6%   {background:rgba(255,238,0,0.55);     box-shadow:inset 4px 0 0 #FFEE00}
-  14%  {background:rgba(255,238,0,0.08);     box-shadow:inset 4px 0 0 rgba(255,238,0,.2)}
-  22%  {background:rgba(255,238,0,0.55);     box-shadow:inset 4px 0 0 #FFEE00}
-  30%  {background:rgba(255,238,0,0.08);     box-shadow:inset 4px 0 0 rgba(255,238,0,.2)}
-  38%  {background:rgba(255,238,0,0.55);     box-shadow:inset 4px 0 0 #FFEE00}
-  46%  {background:rgba(255,238,0,0.08);     box-shadow:inset 4px 0 0 rgba(255,238,0,.2)}
-  54%  {background:rgba(255,238,0,0.55);     box-shadow:inset 4px 0 0 #FFEE00}
-  65%  {background:rgba(255,238,0,0.25);     box-shadow:inset 4px 0 0 rgba(255,238,0,.4)}
-  80%  {background:rgba(255,238,0,0.12);     box-shadow:inset 4px 0 0 rgba(255,238,0,.2)}
-  100% {background:transparent;              box-shadow:inset 4px 0 0 transparent}
+  0%  {background:rgba(55,138,221,0.0)}
+  10% {background:rgba(55,138,221,0.45);box-shadow:inset 3px 0 0 var(--blue)}
+  30% {background:rgba(55,138,221,0.35);box-shadow:inset 3px 0 0 var(--blue)}
+  60% {background:rgba(55,138,221,0.20);box-shadow:inset 3px 0 0 rgba(55,138,221,.5)}
+  100%{background:rgba(55,138,221,0.0);box-shadow:inset 3px 0 0 transparent}
 }
 .sb-row{height:36px;display:flex;align-items:center;border-bottom:0.5px solid var(--border);position:relative}
 .sb-row:hover .row-actions{opacity:1}
@@ -198,7 +192,45 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .pbf{height:100%;border-radius:3px}
 .avatar-row{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
 .avatar{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;background:var(--blue);flex-shrink:0}
-/* ── NOTES MODAL ───────────────────────────── */
+/* ── PAGES TABS ─────────────────────────── */
+#pages-bar{display:flex;align-items:center;gap:6px;margin-bottom:12px;flex-wrap:wrap;border-bottom:0.5px solid var(--border2);padding-bottom:10px}
+.page-tab{font-size:12px;padding:5px 14px;border:0.5px solid var(--border2);border-radius:20px;background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.page-tab:hover{background:var(--bg3);color:var(--text)}
+.page-tab.active{background:var(--blue);color:#fff;border-color:var(--blue-dark);font-weight:500}
+.page-tab .tab-del{font-size:12px;opacity:.6;line-height:1;background:none;border:none;color:inherit;cursor:pointer;padding:0;margin-left:2px}
+.page-tab .tab-del:hover{opacity:1}
+.page-tab-add{font-size:18px;width:28px;height:28px;border-radius:50%;border:0.5px dashed var(--border2);background:transparent;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.page-tab-add:hover{border-color:var(--blue);color:var(--blue)}
+
+/* ── RESOURCE POOL PICKER ───────────────── */
+.res-pool-wrap{margin-top:6px}
+.res-pool-category{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin:10px 0 5px;padding-left:2px}
+.res-pool-category:first-child{margin-top:0}
+.res-pool-grid{display:flex;flex-wrap:wrap;gap:5px}
+.res-pill{display:flex;align-items:center;gap:4px;padding:4px 10px 4px 6px;border:0.5px solid var(--border2);border-radius:12px;cursor:pointer;font-size:12px;background:var(--bg2);color:var(--text2);transition:all .12s;user-select:none}
+.res-pill:hover{border-color:var(--blue);color:var(--text)}
+.res-pill.selected{background:var(--blue-light);border-color:var(--blue);color:var(--blue-dark);font-weight:500}
+.res-pill .res-pill-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* ── WORKLOAD PANEL ─────────────────────── */
+#workload-modal{width:680px;max-width:96vw;max-height:88vh;overflow-y:auto}
+.wl-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.wl-header h3{font-size:15px;font-weight:600;flex:1}
+.wl-filter{font-size:12px;padding:4px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);height:28px}
+.wl-category-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 8px;padding-bottom:4px;border-bottom:0.5px solid var(--border)}
+.wl-category-title:first-of-type{margin-top:0}
+.wl-resource-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:6px}
+.wl-res-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.wl-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.wl-res-name{font-size:13px;font-weight:500;flex:1}
+.wl-res-role{font-size:11px;color:var(--text3);background:var(--bg3);padding:2px 7px;border-radius:8px}
+.wl-pct-label{font-size:12px;font-weight:600;min-width:38px;text-align:right}
+.wl-bar-wrap{background:var(--bg3);border-radius:4px;height:7px;overflow:hidden;margin-bottom:6px}
+.wl-bar-fill{height:100%;border-radius:4px;transition:width .4s}
+.wl-tasks-list{display:flex;flex-wrap:wrap;gap:4px}
+.wl-task-chip{font-size:11px;padding:2px 8px;border-radius:10px;border:0.5px solid var(--border2);background:var(--bg);color:var(--text2);cursor:pointer;transition:background .12s}
+.wl-task-chip:hover{background:var(--blue-light);border-color:var(--blue);color:var(--blue-dark)}
+.wl-empty{font-size:12px;color:var(--text3);font-style:italic}
 #notes-modal{width:620px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column}
 #notes-modal h3{font-size:14px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:8px}
 #notes-modal .notes-subtitle{font-size:11px;color:var(--text3);margin-bottom:12px}
@@ -321,6 +353,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
+<div id="pages-bar">
+  <div id="page-tabs"></div>
+  <button class="page-tab-add" onclick="addPage()" title="Nuova pagina">+</button>
+</div>
+
 <div class="toolbar">
   <div class="btn-group">
     <button class="btn" onclick="zoom(-1)">− zoom</button>
@@ -329,6 +366,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <button class="btn primary" onclick="openAddModal(null)">
     <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     Aggiungi task
+  </button>
+  <button class="btn" onclick="openWorkloadPanel()">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.1" fill="none"/><path d="M1.5 12c0-2.8 2.2-4.5 5-4.5s5 1.7 5 4.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M9 5.5h2.5M10.5 4.5v2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+    Risorse
   </button>
   <div class="btn-group">
     <button class="btn" onclick="exportPDF()">
@@ -432,10 +473,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="form-row">
       <label>Risorse assegnate</label>
       <div id="res-tags" class="res-tags"></div>
-      <div class="res-input-row">
-        <input id="f-res-input" type="text" placeholder="Nome risorsa…" onkeydown="if(event.key==='Enter'){addResource();event.preventDefault()}">
-        <button class="btn" onclick="addResource()">+ Aggiungi</button>
-      </div>
+      <div class="res-pool-wrap" id="res-pool-container"></div>
     </div>
     <div class="modal-btns">
       <button class="btn" onclick="closeModal()">Annulla</button>
@@ -453,6 +491,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <button class="btn" onclick="closeDemote()">Annulla</button>
       <button class="btn ok" onclick="saveDemote()">Conferma</button>
     </div>
+  </div>
+</div>
+
+<!-- WORKLOAD MODAL -->
+<div class="modal-backdrop" id="workload-overlay">
+  <div class="modal" id="workload-modal">
+    <div class="wl-header">
+      <h3>👥 Carico di lavoro risorse</h3>
+      <select class="wl-filter" id="wl-page-filter" onchange="renderWorkload()">
+        <option value="all">Tutte le pagine</option>
+      </select>
+      <button class="btn" onclick="closeWorkloadPanel()" style="height:28px;padding:0 10px">✕</button>
+    </div>
+    <div id="workload-body"></div>
   </div>
 </div>
 
@@ -698,47 +750,138 @@ COLOR_PRESETS.forEach(c=>{
   cpWrap.appendChild(d);
 });
 
-// ─── DATA ─────────────────────────────────────────────
-const PROJECTS=[
-  {id:'p1',label:'Sito Web Aziendale',color:'#378ADD'},
-  {id:'p2',label:'App Mobile',color:'#639922'},
-  {id:'p3',label:'Campagna Marketing',color:'#EF9F27'},
+// ─── RESOURCE POOL ────────────────────────────────────
+const RESOURCE_POOL = [
+  // Sviluppatori (6)
+  {id:'r1', name:'Marco Ferretti',   role:'Senior Dev',      category:'Sviluppatori', color:'#378ADD'},
+  {id:'r2', name:'Luca Bianchi',     role:'Frontend Dev',    category:'Sviluppatori', color:'#185FA5'},
+  {id:'r3', name:'Sara Conti',       role:'Backend Dev',     category:'Sviluppatori', color:'#534AB7'},
+  {id:'r4', name:'Paolo Ricci',      role:'Full Stack Dev',  category:'Sviluppatori', color:'#1D9E75'},
+  {id:'r5', name:'Giulia Moretti',   role:'Mobile Dev',      category:'Sviluppatori', color:'#378ADD'},
+  {id:'r6', name:'Davide Romano',    role:'DevOps',          category:'Sviluppatori', color:'#185FA5'},
+  // Content Manager (4)
+  {id:'r7', name:'Anna Russo',       role:'Content Manager', category:'Content Manager', color:'#EF9F27'},
+  {id:'r8', name:'Chiara Lombardi',  role:'Copywriter',      category:'Content Manager', color:'#D4537E'},
+  {id:'r9', name:'Matteo Gallo',     role:'SEO Specialist',  category:'Content Manager', color:'#EF9F27'},
+  {id:'r10',name:'Federica Esposito',role:'Social Media',    category:'Content Manager', color:'#D4537E'},
+  // Project Manager (4)
+  {id:'r11',name:'Roberto Mancini',  role:'Project Manager', category:'Project Manager', color:'#639922'},
+  {id:'r12',name:'Valentina Costa',  role:'Project Manager', category:'Project Manager', color:'#3B6D11'},
+  {id:'r13',name:'Simone Ferrari',   role:'Account Manager', category:'Project Manager', color:'#639922'},
+  {id:'r14',name:'Elena Martini',    role:'Coordinator',     category:'Project Manager', color:'#3B6D11'},
 ];
+const RES_BY_ID = {};
+RESOURCE_POOL.forEach(r=>RES_BY_ID[r.id]=r);
+const resById = id => RES_BY_ID[id] || {name:id, color:'#888', role:'', category:''};
 
-let tasks=[
-  {id:'t1',proj:'p1',label:'Wireframe & UX',start:D(2025,2,3),end:D(2025,2,14),progress:100,status:'done',color:'#639922',icon:'doc',resources:['Marco','Luca'],deps:[],parentId:null,notes:''},
-  {id:'t2',proj:'p1',label:'Design UI',start:D(2025,2,14),end:D(2025,2,28),progress:80,status:'active',color:'#378ADD',icon:'star',resources:['Luca'],deps:['t1'],parentId:null,notes:''},
-  {id:'t2a',proj:'p1',label:'Homepage',start:D(2025,2,14),end:D(2025,2,20),progress:100,status:'done',color:'#639922',icon:'home',resources:['Luca'],deps:[],parentId:'t2',notes:''},
-  {id:'t2b',proj:'p1',label:'Pagine interne',start:D(2025,2,20),end:D(2025,2,28),progress:60,status:'active',color:'#378ADD',icon:'doc',resources:['Luca','Sara'],deps:[],parentId:'t2',notes:''},
-  {id:'t3',proj:'p1',label:'Sviluppo frontend',start:D(2025,2,28),end:D(2025,3,18),progress:30,status:'active',color:'#378ADD',icon:'gear',resources:['Marco'],deps:['t2'],parentId:null,notes:''},
-  {id:'t4',proj:'p1',label:'Test & QA',start:D(2025,3,18),end:D(2025,3,30),progress:0,status:'todo',color:'#B4B2A9',icon:'bug',resources:[],deps:['t3'],parentId:null,notes:''},
-  {id:'m1',proj:'p1',label:'Go-live sito',start:D(2025,3,30),end:D(2025,3,30),progress:0,status:'milestone',color:'#534AB7',icon:'rocket',resources:[],deps:['t4'],parentId:null,isMilestone:true,notes:''},
-  {id:'t5',proj:'p2',label:'Architettura & setup',start:D(2025,2,10),end:D(2025,2,21),progress:100,status:'done',color:'#639922',icon:'gear',resources:['Paolo'],deps:[],parentId:null,notes:''},
-  {id:'t6',proj:'p2',label:'Modulo autenticazione',start:D(2025,2,21),end:D(2025,3,4),progress:60,status:'active',color:'#378ADD',icon:'lock',resources:['Paolo'],deps:['t5'],parentId:null,notes:''},
-  {id:'t6a',proj:'p2',label:'Login / Register',start:D(2025,2,21),end:D(2025,2,26),progress:100,status:'done',color:'#639922',icon:'person',resources:['Paolo'],deps:[],parentId:'t6',notes:''},
-  {id:'t6b',proj:'p2',label:'OAuth Google',start:D(2025,2,26),end:D(2025,3,4),progress:20,status:'active',color:'#378ADD',icon:'link',resources:['Paolo','Giulia'],deps:[],parentId:'t6',notes:''},
-  {id:'t7',proj:'p2',label:'Dashboard & notifiche',start:D(2025,3,4),end:D(2025,3,25),progress:10,status:'active',color:'#378ADD',icon:'chart',resources:['Giulia'],deps:['t6'],parentId:null,notes:''},
-  {id:'t8',proj:'p2',label:'Beta testing',start:D(2025,3,25),end:D(2025,4,10),progress:0,status:'todo',color:'#B4B2A9',icon:'bug',resources:[],deps:['t7'],parentId:null,notes:''},
-  {id:'m2',proj:'p2',label:'Release v1.0',start:D(2025,4,10),end:D(2025,4,10),progress:0,status:'milestone',color:'#534AB7',icon:'rocket',resources:[],deps:['t8'],parentId:null,isMilestone:true,notes:''},
-  {id:'t9',proj:'p3',label:'Definizione strategia',start:D(2025,2,5),end:D(2025,2,19),progress:100,status:'done',color:'#639922',icon:'flag',resources:['Anna'],deps:[],parentId:null,notes:''},
-  {id:'t10',proj:'p3',label:'Produzione contenuti',start:D(2025,2,19),end:D(2025,3,12),progress:45,status:'standby',color:'#EF9F27',icon:'doc',resources:['Anna','Marco'],deps:['t9'],parentId:null,notes:''},
-  {id:'t11',proj:'p3',label:'Lancio campagna',start:D(2025,3,12),end:D(2025,4,5),progress:0,status:'todo',color:'#B4B2A9',icon:'mail',resources:[],deps:['t10'],parentId:null,notes:''},
+// ─── PAGES ────────────────────────────────────────────
+let pages = [
+  {
+    id:'pg1', label:'Cliente A',
+    projects:[
+      {id:'p1',label:'Sito Web Aziendale',color:'#378ADD'},
+      {id:'p2',label:'App Mobile',color:'#639922'},
+      {id:'p3',label:'Campagna Marketing',color:'#EF9F27'},
+    ],
+    tasks:[
+      {id:'t1',proj:'p1',label:'Wireframe & UX',start:D(2025,2,3),end:D(2025,2,14),progress:100,status:'done',color:'#639922',icon:'doc',resources:['r1','r2'],deps:[],parentId:null,notes:''},
+      {id:'t2',proj:'p1',label:'Design UI',start:D(2025,2,14),end:D(2025,2,28),progress:80,status:'active',color:'#378ADD',icon:'star',resources:['r2'],deps:['t1'],parentId:null,notes:''},
+      {id:'t2a',proj:'p1',label:'Homepage',start:D(2025,2,14),end:D(2025,2,20),progress:100,status:'done',color:'#639922',icon:'home',resources:['r2'],deps:[],parentId:'t2',notes:''},
+      {id:'t2b',proj:'p1',label:'Pagine interne',start:D(2025,2,20),end:D(2025,2,28),progress:60,status:'active',color:'#378ADD',icon:'doc',resources:['r2','r3'],deps:[],parentId:'t2',notes:''},
+      {id:'t3',proj:'p1',label:'Sviluppo frontend',start:D(2025,2,28),end:D(2025,3,18),progress:30,status:'active',color:'#378ADD',icon:'gear',resources:['r1'],deps:['t2'],parentId:null,notes:''},
+      {id:'t4',proj:'p1',label:'Test & QA',start:D(2025,3,18),end:D(2025,3,30),progress:0,status:'todo',color:'#B4B2A9',icon:'bug',resources:[],deps:['t3'],parentId:null,notes:''},
+      {id:'m1',proj:'p1',label:'Go-live sito',start:D(2025,3,30),end:D(2025,3,30),progress:0,status:'milestone',color:'#534AB7',icon:'rocket',resources:[],deps:['t4'],parentId:null,isMilestone:true,notes:''},
+      {id:'t5',proj:'p2',label:'Architettura & setup',start:D(2025,2,10),end:D(2025,2,21),progress:100,status:'done',color:'#639922',icon:'gear',resources:['r4'],deps:[],parentId:null,notes:''},
+      {id:'t6',proj:'p2',label:'Modulo autenticazione',start:D(2025,2,21),end:D(2025,3,4),progress:60,status:'active',color:'#378ADD',icon:'lock',resources:['r4'],deps:['t5'],parentId:null,notes:''},
+      {id:'t6a',proj:'p2',label:'Login / Register',start:D(2025,2,21),end:D(2025,2,26),progress:100,status:'done',color:'#639922',icon:'person',resources:['r4'],deps:[],parentId:'t6',notes:''},
+      {id:'t6b',proj:'p2',label:'OAuth Google',start:D(2025,2,26),end:D(2025,3,4),progress:20,status:'active',color:'#378ADD',icon:'link',resources:['r4','r5'],deps:[],parentId:'t6',notes:''},
+      {id:'t7',proj:'p2',label:'Dashboard & notifiche',start:D(2025,3,4),end:D(2025,3,25),progress:10,status:'active',color:'#378ADD',icon:'chart',resources:['r5'],deps:['t6'],parentId:null,notes:''},
+      {id:'t8',proj:'p2',label:'Beta testing',start:D(2025,3,25),end:D(2025,4,10),progress:0,status:'todo',color:'#B4B2A9',icon:'bug',resources:[],deps:['t7'],parentId:null,notes:''},
+      {id:'m2',proj:'p2',label:'Release v1.0',start:D(2025,4,10),end:D(2025,4,10),progress:0,status:'milestone',color:'#534AB7',icon:'rocket',resources:[],deps:['t8'],parentId:null,isMilestone:true,notes:''},
+      {id:'t9',proj:'p3',label:'Definizione strategia',start:D(2025,2,5),end:D(2025,2,19),progress:100,status:'done',color:'#639922',icon:'flag',resources:['r7'],deps:[],parentId:null,notes:''},
+      {id:'t10',proj:'p3',label:'Produzione contenuti',start:D(2025,2,19),end:D(2025,3,12),progress:45,status:'standby',color:'#EF9F27',icon:'doc',resources:['r7','r1'],deps:['t9'],parentId:null,notes:''},
+      {id:'t11',proj:'p3',label:'Lancio campagna',start:D(2025,3,12),end:D(2025,4,5),progress:0,status:'todo',color:'#B4B2A9',icon:'mail',resources:[],deps:['t10'],parentId:null,notes:''},
+    ]
+  }
 ];
+let currentPageId = 'pg1';
+
+/* Getters per pagina corrente */
+function curPage(){ return pages.find(p=>p.id===currentPageId)||pages[0]; }
+function getProjects(){ return curPage().projects; }
+function getTasks(){ return curPage().tasks; }
+function setTasks(arr){ curPage().tasks=arr; }
+
+/* Proxy: tasks e PROJECTS puntano sempre alla pagina corrente */
+let PROJECTS = getProjects();
+let tasks = getTasks();
+function syncPageData(){ PROJECTS=getProjects(); tasks=getTasks(); }
 
 const SL={todo:'Not started',active:'On-going',standby:'Stand-by',done:'Done',milestone:'Milestone'};
 let dragState=null,selectedTask=null,editingId=null,demoteTarget=null;
 let modalResources=[],selectedIcon='none';
 const svgW=()=>TOTAL_DAYS*DAY_W;
-const getT=id=>tasks.find(t=>t.id===id);
+const getT=id=>getTasks().find(t=>t.id===id);
+
+// ─── PAGE MANAGEMENT ──────────────────────────────────
+function renderPageTabs(){
+  const bar = document.getElementById('page-tabs');
+  bar.innerHTML = pages.map(p=>`
+    <div class="page-tab${p.id===currentPageId?' active':''}" onclick="switchPage('${p.id}')">
+      <span ondblclick="renamePage('${p.id}')" title="Doppio click per rinominare">${p.label}</span>
+      ${pages.length>1?`<button class="tab-del" onclick="deletePage(event,'${p.id}')" title="Elimina pagina">✕</button>`:''}
+    </div>`).join('');
+}
+
+function switchPage(id){
+  currentPageId=id;
+  syncPageData();
+  selectedTask=null;
+  document.getElementById('detail-panel').classList.remove('open');
+  document.getElementById('gantt-container').style.borderRadius='';
+  clearSearch();
+  renderPageTabs();
+  rerender();
+}
+
+function addPage(){
+  const label = prompt('Nome della nuova pagina (es. Cliente B):','Nuova pagina');
+  if(!label||!label.trim()) return;
+  const id = 'pg'+Date.now();
+  pages.push({
+    id, label:label.trim(),
+    projects:[{id:'pp'+Date.now(),label:'Progetto 1',color:'#378ADD'}],
+    tasks:[]
+  });
+  switchPage(id);
+}
+
+function deletePage(e, id){
+  e.stopPropagation();
+  if(!confirm('Eliminare questa pagina e tutti i suoi progetti e task?')) return;
+  pages = pages.filter(p=>p.id!==id);
+  if(currentPageId===id) currentPageId=pages[0].id;
+  syncPageData();
+  renderPageTabs();
+  rerender();
+}
+
+function renamePage(id){
+  const pg=pages.find(p=>p.id===id); if(!pg) return;
+  const name=prompt('Rinomina pagina:',pg.label);
+  if(!name||!name.trim()) return;
+  pg.label=name.trim();
+  renderPageTabs();
+}
 
 // ─── ROWS ─────────────────────────────────────────────
 function buildRows(){
   const rows=[];
-  PROJECTS.forEach(p=>{
+  getProjects().forEach(p=>{
     rows.push({type:'group',proj:p});
-    tasks.filter(t=>t.proj===p.id&&!t.parentId).forEach(t=>{
+    getTasks().filter(t=>t.proj===p.id&&!t.parentId).forEach(t=>{
       rows.push({type:'task',task:t,proj:p,indent:0});
-      tasks.filter(s=>s.parentId===t.id).forEach(s=>rows.push({type:'task',task:s,proj:p,indent:1}));
+      getTasks().filter(s=>s.parentId===t.id).forEach(s=>rows.push({type:'task',task:s,proj:p,indent:1}));
     });
   });
   return rows;
@@ -752,8 +895,18 @@ function pctBadge(p,status){
   else if(p>0){bg='#E6F1FB';fg='#185FA5';}
   return `<span class="pct-badge" style="background:${bg};color:${fg}">${p}%</span>`;
 }
-function avatarInitials(n){return n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}
-function avatarColor(n){const c=['#378ADD','#639922','#534AB7','#EF9F27','#D4537E','#1D9E75'];let h=0;for(let ch of n)h=(h*31+ch.charCodeAt(0))%c.length;return c[Math.abs(h)%c.length]}
+function avatarInitials(nameOrId){
+  const r=resById(nameOrId); const n=r?r.name:nameOrId;
+  return n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+}
+function avatarColor(nameOrId){
+  const r=resById(nameOrId); if(r&&r.color) return r.color;
+  const c=['#378ADD','#639922','#534AB7','#EF9F27','#D4537E','#1D9E75'];
+  let h=0;for(let ch of nameOrId)h=(h*31+ch.charCodeAt(0))%c.length;return c[Math.abs(h)%c.length];
+}
+function resDisplayName(idOrName){
+  const r=resById(idOrName); return r?r.name:idOrName;
+}
 
 // ─── SIDEBAR ──────────────────────────────────────────
 function renderSidebar(rows){
@@ -771,7 +924,7 @@ function renderSidebar(rows){
       div.dataset.sbId = t.id;
       const indent=r.indent*16;
       const iconH=t.icon&&t.icon!=='none'?`<span class="row-icon" style="color:${t.color||'#888'}">${iconSVG(t.icon,13,t.color||'currentColor')}</span>`:'';
-      const resH=t.resources&&t.resources.length?`<span class="row-res">${t.resources.slice(0,2).join(', ')}${t.resources.length>2?'+':''}` :'';
+      const resH=t.resources&&t.resources.length?`<span class="row-res">${t.resources.slice(0,2).map(r=>resDisplayName(r).split(' ')[0]).join(', ')}${t.resources.length>2?'+':''}</span>` :'';
       const pB=r.indent>0?`<button class="ra" title="Promuovi" onclick="promoteTask('${t.id}')">↑</button>`:'';
       const dB=r.indent===0&&!t.isMilestone?`<button class="ra" title="Converti subtask" onclick="openDemoteModal('${t.id}')">↓</button>`:'';
       const hasNotes=t.notes&&t.notes.trim()&&t.notes!=='<p><br></p>';
@@ -918,13 +1071,13 @@ function selectTask(id){
   let g=`<span class="dl">Inizio</span><span class="dv">${fmtDate(t.start)}</span><span class="dl">Fine</span><span class="dv">${fmtDate(t.end)}</span><span class="dl">Durata</span><span class="dv">${dur} giorni</span><span class="dl">Stato</span><span class="dv">${SL[t.status]||t.status}</span>`;
   if(!t.isMilestone) g+=`<span class="dl">Avanzamento</span><span class="dv"><div class="pbw"><div class="pbf" style="width:${t.progress}%;background:${t.color||'#378ADD'}"></div></div>${t.progress}%</span>`;
   if(t.parentId){const par=getT(t.parentId);g+=`<span class="dl">Subtask di</span><span class="dv">${par?par.label:t.parentId}</span>`;}
-  if(t.resources&&t.resources.length){const avs=t.resources.map(r=>`<div class="avatar" style="background:${avatarColor(r)}" title="${r}">${avatarInitials(r)}</div>`).join('');g+=`<span class="dl">Risorse</span><span class="dv"><div class="avatar-row">${avs}</div></span>`;}
+  if(t.resources&&t.resources.length){const avs=t.resources.map(r=>`<div class="avatar" style="background:${avatarColor(r)}" title="${resDisplayName(r)}">${avatarInitials(r)}</div>`).join('');g+=`<span class="dl">Risorse</span><span class="dv"><div class="avatar-row">${avs}</div><div style="font-size:11px;color:var(--text2);margin-top:3px">${t.resources.map(r=>resDisplayName(r)).join(', ')}</div></span>`;}
   if(t.deps&&t.deps.length){const dn=t.deps.map(d=>{const dt=getT(d);return dt?dt.label:d}).join(', ');g+=`<span class="dl">Dipende da</span><span class="dv">${dn}</span>`;}
   document.getElementById('dp-grid').innerHTML=g;
   rerender();
 }
 
-function deleteTask(id){tasks=tasks.filter(t=>t.id!==id&&t.parentId!==id);if(selectedTask===id){selectedTask=null;document.getElementById('detail-panel').classList.remove('open');document.getElementById('gantt-container').style.borderRadius='';}rerender()}
+function deleteTask(id){setTasks(getTasks().filter(t=>t.id!==id&&t.parentId!==id));if(selectedTask===id){selectedTask=null;document.getElementById('detail-panel').classList.remove('open');document.getElementById('gantt-container').style.borderRadius='';}rerender()}
 function promoteTask(id){const t=getT(id);if(t)t.parentId=null;rerender()}
 
 function buildIconGrid(){
@@ -939,9 +1092,33 @@ function buildIconGrid(){
   });
 }
 
-function addResource(){const inp=document.getElementById('f-res-input');const v=inp.value.trim();if(!v)return;if(!modalResources.includes(v))modalResources.push(v);inp.value='';renderResourceTags()}
-function removeResource(n){modalResources=modalResources.filter(r=>r!==n);renderResourceTags()}
-function renderResourceTags(){document.getElementById('res-tags').innerHTML=modalResources.map(r=>`<div class="res-tag"><div class="avatar" style="background:${avatarColor(r)};width:16px;height:16px;font-size:7px">${avatarInitials(r)}</div>${r}<span class="rm" onclick="removeResource('${r}')">&times;</span></div>`).join('')}
+function buildResourcePool(){
+  const container=document.getElementById('res-pool-container');
+  const categories=[...new Set(RESOURCE_POOL.map(r=>r.category))];
+  container.innerHTML=categories.map(cat=>{
+    const members=RESOURCE_POOL.filter(r=>r.category===cat);
+    return `<div class="res-pool-category">${cat}</div>
+      <div class="res-pool-grid">${members.map(r=>{
+        const sel=modalResources.includes(r.id);
+        return `<div class="res-pill${sel?' selected':''}" onclick="toggleResource('${r.id}')" title="${r.role}">
+          <div class="res-pill-dot" style="background:${r.color}"></div>${r.name.split(' ')[0]} <span style="font-size:10px;opacity:.7">${r.name.split(' ').slice(1).join(' ')}</span>
+        </div>`;
+      }).join('')}</div>`;
+  }).join('');
+}
+
+function toggleResource(id){
+  if(modalResources.includes(id)) modalResources=modalResources.filter(r=>r!==id);
+  else modalResources.push(id);
+  buildResourcePool();
+  renderResourceTags();
+}
+function renderResourceTags(){
+  document.getElementById('res-tags').innerHTML=modalResources.map(id=>{
+    const r=resById(id);
+    return `<div class="res-tag"><div class="avatar" style="background:${avatarColor(id)};width:16px;height:16px;font-size:7px">${avatarInitials(id)}</div>${r?r.name:id}<span class="rm" onclick="toggleResource('${id}')">&times;</span></div>`;
+  }).join('');
+}
 
 /* Colori automatici per stato */
 const STATUS_TO_COLOR={
@@ -967,14 +1144,14 @@ function onTypeChange(){
 function updateParentOptions(){
   const projId=document.getElementById('f-proj').value;
   const par=document.getElementById('f-parent');
-  const opts=tasks.filter(t=>t.proj===projId&&!t.parentId&&!t.isMilestone&&t.id!==editingId);
+  const opts=getTasks().filter(t=>t.proj===projId&&!t.parentId&&!t.isMilestone&&t.id!==editingId);
   par.innerHTML=opts.map(t=>`<option value="${t.id}">${t.label}</option>`).join('');
 }
 
 function openAddModal(projId){
   editingId=null;
   document.getElementById('modal-title').textContent='Nuovo task';
-  document.getElementById('f-proj').innerHTML=PROJECTS.map(p=>`<option value="${p.id}"${p.id===projId?' selected':''}>${p.label}</option>`).join('');
+  document.getElementById('f-proj').innerHTML=getProjects().map(p=>`<option value="${p.id}"${p.id===projId?' selected':''}>${p.label}</option>`).join('');
   document.getElementById('f-type').value='task';
   document.getElementById('f-name').value='';
   document.getElementById('f-start').value=toISO(TODAY);
@@ -983,14 +1160,14 @@ function openAddModal(projId){
   document.getElementById('f-status').value='todo';
   document.getElementById('f-color').value=STATUS_TO_COLOR['todo'];
   modalResources=[];selectedIcon='none';
-  renderResourceTags();buildIconGrid();onTypeChange();
+  renderResourceTags();buildResourcePool();buildIconGrid();onTypeChange();
   document.getElementById('modal-overlay').classList.add('open');
   setTimeout(()=>document.getElementById('f-name').focus(),100);
 }
 function openEditModal(id){
   editingId=id;const t=getT(id);if(!t)return;
   document.getElementById('modal-title').textContent='Modifica: '+t.label;
-  document.getElementById('f-proj').innerHTML=PROJECTS.map(p=>`<option value="${p.id}"${p.id===t.proj?' selected':''}>${p.label}</option>`).join('');
+  document.getElementById('f-proj').innerHTML=getProjects().map(p=>`<option value="${p.id}"${p.id===t.proj?' selected':''}>${p.label}</option>`).join('');
   document.getElementById('f-type').value=t.isMilestone?'milestone':t.parentId?'subtask':'task';
   document.getElementById('f-name').value=t.label;
   document.getElementById('f-start').value=toISO(t.start);
@@ -999,7 +1176,7 @@ function openEditModal(id){
   document.getElementById('f-status').value=t.status==='milestone'?'todo':t.status;
   document.getElementById('f-color').value=STATUS_TO_COLOR[t.status]||t.color||'#378ADD';
   modalResources=[...(t.resources||[])];selectedIcon=t.icon||'none';
-  renderResourceTags();buildIconGrid();onTypeChange();updateParentOptions();
+  renderResourceTags();buildResourcePool();buildIconGrid();onTypeChange();updateParentOptions();
   if(t.parentId)document.getElementById('f-parent').value=t.parentId;
   document.getElementById('modal-overlay').classList.add('open');
 }
@@ -1017,13 +1194,13 @@ function saveModal(){
   const icon=selectedIcon;const resources=[...modalResources];
   if(!name){document.getElementById('f-name').focus();return;}
   if(editingId){const t=getT(editingId);if(t)Object.assign(t,{label:name,proj,parentId,start:startVal,end:endVal,progress,status,color,icon,resources,isMilestone:type==='milestone'});}
-  else tasks.push({id:uid(),proj,label:name,start:startVal,end:endVal,progress,status,color,icon,resources,deps:[],parentId,isMilestone:type==='milestone',notes:''});
+  else getTasks().push({id:uid(),proj,label:name,start:startVal,end:endVal,progress,status,color,icon,resources,deps:[],parentId,isMilestone:type==='milestone',notes:''});
   closeModal();rerender();
 }
 
 function openDemoteModal(id){
   demoteTarget=id;const t=getT(id);
-  const opts=tasks.filter(p=>p.proj===t.proj&&p.id!==id&&!p.parentId&&!p.isMilestone);
+  const opts=getTasks().filter(p=>p.proj===t.proj&&p.id!==id&&!p.parentId&&!p.isMilestone);
   document.getElementById('demote-parent').innerHTML=opts.map(p=>`<option value="${p.id}">${p.label}</option>`).join('');
   document.getElementById('demote-overlay').classList.add('open');
 }
@@ -1034,7 +1211,8 @@ function showTip(e,id){
   if(!id)return;const t=getT(id);if(!t)return;
   const tip=document.getElementById('tooltip');
   const dur=diffDays(t.start,t.end);
-  const resH=t.resources&&t.resources.length?`<div style="margin-top:4px;color:var(--text2)">${t.resources.join(', ')}</div>`:'';
+  const resNames=(t.resources||[]).map(r=>resDisplayName(r)).join(', ');
+  const resH=resNames?`<div style="margin-top:4px;color:var(--text2)">${resNames}</div>`:'';
   tip.innerHTML=`<strong style="font-size:12px">${t.label}</strong><br>${fmtDate(t.start)} → ${fmtDate(t.end)}<br>${dur} giorni${t.isMilestone?'':' · '+t.progress+'%'}<br><span style="color:${t.color||'#888'}">${SL[t.status]||''}</span>${resH}`;
   tip.style.opacity='1';tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY-10)+'px';
 }
@@ -1042,7 +1220,7 @@ function hideTip(){document.getElementById('tooltip').style.opacity='0'}
 
 function zoom(dir){DAY_W=Math.max(12,Math.min(60,DAY_W+dir*4));rerender()}
 
-function rerender(){const rows=buildRows();renderSidebar(rows);renderHeader();renderGantt(rows)}
+function rerender(){syncPageData();const rows=buildRows();renderPageTabs();renderSidebar(rows);renderHeader();renderGantt(rows)}
 
 function exportXLSX(){
   try {
@@ -1295,10 +1473,10 @@ function onSearchInput(){
 
   if(!q){ sugBox.classList.remove('open'); sugBox.innerHTML=''; return; }
 
-  /* Cerca in tutti i task */
-  const results = tasks.filter(t =>
+  /* Cerca in tutti i task della pagina corrente */
+  const results = getTasks().filter(t =>
     t.label.toLowerCase().includes(q) ||
-    (t.resources||[]).some(r=>r.toLowerCase().includes(q))
+    (t.resources||[]).some(r=>resDisplayName(r).toLowerCase().includes(q))
   ).slice(0,10);
 
   if(!results.length){ sugBox.innerHTML='<div class="sb-sug-item" style="color:var(--text3);cursor:default">Nessun risultato</div>'; sugBox.classList.add('open'); return; }
@@ -1364,7 +1542,7 @@ function jumpToTask(id){
       row.classList.remove('search-match');
       void row.offsetWidth;
       row.classList.add('search-match');
-      setTimeout(()=>row.classList.remove('search-match'), 3600);
+      setTimeout(()=>row.classList.remove('search-match'), 2600);
     }
   });
 }
@@ -1383,6 +1561,83 @@ document.addEventListener('click', e=>{
     document.getElementById('sb-suggestions')?.classList.remove('open');
   }
 });
+
+// ─── WORKLOAD PANEL ───────────────────────────────────
+function openWorkloadPanel(){
+  /* Popola filtro pagine */
+  const sel=document.getElementById('wl-page-filter');
+  sel.innerHTML='<option value="all">Tutte le pagine</option>'+
+    pages.map(p=>`<option value="${p.id}">${p.label}</option>`).join('');
+  document.getElementById('workload-overlay').classList.add('open');
+  renderWorkload();
+}
+function closeWorkloadPanel(){
+  document.getElementById('workload-overlay').classList.remove('open');
+}
+
+function renderWorkload(){
+  const filterPage = document.getElementById('wl-page-filter').value;
+  /* Raccoglie tutti i task dalle pagine filtrate */
+  const allTasks=[];
+  const allProjMap={};
+  pages.forEach(pg=>{
+    if(filterPage!=='all'&&pg.id!==filterPage) return;
+    pg.tasks.forEach(t=>{ allTasks.push({...t,_page:pg.label}); });
+    pg.projects.forEach(p=>{ allProjMap[p.id]=p; });
+  });
+
+  /* Calcola giorni totali per risorsa */
+  const resLoad={};
+  RESOURCE_POOL.forEach(r=>{ resLoad[r.id]={days:0,tasks:[]}; });
+  allTasks.forEach(t=>{
+    const dur=Math.max(1,diffDays(t.start,t.end));
+    (t.resources||[]).forEach(rid=>{
+      if(resLoad[rid]){
+        resLoad[rid].days+=dur;
+        resLoad[rid].tasks.push(t);
+      }
+    });
+  });
+
+  /* Trova il massimo per normalizzare */
+  const maxDays=Math.max(1,...Object.values(resLoad).map(r=>r.days));
+  /* Soglie carico: 0-30% libero, 31-70% medio, 71-90% alto, 91%+ full */
+  function loadLabel(pct){
+    if(pct===0) return {label:'Disponibile',color:'#639922'};
+    if(pct<=30) return {label:'Leggero',color:'#1D9E75'};
+    if(pct<=70) return {label:'Medio',color:'#EF9F27'};
+    if(pct<=90) return {label:'Alto',color:'#E24B4A'};
+    return {label:'Full',color:'#B4102A'};
+  }
+
+  const categories=[...new Set(RESOURCE_POOL.map(r=>r.category))];
+  let html='';
+  categories.forEach(cat=>{
+    html+=`<div class="wl-category-title">${cat}</div>`;
+    RESOURCE_POOL.filter(r=>r.category===cat).forEach(res=>{
+      const load=resLoad[res.id];
+      const pct=Math.round((load.days/maxDays)*100);
+      const {label:lbl,color:lcol}=loadLabel(pct);
+      const tasksHtml=load.tasks.length
+        ? load.tasks.map(t=>`<span class="wl-task-chip" onclick="closeWorkloadPanel();switchPage('${pages.find(pg=>pg.tasks.some(tt=>tt.id===t.id))?.id||currentPageId}');setTimeout(()=>jumpToTask('${t.id}'),100)" title="${t._page}">${t.label}</span>`).join('')
+        : `<span class="wl-empty">Nessun task assegnato</span>`;
+      html+=`<div class="wl-resource-card">
+        <div class="wl-res-row">
+          <div class="wl-avatar" style="background:${res.color}">${avatarInitials(res.id)}</div>
+          <div class="wl-res-name">${res.name}</div>
+          <div class="wl-res-role">${res.role}</div>
+          <div class="wl-pct-label" style="color:${lcol}">${lbl}</div>
+        </div>
+        <div class="wl-bar-wrap"><div class="wl-bar-fill" style="width:${pct}%;background:${lcol}"></div></div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:5px">${load.days} giorni assegnati su ${pages.filter(p=>filterPage==='all'||p.id===filterPage).length} pagina/e · ${load.tasks.length} task</div>
+        <div class="wl-tasks-list">${tasksHtml}</div>
+      </div>`;
+    });
+  });
+  document.getElementById('workload-body').innerHTML=html;
+}
+
+document.getElementById('workload-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeWorkloadPanel()});
 
 document.getElementById('notes-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeNotesModal()});
 
