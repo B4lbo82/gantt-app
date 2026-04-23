@@ -9,6 +9,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
 <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
 <style>
 :root {
   --bg:#ffffff;--bg2:#f7f7f5;--bg3:#efefec;
@@ -168,19 +169,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .avatar-row{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
 .avatar{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;background:var(--blue);flex-shrink:0}
 /* ── NOTES MODAL ───────────────────────────── */
-#notes-modal{width:560px;max-width:96vw;max-height:85vh;display:flex;flex-direction:column}
+#notes-modal{width:620px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column}
 #notes-modal h3{font-size:14px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:8px}
 #notes-modal .notes-subtitle{font-size:11px;color:var(--text3);margin-bottom:12px}
-#notes-editor-wrap{flex:1;display:flex;flex-direction:column;min-height:0}
+#notes-editor-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
 .ql-toolbar.ql-snow{border-radius:var(--radius) var(--radius) 0 0 !important;border-color:var(--border2) !important;background:var(--bg2);flex-shrink:0}
-.ql-container.ql-snow{border-radius:0 0 var(--radius) var(--radius) !important;border-color:var(--border2) !important;flex:1;min-height:220px;max-height:380px;overflow-y:auto}
-.ql-editor{font-size:13px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);min-height:220px}
+.ql-container.ql-snow{border-radius:0 0 var(--radius) var(--radius) !important;border-color:var(--border2) !important;height:420px;overflow-y:auto}
+.ql-editor{font-size:13px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);min-height:420px;max-height:none}
 .ql-editor a{color:var(--blue)}
 .ql-snow .ql-stroke{stroke:var(--text2) !important}
 .ql-snow .ql-fill{fill:var(--text2) !important}
 .ql-snow .ql-picker{color:var(--text2) !important}
 .ql-snow .ql-picker-options{background:var(--bg) !important;border-color:var(--border2) !important}
 .notes-has-content::after{content:'●';font-size:8px;color:var(--blue);margin-left:3px;vertical-align:super}
+/* Export buttons nelle note */
+.notes-export-btns{display:flex;gap:6px;margin-right:auto}
+.notes-export-btns .btn{font-size:11px;height:28px;padding:0 9px}
 </style>
 </head>
 <body>
@@ -426,6 +430,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div id="notes-quill-editor"></div>
     </div>
     <div class="modal-btns">
+      <div class="notes-export-btns">
+        <button class="btn" onclick="exportNotesWord()" title="Esporta in Word">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="#185FA5" stroke-width="1"/><path d="M3 4l1.5 4L6 5l1.5 3L9 4" stroke="#185FA5" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>Word
+        </button>
+        <button class="btn" onclick="exportNotesPDF()" title="Esporta in PDF">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="#E24B4A" stroke-width="1"/><path d="M3.5 3.5h3a1.5 1.5 0 010 3H3.5V3.5zM3.5 6.5h5" stroke="#E24B4A" stroke-width="1" stroke-linecap="round"/></svg>PDF
+        </button>
+      </div>
       <button class="btn" onclick="closeNotesModal()">Annulla</button>
       <button class="btn ok" onclick="saveNotes()">Salva note</button>
     </div>
@@ -1146,7 +1158,90 @@ function saveNotes(){
   const t = getT(notesTaskId); if(!t) return;
   t.notes = quillInstance.root.innerHTML;
   closeNotesModal();
-  rerender(); /* aggiorna indicatore ● nella sidebar */
+  rerender();
+}
+
+function notesHTMLDoc(t){
+  const title = t ? t.label : 'Note';
+  const proj = t ? (PROJECTS.find(p=>p.id===t.proj)||{}).label||'' : '';
+  const dateRange = t ? fmtDate(t.start)+' → '+fmtDate(t.end) : '';
+  const body = quillInstance ? quillInstance.root.innerHTML : '';
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <style>
+      body{font-family:Calibri,Arial,sans-serif;font-size:13pt;line-height:1.6;max-width:800px;margin:40px auto;color:#1a1a18}
+      h1{font-size:18pt;margin-bottom:4px;color:#185FA5}
+      .meta{font-size:10pt;color:#888;margin-bottom:24px;border-bottom:1px solid #ddd;padding-bottom:10px}
+      h2{font-size:15pt;color:#1a1a18}h3{font-size:13pt}
+      ul,ol{padding-left:24px}
+      blockquote{border-left:3px solid #ddd;margin:0;padding:4px 12px;color:#555}
+      pre{background:#f5f5f5;padding:10px;border-radius:4px;font-size:11pt;overflow:auto}
+      a{color:#185FA5}
+    </style></head><body>
+    <h1>${title}</h1>
+    <div class="meta">${proj}${proj&&dateRange?' &nbsp;·&nbsp; ':''}${dateRange}</div>
+    ${body}
+  </body></html>`;
+}
+
+function exportNotesWord(){
+  const t = notesTaskId ? getT(notesTaskId) : null;
+  const html = notesHTMLDoc(t);
+  try {
+    if(typeof htmlDocx !== 'undefined'){
+      /* html-docx-js disponibile */
+      const docx = htmlDocx.asBlob(html);
+      const url = URL.createObjectURL(docx);
+      const a = document.createElement('a');
+      a.href=url; a.download=(t?t.label.replace(/[^a-z0-9]/gi,'_'):'note')+'_note.docx';
+      document.body.appendChild(a); a.click();
+      setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},200);
+    } else {
+      /* Fallback: HTML che Word apre natively */
+      const blob = new Blob([html],{type:'application/msword'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href=url; a.download=(t?t.label.replace(/[^a-z0-9]/gi,'_'):'note')+'_note.doc';
+      document.body.appendChild(a); a.click();
+      setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},200);
+    }
+  } catch(e){ alert('Errore export Word: '+e.message); }
+}
+
+function exportNotesPDF(){
+  if(typeof window.jspdf==='undefined'){alert('Libreria PDF non caricata. Ricarica la pagina.');return;}
+  const t = notesTaskId ? getT(notesTaskId) : null;
+  const editorEl = document.querySelector('.ql-editor');
+  if(!editorEl){alert('Nessun contenuto da esportare.');return;}
+  /* Clona il contenuto in un div stampabile con stile completo */
+  const printDiv = document.createElement('div');
+  printDiv.style.cssText='position:fixed;left:-9999px;top:0;width:750px;padding:32px;background:#fff;font-family:Arial,sans-serif;font-size:13px;line-height:1.6;color:#1a1a18;z-index:-1';
+  /* Header */
+  const header = document.createElement('div');
+  header.innerHTML=`<h2 style="font-size:17px;margin:0 0 4px;color:#185FA5">${t?t.label:'Note'}</h2><p style="font-size:11px;color:#888;margin:0 0 20px;border-bottom:1px solid #ddd;padding-bottom:10px">${t?(PROJECTS.find(p=>p.id===t.proj)||{}).label||'':''} ${t?fmtDate(t.start)+' → '+fmtDate(t.end):''}</p>`;
+  printDiv.appendChild(header);
+  const contentClone = editorEl.cloneNode(true);
+  contentClone.style.cssText='font-size:13px;line-height:1.6;color:#1a1a18';
+  printDiv.appendChild(contentClone);
+  document.body.appendChild(printDiv);
+  html2canvas(printDiv,{scale:1.5,backgroundColor:'#ffffff',useCORS:true,width:750}).then(canvas=>{
+    document.body.removeChild(printDiv);
+    const {jsPDF}=window.jspdf;
+    const PX_TO_MM=25.4/96;
+    const mmW=Math.ceil((canvas.width/1.5)*PX_TO_MM);
+    const mmH=Math.ceil((canvas.height/1.5)*PX_TO_MM);
+    const pageH=297; /* A4 portrait height in mm */
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const a4W=210;
+    const ratio=a4W/mmW;
+    const scaledH=mmH*ratio;
+    let yOff=0;
+    while(yOff<scaledH){
+      if(yOff>0) pdf.addPage();
+      pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,-yOff,a4W,scaledH);
+      yOff+=pageH;
+    }
+    pdf.save((t?t.label.replace(/[^a-z0-9]/gi,'_'):'note')+'_note.pdf');
+  });
 }
 
 document.getElementById('notes-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeNotesModal()});
