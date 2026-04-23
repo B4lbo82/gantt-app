@@ -82,9 +82,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #gantt-scroll{overflow-x:auto}
 #gantt-inner{display:flex}
 #sidebar{flex-shrink:0;width:280px;border-right:0.5px solid var(--border2);display:flex;flex-direction:column}
-.sb-head{height:96px;display:flex;align-items:flex-end;border-bottom:0.5px solid var(--border2);background:var(--bg2)}
-.sb-head-task{flex:1;padding:0 8px 8px 10px;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
-.sb-head-pct{width:52px;text-align:center;padding:0 4px 8px;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;border-left:0.5px solid var(--border)}
+.sb-head{height:96px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:0.5px solid var(--border2);background:var(--bg2);padding:6px 8px 0}
+.sb-head-labels{display:flex;align-items:flex-end;padding-bottom:8px}
+.sb-head-task{flex:1;padding:0 0 0 2px;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
+.sb-head-pct{width:52px;text-align:center;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;border-left:0.5px solid var(--border);padding-left:4px}
+/* Search box */
+.sb-search-wrap{position:relative;margin-bottom:6px}
+.sb-search-input{width:100%;font-size:12px;padding:5px 28px 5px 8px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);outline:none;height:28px;transition:border-color .15s}
+.sb-search-input:focus{border-color:var(--blue)}
+.sb-search-clear{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;line-height:1;padding:0;display:none}
+.sb-search-clear:hover{color:var(--text)}
+/* Dropdown suggerimenti */
+.sb-suggestions{position:absolute;top:calc(100% + 2px);left:0;right:0;background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius);box-shadow:0 4px 14px rgba(0,0,0,.12);z-index:200;max-height:220px;overflow-y:auto;display:none}
+.sb-suggestions.open{display:block}
+.sb-sug-item{padding:7px 10px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:7px;border-bottom:0.5px solid var(--border)}
+.sb-sug-item:last-child{border-bottom:none}
+.sb-sug-item:hover,.sb-sug-item.active{background:var(--blue-light)}
+.sb-sug-mark{color:var(--blue);font-weight:600}
+.sb-sug-meta{font-size:10px;color:var(--text3);margin-left:auto;white-space:nowrap}
+/* Evidenzia riga trovata */
+.sb-row.search-match{background:var(--blue-light) !important;animation:flashMatch .6s ease}
+@keyframes flashMatch{0%{background:rgba(55,138,221,0.35)}100%{background:var(--blue-light)}}
 .sb-row{height:36px;display:flex;align-items:center;border-bottom:0.5px solid var(--border);position:relative}
 .sb-row:hover .row-actions{opacity:1}
 .sb-row.group-row{background:var(--bg3);height:32px}
@@ -328,8 +346,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div id="gantt-inner">
       <div id="sidebar">
         <div class="sb-head">
-          <div class="sb-head-task">Task / Progetto</div>
-          <div class="sb-head-pct">%</div>
+          <div class="sb-search-wrap">
+            <input class="sb-search-input" id="sb-search" type="text" placeholder="🔍  Cerca task…" autocomplete="off"
+              oninput="onSearchInput()" onkeydown="onSearchKey(event)" onfocus="onSearchInput()">
+            <button class="sb-search-clear" id="sb-search-clear" onclick="clearSearch()" title="Cancella">✕</button>
+            <div class="sb-suggestions" id="sb-suggestions"></div>
+          </div>
+          <div class="sb-head-labels">
+            <div class="sb-head-task">Task / Progetto</div>
+            <div class="sb-head-pct">%</div>
+          </div>
         </div>
         <div id="sb-rows"></div>
       </div>
@@ -730,6 +756,7 @@ function renderSidebar(rows){
     } else {
       const t=r.task;
       if(selectedTask===t.id) div.classList.add('selected-row');
+      div.dataset.sbId = t.id;
       const indent=r.indent*16;
       const iconH=t.icon&&t.icon!=='none'?`<span class="row-icon" style="color:${t.color||'#888'}">${iconSVG(t.icon,13,t.color||'currentColor')}</span>`:'';
       const resH=t.resources&&t.resources.length?`<span class="row-res">${t.resources.slice(0,2).join(', ')}${t.resources.length>2?'+':''}` :'';
@@ -1243,6 +1270,105 @@ function exportNotesPDF(){
     pdf.save((t?t.label.replace(/[^a-z0-9]/gi,'_'):'note')+'_note.pdf');
   });
 }
+
+// ─── SEARCH ───────────────────────────────────────────
+let searchHighlightIndex = -1;
+
+function onSearchInput(){
+  const q = document.getElementById('sb-search').value.trim().toLowerCase();
+  const clearBtn = document.getElementById('sb-search-clear');
+  const sugBox = document.getElementById('sb-suggestions');
+  clearBtn.style.display = q ? 'block' : 'none';
+  searchHighlightIndex = -1;
+
+  if(!q){ sugBox.classList.remove('open'); sugBox.innerHTML=''; return; }
+
+  /* Cerca in tutti i task */
+  const results = tasks.filter(t =>
+    t.label.toLowerCase().includes(q) ||
+    (t.resources||[]).some(r=>r.toLowerCase().includes(q))
+  ).slice(0,10);
+
+  if(!results.length){ sugBox.innerHTML='<div class="sb-sug-item" style="color:var(--text3);cursor:default">Nessun risultato</div>'; sugBox.classList.add('open'); return; }
+
+  sugBox.innerHTML = results.map((t,i)=>{
+    const proj = PROJECTS.find(p=>p.id===t.proj)||{};
+    /* Evidenzia la parte corrispondente nel nome */
+    const idx = t.label.toLowerCase().indexOf(q);
+    let labelHtml = t.label;
+    if(idx>=0){
+      labelHtml = t.label.slice(0,idx)
+        + `<span class="sb-sug-mark">${t.label.slice(idx,idx+q.length)}</span>`
+        + t.label.slice(idx+q.length);
+    }
+    const typeTag = t.isMilestone ? '◆' : t.parentId ? '↳' : '●';
+    const col = t.color||'#888';
+    return `<div class="sb-sug-item" data-id="${t.id}" onclick="jumpToTask('${t.id}')">
+      <span style="color:${col};flex-shrink:0">${typeTag}</span>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${labelHtml}</span>
+      <span class="sb-sug-meta">${proj.label||''}</span>
+    </div>`;
+  }).join('');
+  sugBox.classList.add('open');
+}
+
+function onSearchKey(e){
+  const sugBox = document.getElementById('sb-suggestions');
+  const items = sugBox.querySelectorAll('.sb-sug-item[data-id]');
+  if(!items.length) return;
+  if(e.key==='ArrowDown'){
+    e.preventDefault();
+    searchHighlightIndex = Math.min(searchHighlightIndex+1, items.length-1);
+    items.forEach((el,i)=>el.classList.toggle('active',i===searchHighlightIndex));
+    items[searchHighlightIndex]?.scrollIntoView({block:'nearest'});
+  } else if(e.key==='ArrowUp'){
+    e.preventDefault();
+    searchHighlightIndex = Math.max(searchHighlightIndex-1, 0);
+    items.forEach((el,i)=>el.classList.toggle('active',i===searchHighlightIndex));
+    items[searchHighlightIndex]?.scrollIntoView({block:'nearest'});
+  } else if(e.key==='Enter'){
+    e.preventDefault();
+    const active = searchHighlightIndex>=0 ? items[searchHighlightIndex] : items[0];
+    if(active) jumpToTask(active.dataset.id);
+  } else if(e.key==='Escape'){
+    clearSearch();
+  }
+}
+
+function jumpToTask(id){
+  /* Chiudi suggerimenti */
+  document.getElementById('sb-suggestions').classList.remove('open');
+  document.getElementById('sb-search').value = getT(id)?.label || '';
+  document.getElementById('sb-search-clear').style.display = 'block';
+
+  /* Trova la riga nella sidebar */
+  rerender(); /* assicura che la riga esista */
+  const row = document.querySelector(`.sb-row[data-sb-id="${id}"]`);
+  if(row){
+    /* Scroll nella sidebar fino alla riga */
+    row.scrollIntoView({block:'center', behavior:'smooth'});
+    /* Effetto flash */
+    row.classList.add('search-match');
+    setTimeout(()=>row.classList.remove('search-match'), 1200);
+  }
+  /* Seleziona il task per mostrare il dettaglio */
+  selectTask(id);
+}
+
+function clearSearch(){
+  document.getElementById('sb-search').value='';
+  document.getElementById('sb-search-clear').style.display='none';
+  document.getElementById('sb-suggestions').classList.remove('open');
+  document.getElementById('sb-suggestions').innerHTML='';
+  searchHighlightIndex=-1;
+}
+
+/* Chiudi suggerimenti cliccando fuori */
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.sb-search-wrap')){
+    document.getElementById('sb-suggestions')?.classList.remove('open');
+  }
+});
 
 document.getElementById('notes-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeNotesModal()});
 
