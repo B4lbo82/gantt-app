@@ -870,6 +870,7 @@ function applyStatusColor(){
   const col=STATUS_TO_COLOR[status]||'#378ADD';
   document.getElementById('f-color').value=col;
 }
+function onTypeChange(){
   const type=document.getElementById('f-type').value;
   document.getElementById('f-parent-row').style.display=type==='subtask'?'block':'none';
   document.getElementById('f-end-row').style.display=type==='milestone'?'none':'block';
