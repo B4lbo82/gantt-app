@@ -193,14 +193,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .avatar-row{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
 .avatar{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;background:var(--blue);flex-shrink:0}
 /* ── PAGES TABS ─────────────────────────── */
-#pages-bar{display:flex;align-items:center;gap:6px;margin-bottom:12px;flex-wrap:wrap;border-bottom:0.5px solid var(--border2);padding-bottom:10px}
-.page-tab{font-size:12px;padding:5px 14px;border:0.5px solid var(--border2);border-radius:20px;background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+#pages-bar{display:flex;align-items:center;gap:6px;margin-bottom:12px;border-bottom:0.5px solid var(--border2);padding-bottom:10px;flex-wrap:wrap}
+#page-tabs{display:flex;flex-wrap:wrap;gap:6px;flex:1}
+.page-tab{font-size:12px;padding:5px 10px 5px 14px;border:0.5px solid var(--border2);border-radius:20px;background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .page-tab:hover{background:var(--bg3);color:var(--text)}
 .page-tab.active{background:var(--blue);color:#fff;border-color:var(--blue-dark);font-weight:500}
-.page-tab .tab-del{font-size:12px;opacity:.6;line-height:1;background:none;border:none;color:inherit;cursor:pointer;padding:0;margin-left:2px}
-.page-tab .tab-del:hover{opacity:1}
-.page-tab-add{font-size:18px;width:28px;height:28px;border-radius:50%;border:0.5px dashed var(--border2);background:transparent;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.tab-rename{font-size:11px;opacity:0;background:none;border:none;color:inherit;cursor:pointer;padding:1px 3px;border-radius:3px;transition:opacity .15s;line-height:1}
+.page-tab:hover .tab-rename{opacity:.7}
+.page-tab:hover .tab-rename:hover{opacity:1;background:rgba(0,0,0,.12)}
+.page-tab .tab-del{font-size:11px;opacity:0;line-height:1;background:none;border:none;color:inherit;cursor:pointer;padding:1px 3px;border-radius:3px;transition:opacity .15s}
+.page-tab:hover .tab-del{opacity:.7}
+.page-tab:hover .tab-del:hover{opacity:1;background:rgba(0,0,0,.12)}
+.page-tab-add{font-size:18px;width:28px;height:28px;border-radius:50%;border:0.5px dashed var(--border2);background:transparent;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
 .page-tab-add:hover{border-color:var(--blue);color:var(--blue)}
+/* Mobile: tabs in verticale */
+@media(max-width:600px){
+  #pages-bar{flex-direction:column;align-items:stretch}
+  #page-tabs{flex-direction:column}
+  .page-tab{border-radius:var(--radius);justify-content:space-between}
+  .tab-rename,.tab-del{opacity:.6!important}
+  .page-tab-add{width:100%;border-radius:var(--radius);height:34px}
+}
 
 /* ── RESOURCE POOL PICKER ───────────────── */
 .res-pool-wrap{margin-top:6px}
@@ -247,8 +260,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* Export buttons nelle note */
 .notes-export-btns{display:flex;gap:6px;margin-right:auto}
 .notes-export-btns .btn{font-size:11px;height:28px;padding:0 9px}
+/* ── RESOURCE MANAGER ───────────────────── */
+#res-manager-modal{width:580px;max-width:96vw;max-height:85vh;overflow-y:auto}
+.rm-cat-header{display:flex;align-items:center;gap:8px;margin:14px 0 8px}
+.rm-cat-header:first-child{margin-top:0}
+.rm-cat-title{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;flex:1}
+.rm-res-row{display:flex;align-items:center;gap:7px;padding:5px 7px;border-radius:var(--radius);background:var(--bg2);border:0.5px solid var(--border);margin-bottom:4px}
+.rm-res-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0}
+.rm-res-name-input{flex:1;font-size:12px;padding:4px 7px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg);color:var(--text);min-width:0;height:28px}
+.rm-res-role-input{width:120px;font-size:11px;padding:4px 7px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg);color:var(--text);height:28px}
+.rm-color-pick{width:28px;height:28px;padding:2px;border:0.5px solid var(--border2);border-radius:6px;cursor:pointer;flex-shrink:0}
+.rm-del-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:2px 5px;border-radius:4px;flex-shrink:0;line-height:1}
+.rm-del-btn:hover{background:var(--red-light);color:var(--red)}
+.rm-add-row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.rm-add-row input,.rm-add-row select{font-size:12px;padding:5px 8px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);height:30px}
+.rm-add-row input[type=text]{flex:1;min-width:100px}
+.rm-add-row select{width:140px}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes slideInToast{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes fadeOutToast{from{opacity:1}to{opacity:0;transform:translateY(10px)}}
 </style>
-</head>
 <body>
 
 <!-- ══════════════════════════════════════
@@ -345,6 +376,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="header-bar">
   <h1>Project Planner</h1>
   <span style="font-size:11px;color:var(--text3)" id="today-label"></span>
+  <span id="save-status" style="font-size:11px;display:none;align-items:center;gap:5px"></span>
   <div class="spacer"></div>
   <div class="user-chip">
     <div class="user-avatar" id="user-avatar">?</div>
@@ -370,6 +402,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <button class="btn" onclick="openWorkloadPanel()">
     <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.1" fill="none"/><path d="M1.5 12c0-2.8 2.2-4.5 5-4.5s5 1.7 5 4.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M9 5.5h2.5M10.5 4.5v2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
     Risorse
+  </button>
+  <button class="btn" onclick="openResManager()">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="4.5" cy="4" r="2" stroke="currentColor" stroke-width="1.1" fill="none"/><circle cx="9" cy="4" r="2" stroke="currentColor" stroke-width="1.1" fill="none"/><path d="M1 11c0-2 1.6-3 3.5-3M7 11c0-2 1.6-3 3.5-3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M6 7.5v3M4.5 9h3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+    Roster
   </button>
   <div class="btn-group">
     <button class="btn" onclick="exportPDF()">
@@ -490,6 +526,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="modal-btns">
       <button class="btn" onclick="closeDemote()">Annulla</button>
       <button class="btn ok" onclick="saveDemote()">Conferma</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESOURCE MANAGER MODAL -->
+<div class="modal-backdrop" id="res-manager-overlay">
+  <div class="modal" id="res-manager-modal">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <h3 style="flex:1;margin:0">👥 Gestisci roster risorse</h3>
+      <button class="btn" onclick="closeResManager()" style="height:28px;padding:0 10px">✕</button>
+    </div>
+    <div id="res-manager-body"></div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn" onclick="closeResManager()">Annulla</button>
+      <button class="btn ok" onclick="saveResManager()">Salva modifiche</button>
     </div>
   </div>
 </div>
@@ -651,10 +702,13 @@ async function enterApp() {
   document.getElementById('user-avatar').textContent = email.slice(0,2).toUpperCase();
   document.getElementById('auth-wrap').style.display = 'none';
   document.getElementById('app-wrap').style.display = 'block';
+  await loadFromSupabase();
+  await subscribeRealtime();
   rerender();
 }
 
 async function doLogout() {
+  unsubscribeRealtime();
   await sb.auth.signOut();
   document.getElementById('auth-wrap').style.display = 'flex';
   document.getElementById('app-wrap').style.display = 'none';
@@ -817,6 +871,148 @@ let PROJECTS = getProjects();
 let tasks = getTasks();
 function syncPageData(){ PROJECTS=getProjects(); tasks=getTasks(); }
 
+// ─── PERSISTENZA SUPABASE ─────────────────────────────
+let saveTimer = null;
+
+/* Serializza: converte Date → ISO string per JSON */
+function serializeState(){
+  return {
+    pages: pages.map(pg=>({
+      ...pg,
+      tasks: pg.tasks.map(t=>({
+        ...t,
+        start: t.start instanceof Date ? t.start.toISOString() : t.start,
+        end:   t.end   instanceof Date ? t.end.toISOString()   : t.end,
+      }))
+    })),
+    resourcePool: RESOURCE_POOL.map(r=>({...r}))
+  };
+}
+
+/* Deserializza: ricostruisce Date dagli ISO string */
+function deserializeState(raw){
+  if(raw.pages){
+    pages = raw.pages.map(pg=>({
+      ...pg,
+      tasks: (pg.tasks||[]).map(t=>({
+        ...t,
+        start: new Date(t.start),
+        end:   new Date(t.end),
+      }))
+    }));
+    currentPageId = pages[0]?.id || currentPageId;
+  }
+  if(raw.resourcePool && raw.resourcePool.length){
+    RESOURCE_POOL.length = 0;
+    raw.resourcePool.forEach(r=>RESOURCE_POOL.push(r));
+    Object.keys(RES_BY_ID).forEach(k=>delete RES_BY_ID[k]);
+    RESOURCE_POOL.forEach(r=>RES_BY_ID[r.id]=r);
+  }
+}
+
+function setSaveStatus(state){
+  const el = document.getElementById('save-status');
+  if(!el) return;
+  if(state==='saving'){
+    el.style.display='inline-flex';
+    el.style.color='var(--text3)';
+    el.innerHTML='<svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="animation:spin 1s linear infinite"><path d="M6 1v2M6 9v2M1 6h2M9 6h2M2.5 2.5l1.4 1.4M8.1 8.1l1.4 1.4M2.5 9.5l1.4-1.4M8.1 3.9l1.4-1.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg> Salvataggio…';
+  } else if(state==='saved'){
+    el.style.display='inline-flex';
+    el.style.color='var(--green)';
+    el.innerHTML='<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Salvato';
+    setTimeout(()=>{ if(el) el.style.display='none'; }, 2500);
+  } else if(state==='error'){
+    el.style.display='inline-flex';
+    el.style.color='var(--red)';
+    el.innerHTML='⚠ Errore salvataggio';
+  }
+}
+
+async function saveToSupabase(){
+  try {
+    setSaveStatus('saving');
+    const { data:{ user } } = await sb.auth.getUser();
+    if(!user) return;
+    const { error } = await sb.from('planner_data').upsert(
+      { workspace_id:'shared', data: serializeState(), updated_by: user.id, updated_at: new Date().toISOString() },
+      { onConflict: 'workspace_id' }
+    );
+    setSaveStatus(error ? 'error' : 'saved');
+    if(error) console.error('Save error:', error);
+  } catch(e){
+    setSaveStatus('error');
+    console.error('Save exception:', e);
+  }
+}
+
+async function loadFromSupabase(){
+  try {
+    const { data, error } = await sb.from('planner_data')
+      .select('data')
+      .eq('workspace_id','shared')
+      .maybeSingle();
+    if(error){ console.error('Load error:', error); return; }
+    if(data?.data) deserializeState(data.data);
+  } catch(e){
+    console.error('Load exception:', e);
+  }
+}
+
+/* Auto-save con debounce 1.5s dopo ogni modifica */
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveToSupabase, 1500);
+}
+
+// ─── REALTIME ─────────────────────────────────────────
+let realtimeChannel = null;
+
+async function subscribeRealtime(){
+  const { data:{ user } } = await sb.auth.getUser();
+  const myId = user?.id;
+
+  realtimeChannel = sb.channel('planner_shared')
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'planner_data',
+      filter: 'workspace_id=eq.shared'
+    }, async payload => {
+      /* Ignora gli aggiornamenti fatti da noi stessi */
+      if(payload.new?.updated_by === myId) return;
+      /* Aggiorna i dati e ridisegna senza triggherare un nuovo save */
+      if(payload.new?.data) deserializeState(payload.new.data);
+      rerenderOnly();
+      showRealtimeToast(payload.new?.updated_by);
+    })
+    .subscribe();
+}
+
+function unsubscribeRealtime(){
+  if(realtimeChannel){ sb.removeChannel(realtimeChannel); realtimeChannel=null; }
+}
+
+/* Toast "Giulia ha aggiornato il planner" */
+const emailCache = {};
+async function showRealtimeToast(userId){
+  if(!userId) return;
+  /* Recupera email dalla cache o da Supabase */
+  let label = emailCache[userId];
+  if(!label){
+    try {
+      const { data } = await sb.auth.admin?.getUserById?.(userId).catch(()=>({data:null})) || {data:null};
+      label = data?.user?.email?.split('@')[0] || 'Un collega';
+    } catch(_){ label = 'Un collega'; }
+    emailCache[userId] = label;
+  }
+  const toast = document.createElement('div');
+  toast.style.cssText=`position:fixed;bottom:20px;right:20px;background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:10px 16px;font-size:13px;color:var(--text);box-shadow:0 4px 16px rgba(0,0,0,.14);z-index:9999;display:flex;align-items:center;gap:8px;animation:slideInToast .25s ease`;
+  toast.innerHTML=`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="var(--blue)" stroke-width="1.2"/><path d="M7 4v3l2 2" stroke="var(--blue)" stroke-width="1.2" stroke-linecap="round"/></svg><span><strong style="color:var(--blue)">${label}</strong> ha aggiornato il planner</span>`;
+  document.body.appendChild(toast);
+  setTimeout(()=>{ toast.style.animation='fadeOutToast .3s ease forwards'; setTimeout(()=>toast.remove(), 300); }, 3500);
+}
+
 const SL={todo:'Not started',active:'On-going',standby:'Stand-by',done:'Done',milestone:'Milestone'};
 let dragState=null,selectedTask=null,editingId=null,demoteTarget=null;
 let modalResources=[],selectedIcon='none';
@@ -828,8 +1024,9 @@ function renderPageTabs(){
   const bar = document.getElementById('page-tabs');
   bar.innerHTML = pages.map(p=>`
     <div class="page-tab${p.id===currentPageId?' active':''}" onclick="switchPage('${p.id}')">
-      <span ondblclick="renamePage('${p.id}')" title="Doppio click per rinominare">${p.label}</span>
-      ${pages.length>1?`<button class="tab-del" onclick="deletePage(event,'${p.id}')" title="Elimina pagina">✕</button>`:''}
+      <span>${p.label}</span>
+      <button class="tab-rename" onclick="renamePage(event,'${p.id}')" title="Rinomina">✎</button>
+      ${pages.length>1?`<button class="tab-del" onclick="deletePage(event,'${p.id}')" title="Elimina">✕</button>`:''}
     </div>`).join('');
 }
 
@@ -866,7 +1063,8 @@ function deletePage(e, id){
   rerender();
 }
 
-function renamePage(id){
+function renamePage(e, id){
+  e.stopPropagation();
   const pg=pages.find(p=>p.id===id); if(!pg) return;
   const name=prompt('Rinomina pagina:',pg.label);
   if(!name||!name.trim()) return;
@@ -1220,7 +1418,8 @@ function hideTip(){document.getElementById('tooltip').style.opacity='0'}
 
 function zoom(dir){DAY_W=Math.max(12,Math.min(60,DAY_W+dir*4));rerender()}
 
-function rerender(){syncPageData();const rows=buildRows();renderPageTabs();renderSidebar(rows);renderHeader();renderGantt(rows)}
+function rerenderOnly(){syncPageData();const rows=buildRows();renderPageTabs();renderSidebar(rows);renderHeader();renderGantt(rows);}
+function rerender(){rerenderOnly();scheduleSave();}
 
 function exportXLSX(){
   try {
@@ -1561,6 +1760,112 @@ document.addEventListener('click', e=>{
     document.getElementById('sb-suggestions')?.classList.remove('open');
   }
 });
+
+// ─── RESOURCE MANAGER ─────────────────────────────────
+let resManagerDraft = [];
+
+function openResManager(){
+  resManagerDraft = RESOURCE_POOL.map(r=>({...r}));
+  renderResManagerBody();
+  document.getElementById('res-manager-overlay').classList.add('open');
+}
+function closeResManager(){
+  document.getElementById('res-manager-overlay').classList.remove('open');
+}
+function renderResManagerBody(){
+  const categories=[...new Set(resManagerDraft.map(r=>r.category))];
+  const allCats=['Sviluppatori','Content Manager','Project Manager',...categories.filter(c=>!['Sviluppatori','Content Manager','Project Manager'].includes(c))];
+  const uniqueCats=[...new Set(allCats.filter(c=>resManagerDraft.some(r=>r.category===c)))];
+  let html='';
+  uniqueCats.forEach(cat=>{
+    const members=resManagerDraft.filter(r=>r.category===cat);
+    html+=`<div class="rm-cat-header">
+      <div class="rm-cat-title">${cat} <span style="font-weight:400;opacity:.6">(${members.length})</span></div>
+    </div>`;
+    members.forEach(r=>{
+      html+=`<div class="rm-res-row" data-rid="${r.id}">
+        <div class="rm-res-avatar" style="background:${r.color}">${r.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}</div>
+        <input class="rm-res-name-input" type="text" value="${r.name}" placeholder="Nome" onchange="updateResDraft('${r.id}','name',this.value)">
+        <input class="rm-res-role-input" type="text" value="${r.role}" placeholder="Ruolo" onchange="updateResDraft('${r.id}','role',this.value)">
+        <input class="rm-color-pick" type="color" value="${r.color}" onchange="updateResDraft('${r.id}','color',this.value)">
+        <button class="rm-del-btn" onclick="deleteResDraft('${r.id}')" title="Elimina">✕</button>
+      </div>`;
+    });
+    /* Add row per questa categoria */
+    html+=`<div class="rm-add-row">
+      <input type="text" placeholder="Nome…" id="rm-new-name-${cat.replace(/\s/g,'_')}">
+      <input type="text" placeholder="Ruolo…" id="rm-new-role-${cat.replace(/\s/g,'_')}">
+      <button class="btn" style="height:30px;padding:0 10px;font-size:11px" onclick="addResDraft('${cat}')">+ Aggiungi a ${cat}</button>
+    </div>`;
+  });
+  /* Add in nuova categoria */
+  html+=`<div style="margin-top:12px;padding-top:12px;border-top:0.5px solid var(--border)">
+    <div style="font-size:11px;color:var(--text3);margin-bottom:6px">Aggiungi in nuova categoria</div>
+    <div class="rm-add-row">
+      <input type="text" placeholder="Nome…" id="rm-new-name-new">
+      <input type="text" placeholder="Ruolo…" id="rm-new-role-new">
+      <input type="text" placeholder="Categoria…" id="rm-new-cat-new" style="width:130px">
+      <button class="btn" style="height:30px;padding:0 10px;font-size:11px" onclick="addResDraft('__new__')">+ Aggiungi</button>
+    </div>
+  </div>`;
+  document.getElementById('res-manager-body').innerHTML=html;
+}
+function updateResDraft(id,field,val){
+  const r=resManagerDraft.find(r=>r.id===id);
+  if(r){
+    r[field]=val;
+    /* Aggiorna avatar color in tempo reale */
+    if(field==='color'){
+      const row=document.querySelector(`.rm-res-row[data-rid="${id}"] .rm-res-avatar`);
+      if(row) row.style.background=val;
+    }
+  }
+}
+function deleteResDraft(id){
+  resManagerDraft=resManagerDraft.filter(r=>r.id!==id);
+  renderResManagerBody();
+}
+function addResDraft(cat){
+  let catName=cat, suffix=cat.replace(/\s/g,'_');
+  if(cat==='__new__'){
+    catName=(document.getElementById('rm-new-cat-new').value||'').trim();
+    suffix='new';
+    if(!catName){alert('Inserisci il nome della categoria.');return;}
+  }
+  const name=(document.getElementById(`rm-new-name-${suffix}`).value||'').trim();
+  const role=(document.getElementById(`rm-new-role-${suffix}`).value||'').trim();
+  if(!name){alert('Inserisci il nome della risorsa.');return;}
+  const colors=['#378ADD','#639922','#534AB7','#EF9F27','#D4537E','#1D9E75','#E24B4A','#888780'];
+  resManagerDraft.push({
+    id:'r'+Date.now(),name,role:role||'—',
+    category:catName,
+    color:colors[resManagerDraft.length%colors.length]
+  });
+  renderResManagerBody();
+}
+function saveResManager(){
+  /* Leggi valori correnti dagli input prima di salvare */
+  resManagerDraft.forEach(r=>{
+    const row=document.querySelector(`.rm-res-row[data-rid="${r.id}"]`);
+    if(row){
+      const nameI=row.querySelector('.rm-res-name-input');
+      const roleI=row.querySelector('.rm-res-role-input');
+      const colorI=row.querySelector('.rm-color-pick');
+      if(nameI) r.name=nameI.value.trim()||r.name;
+      if(roleI) r.role=roleI.value.trim()||r.role;
+      if(colorI) r.color=colorI.value;
+    }
+  });
+  /* Applica al pool globale */
+  RESOURCE_POOL.length=0;
+  resManagerDraft.forEach(r=>RESOURCE_POOL.push(r));
+  Object.keys(RES_BY_ID).forEach(k=>delete RES_BY_ID[k]);
+  RESOURCE_POOL.forEach(r=>RES_BY_ID[r.id]=r);
+  closeResManager();
+  rerender();
+  saveToSupabase();
+}
+document.getElementById('res-manager-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeResManager()});
 
 // ─── WORKLOAD PANEL ───────────────────────────────────
 function openWorkloadPanel(){
