@@ -1301,8 +1301,8 @@ function attachEvents(svg){
   });
 }
 
-function onDragStart(e){e.preventDefault();const t=getT(e.target.dataset.id);if(!t||t.isMilestone)return;dragState={type:'move',id:t.id,startX:e.clientX,origStart:new Date(t.start),origEnd:new Date(t.end)};window.addEventListener('mousemove',onDragMove);window.addEventListener('mouseup',onDragEnd)}
-function onResizeStart(e){e.preventDefault();const t=getT(e.target.dataset.id);if(!t||t.isMilestone)return;dragState={type:'resize',id:t.id,side:e.target.dataset.side,startX:e.clientX,origStart:new Date(t.start),origEnd:new Date(t.end)};window.addEventListener('mousemove',onDragMove);window.addEventListener('mouseup',onDragEnd)}
+function onDragStart(e){e.preventDefault();const t=getT(e.target.dataset.id);if(!t||t.isMilestone)return;pushUndo();dragState={type:'move',id:t.id,startX:e.clientX,origStart:new Date(t.start),origEnd:new Date(t.end)};window.addEventListener('mousemove',onDragMove);window.addEventListener('mouseup',onDragEnd)}
+function onResizeStart(e){e.preventDefault();const t=getT(e.target.dataset.id);if(!t||t.isMilestone)return;pushUndo();dragState={type:'resize',id:t.id,side:e.target.dataset.side,startX:e.clientX,origStart:new Date(t.start),origEnd:new Date(t.end)};window.addEventListener('mousemove',onDragMove);window.addEventListener('mouseup',onDragEnd)}
 function onTS(e){const tc=e.touches[0];onDragStart({preventDefault:()=>e.preventDefault(),clientX:tc.clientX,target:e.target});window.addEventListener('touchmove',onTM,{passive:false});window.addEventListener('touchend',onDragEnd)}
 function onTRS(e){const tc=e.touches[0];onResizeStart({preventDefault:()=>e.preventDefault(),clientX:tc.clientX,target:e.target});window.addEventListener('touchmove',onTM,{passive:false});window.addEventListener('touchend',onDragEnd)}
 function onTM(e){e.preventDefault();onDragMove({clientX:e.touches[0].clientX})}
@@ -1339,7 +1339,59 @@ function selectTask(id){
   rerender();
 }
 
-function deleteTask(id){setTasks(getTasks().filter(t=>t.id!==id&&t.parentId!==id));if(selectedTask===id){selectedTask=null;document.getElementById('detail-panel').classList.remove('open');document.getElementById('gantt-container').style.borderRadius='';}rerender()}
+// ─── UNDO ─────────────────────────────────────────────
+const UNDO_LIMIT = 20;
+let undoStack = [];
+
+function pushUndo(){
+  undoStack.push(JSON.stringify(serializeState()));
+  if(undoStack.length > UNDO_LIMIT) undoStack.shift();
+}
+
+function undoLast(){
+  if(!undoStack.length) return;
+  const prev = undoStack.pop();
+  try {
+    deserializeState(JSON.parse(prev));
+    rerenderOnly();
+    showUndoToast();
+  } catch(e){ console.error('Undo error:', e); }
+}
+
+function showUndoToast(){
+  const existing = document.getElementById('undo-toast');
+  if(existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.id = 'undo-toast';
+  toast.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:9px 18px;font-size:13px;color:var(--text);box-shadow:0 4px 16px rgba(0,0,0,.14);z-index:9999;display:flex;align-items:center;gap:8px;animation:slideInToast .2s ease';
+  toast.innerHTML='<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7a5 5 0 105-5H4M4 2L2 4l2 2" stroke="var(--blue)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Operazione annullata</span>';
+  document.body.appendChild(toast);
+  setTimeout(()=>{ toast.style.animation='fadeOutToast .3s ease forwards'; setTimeout(()=>toast.remove(),300); }, 2000);
+}
+
+document.addEventListener('keydown', e=>{
+  if((e.ctrlKey||e.metaKey) && e.key==='z' && !e.shiftKey){
+    /* Non attivare se si sta scrivendo in un input/textarea/editor */
+    const tag = document.activeElement?.tagName?.toLowerCase();
+    if(tag==='input'||tag==='textarea'||document.activeElement?.closest('.ql-editor')) return;
+    e.preventDefault();
+    undoLast();
+  }
+});
+
+function deleteTask(id){
+  const t=getT(id); if(!t) return;
+  const label = t.label;
+  const hasSubs = getTasks().filter(s=>s.parentId===id).length;
+  const msg = hasSubs
+    ? `Sei sicuro di voler eliminare "${label}" e i suoi ${hasSubs} sottotask?`
+    : `Sei sicuro di voler eliminare "${label}"?`;
+  if(!confirm(msg)) return;
+  pushUndo();
+  setTasks(getTasks().filter(t=>t.id!==id&&t.parentId!==id));
+  if(selectedTask===id){selectedTask=null;document.getElementById('detail-panel').classList.remove('open');document.getElementById('gantt-container').style.borderRadius='';}
+  rerender();
+}
 function promoteTask(id){const t=getT(id);if(t)t.parentId=null;rerender()}
 
 function buildIconGrid(){
@@ -1455,6 +1507,7 @@ function saveModal(){
   const color=STATUS_TO_COLOR[status]||document.getElementById('f-color').value;
   const icon=selectedIcon;const resources=[...modalResources];
   if(!name){document.getElementById('f-name').focus();return;}
+  pushUndo();
   if(editingId){const t=getT(editingId);if(t)Object.assign(t,{label:name,proj,parentId,start:startVal,end:endVal,progress,status,color,icon,resources,isMilestone:type==='milestone'});}
   else getTasks().push({id:uid(),proj,label:name,start:startVal,end:endVal,progress,status,color,icon,resources,deps:[],parentId,isMilestone:type==='milestone',notes:''});
   closeModal();rerender();
