@@ -194,7 +194,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .avatar{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;background:var(--blue);flex-shrink:0}
 /* ── PAGES TABS ─────────────────────────── */
 #pages-bar{display:flex;align-items:center;gap:6px;margin-bottom:12px;border-bottom:0.5px solid var(--border2);padding-bottom:10px;flex-wrap:wrap}
-#page-tabs{display:flex;flex-wrap:wrap;gap:6px;flex:1}
+#page-tabs{display:flex;flex-wrap:wrap;gap:6px}
 .page-tab{font-size:12px;padding:5px 10px 5px 14px;border:0.5px solid var(--border2);border-radius:20px;background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .page-tab:hover{background:var(--bg3);color:var(--text)}
 .page-tab.active{background:var(--blue);color:#fff;border-color:var(--blue-dark);font-weight:500}
@@ -279,6 +279,70 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes slideInToast{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes fadeOutToast{from{opacity:1}to{opacity:0;transform:translateY(10px)}}
+
+/* ── RESPONSIVE ──────────────────────────── */
+
+/* Tablet (768–1200px) */
+@media(max-width:1200px){
+  #sidebar{width:240px}
+  .sb-head-task{font-size:10px}
+  .app{padding:10px 12px}
+  .header-bar h1{font-size:15px}
+}
+
+/* Tablet stretto / Mobile landscape (max 900px) */
+@media(max-width:900px){
+  #sidebar{width:200px}
+  .sb-row{font-size:11px}
+  .sb-head-pct{width:40px}
+  .sb-pct-cell{width:40px}
+  .toolbar{gap:5px}
+  .btn{font-size:11px;padding:0 8px;height:28px}
+  .btn-group .btn{height:28px}
+  #gantt-outer #detail-panel.open{width:200px}
+  .dg{font-size:11px}
+}
+
+/* Mobile portrait (max 600px) */
+@media(max-width:600px){
+  .app{padding:8px 8px}
+  .header-bar{gap:6px;margin-bottom:8px}
+  .header-bar h1{font-size:14px}
+  #today-label{display:none}
+  #save-status{display:none!important}
+  .user-chip{padding:3px 8px 3px 4px}
+  #user-email-label{display:none}
+
+  /* Toolbar su due righe */
+  .toolbar{flex-wrap:wrap;gap:5px}
+  .toolbar .btn-group{order:3;width:100%}
+  .toolbar .btn-group .btn{flex:1;justify-content:center}
+  .toolbar>span{display:none}
+
+  /* Sidebar ridotta */
+  #sidebar{width:160px}
+  .sb-head-pct{width:34px}
+  .sb-pct-cell{width:34px}
+  .pct-badge{font-size:10px;padding:1px 4px}
+  .row-label{font-size:11px}
+
+  /* Modali a schermo intero su mobile */
+  .modal-backdrop{padding-top:0;align-items:flex-end}
+  .modal{width:100%!important;max-width:100%!important;border-radius:var(--radius-lg) var(--radius-lg) 0 0;max-height:90vh}
+  #notes-modal{max-height:95vh}
+  #workload-modal{max-height:95vh}
+  #res-manager-modal{max-height:95vh}
+
+  /* Detail panel sotto invece che a lato su mobile */
+  #gantt-outer{flex-direction:column}
+  #gantt-outer #gantt-container{border-radius:var(--radius-lg)!important}
+  #detail-panel{width:100%!important;border-radius:0 0 var(--radius-lg) var(--radius-lg)!important;border-left:0.5px solid var(--border2)!important;border-top:none!important}
+  #detail-panel.open{width:100%!important;padding:12px}
+
+  /* Legenda compatta */
+  #legend{gap:8px;font-size:10px}
+  .leg-sw,.leg-dia{width:9px;height:9px}
+}
 </style>
 <body>
 
@@ -1158,15 +1222,15 @@ function renderHeader(){
     h+=`<rect x="${m.x}" y="0" width="${m.end-m.x}" height="40" fill="rgba(55,138,221,0.08)"/>`;
     h+=`<line x1="${m.x}" y1="0" x2="${m.x}" y2="40" stroke="rgba(55,138,221,0.4)" stroke-width="1"/>`;
     const lbl=m.label.charAt(0).toUpperCase()+m.label.slice(1);
-    h+=`<text x="${m.x+8}" y="24" font-size="13" font-weight="600" fill="rgba(0,0,0,0.55)" dominant-baseline="central" font-family="-apple-system,sans-serif">${lbl}</text>`;
+    h+=`<text x="${m.x+8}" y="24" font-size="13" font-weight="600" fill="rgba(0,0,0,0.55)" dy=".35em" font-family="-apple-system,sans-serif">${lbl}</text>`;
   });
   h+=`<line x1="0" y1="40" x2="${W}" y2="40" stroke="rgba(0,0,0,0.18)" stroke-width="1"/>`;
   for(let i=0;i<TOTAL_DAYS;i++){
     const dt=addDays(START_DATE,i);const x=i*DAY_W;const dow=dt.getDay();
     const lbl=DAY_LBL[dow];const we=isWE(dt),fe=isFest(dt);
     const tc=fe?'#a02020':we?'#185FA5':'rgba(0,0,0,0.45)';const fw=we||fe?'700':'400';
-    h+=`<text x="${x+DAY_W/2}" y="56" font-size="9" font-weight="${fw}" fill="${tc}" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,sans-serif">${lbl}</text>`;
-    h+=`<text x="${x+DAY_W/2}" y="76" font-size="9" font-weight="${fw}" fill="${tc}" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,sans-serif">${dt.getDate()}</text>`;
+    h+=`<text x="${x+DAY_W/2}" y="56" font-size="9" font-weight="${fw}" fill="${tc}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${lbl}</text>`;
+    h+=`<text x="${x+DAY_W/2}" y="76" font-size="9" font-weight="${fw}" fill="${tc}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${dt.getDate()}</text>`;
   }
   h+=`<line x1="0" y1="${HDR_H-0.5}" x2="${W}" y2="${HDR_H-0.5}" stroke="rgba(0,0,0,0.18)" stroke-width="1"/>`;
   const tx=diffDays(START_DATE,TODAY)*DAY_W+DAY_W/2;
@@ -1201,14 +1265,14 @@ function renderGantt(rows){
     if(t.isMilestone){
       const s=13;
       h+=`<g data-id="${t.id}"><polygon points="${x+DAY_W/2},${cy-s/2} ${x+DAY_W/2+s/2},${cy} ${x+DAY_W/2},${cy+s/2} ${x+DAY_W/2-s/2},${cy}" fill="${col}" opacity="0.9" stroke="${sel?'#000':col}" stroke-width="${sel?2:0.5}"/></g>`;
-      h+=`<text x="${x+DAY_W/2+s/2+4}" y="${cy}" font-size="10" fill="${col}" dominant-baseline="central" font-weight="600" font-family="-apple-system,sans-serif">${t.label}</text>`;
+      h+=`<text x="${x+DAY_W/2+s/2+4}" y="${cy}" font-size="10" fill="${col}" dy=".35em" font-weight="600" font-family="-apple-system,sans-serif">${t.label}</text>`;
       return;
     }
     const barH=isSub?14:20;const barY=cy-barH/2;const rx=isSub?3:4;
     h+=`<g class="task-bar" data-id="${t.id}"><rect x="${x+1}" y="${barY}" width="${Math.max(2,w-2)}" height="${barH}" rx="${rx}" fill="${col}" opacity="${isSub?0.68:0.9}" stroke="${sel?'rgba(0,0,0,0.5)':col}" stroke-width="${sel?2:0.5}"/>`;
     if(t.progress>0){const pw=Math.max(2,(t.progress/100)*(w-2));h+=`<rect x="${x+1}" y="${barY}" width="${pw}" height="${barH}" rx="${rx}" fill="rgba(255,255,255,0.25)"/>`;}
     const fs=isSub?9:10;const mw=isSub?22:28;
-    if(w>mw){const mc=Math.floor((w-12)/(fs*0.6));const lbl=t.label.length>mc?t.label.slice(0,mc-1)+'…':t.label;h+=`<text x="${x+6}" y="${cy}" font-size="${fs}" font-weight="500" fill="white" dominant-baseline="central" style="pointer-events:none" font-family="-apple-system,sans-serif">${lbl}</text>`;}
+    if(w>mw){const mc=Math.floor((w-12)/(fs*0.6));const lbl=t.label.length>mc?t.label.slice(0,mc-1)+'…':t.label;h+=`<text x="${x+6}" y="${cy}" font-size="${fs}" font-weight="500" fill="white" dy=".35em" style="pointer-events:none" font-family="-apple-system,sans-serif">${lbl}</text>`;}
     h+=`<rect class="handle" data-id="${t.id}" data-side="left" x="${x+1}" y="${barY}" width="${HANDLE_W}" height="${barH}" style="cursor:ew-resize;fill:transparent"/>`;
     h+=`<rect class="handle" data-id="${t.id}" data-side="right" x="${x+w-HANDLE_W-1}" y="${barY}" width="${HANDLE_W}" height="${barH}" style="cursor:ew-resize;fill:transparent"/>`;
     h+=`<rect data-id="${t.id}" data-drag="move" x="${x+HANDLE_W+1}" y="${barY}" width="${Math.max(0,w-HANDLE_W*2-2)}" height="${barH}" fill="transparent" style="cursor:grab"/></g>`;
