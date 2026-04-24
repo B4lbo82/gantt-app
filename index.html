@@ -257,6 +257,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ql-snow .ql-picker{color:var(--text2) !important}
 .ql-snow .ql-picker-options{background:var(--bg) !important;border-color:var(--border2) !important}
 .notes-has-content::after{content:'●';font-size:8px;color:var(--blue);margin-left:3px;vertical-align:super}
+/* Copy link button in sidebar */
+.ra.link-btn{font-size:10px}
+.ra.link-btn:hover{background:var(--green-light);color:var(--green)}
 /* Export buttons nelle note */
 .notes-export-btns{display:flex;gap:6px;margin-right:auto}
 .notes-export-btns .btn{font-size:11px;height:28px;padding:0 9px}
@@ -769,6 +772,7 @@ async function enterApp() {
   await loadFromSupabase();
   await subscribeRealtime();
   rerender();
+  handleDeepLink();
 }
 
 async function doLogout() {
@@ -1191,7 +1195,8 @@ function renderSidebar(rows){
       const dB=r.indent===0&&!t.isMilestone?`<button class="ra" title="Converti subtask" onclick="openDemoteModal('${t.id}')">↓</button>`:'';
       const hasNotes=t.notes&&t.notes.trim()&&t.notes!=='<p><br></p>';
       const noteBtn=`<button class="ra${hasNotes?' notes-has-content':''}" title="Note" onclick="openNotesModal('${t.id}')" style="font-size:12px">📋</button>`;
-      div.innerHTML=`<div class="sb-task-part"><div style="width:${indent}px;flex-shrink:0"></div>${iconH}<span class="row-label" onclick="selectTask('${t.id}')" title="${t.label}">${t.label}</span><div class="row-actions">${pB}${dB}${noteBtn}<button class="ra" onclick="openEditModal('${t.id}')">✎</button><button class="ra del" onclick="deleteTask('${t.id}')">✕</button></div></div><div class="sb-pct-cell">${pctBadge(t.progress,t.status)}</div>`;
+      const linkBtn=`<button class="ra link-btn" title="Copia link diretto" onclick="copyTaskLink('${t.id}')">🔗</button>`;
+      div.innerHTML=`<div class="sb-task-part"><div style="width:${indent}px;flex-shrink:0"></div>${iconH}<span class="row-label" onclick="selectTask('${t.id}')" title="${t.label}">${t.label}</span><div class="row-actions">${pB}${dB}${linkBtn}${noteBtn}<button class="ra" onclick="openEditModal('${t.id}')">✎</button><button class="ra del" onclick="deleteTask('${t.id}')">✕</button></div></div><div class="sb-pct-cell">${pctBadge(t.progress,t.status)}</div>`;
     }
     sb.appendChild(div);
   });
@@ -1984,7 +1989,53 @@ function saveResManager(){
 }
 document.getElementById('res-manager-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeResManager()});
 
-// ─── WORKLOAD PANEL ───────────────────────────────────
+// ─── DEEP LINKING ─────────────────────────────────────
+function copyTaskLink(id){
+  const url = `${location.origin}${location.pathname}#task/${id}`;
+  navigator.clipboard.writeText(url).then(()=>{
+    showCopyToast(url);
+  }).catch(()=>{
+    /* Fallback per browser senza clipboard API */
+    const inp = document.createElement('input');
+    inp.value = url;
+    document.body.appendChild(inp);
+    inp.select();
+    document.execCommand('copy');
+    document.body.removeChild(inp);
+    showCopyToast(url);
+  });
+}
+
+function showCopyToast(url){
+  const existing = document.getElementById('copy-toast');
+  if(existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.id = 'copy-toast';
+  toast.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:9px 18px;font-size:12px;color:var(--text);box-shadow:0 4px 16px rgba(0,0,0,.14);z-index:9999;display:flex;flex-direction:column;align-items:center;gap:4px;animation:slideInToast .2s ease;max-width:90vw';
+  toast.innerHTML=`<div style="display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3 3 7-6" stroke="var(--green)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg><strong>Link copiato!</strong></div><div style="font-size:10px;color:var(--text3);font-family:monospace;word-break:break-all">${url}</div>`;
+  document.body.appendChild(toast);
+  setTimeout(()=>{ toast.style.animation='fadeOutToast .3s ease forwards'; setTimeout(()=>toast.remove(),300); }, 3000);
+}
+
+function handleDeepLink(){
+  const hash = location.hash; /* es. #task/t2b */
+  if(!hash.startsWith('#task/')) return;
+  const taskId = hash.slice(6);
+  /* Cerca il task in tutte le pagine */
+  for(const pg of pages){
+    const found = pg.tasks.find(t=>t.id===taskId);
+    if(found){
+      if(pg.id !== currentPageId) switchPage(pg.id);
+      /* Aspetta il render poi naviga */
+      setTimeout(()=>{
+        jumpToTask(taskId);
+        /* Pulisci l'hash dall'URL senza ricaricare */
+        history.replaceState(null,'',location.pathname+location.search);
+      }, 300);
+      return;
+    }
+  }
+}
 function openWorkloadPanel(){
   /* Popola filtro pagine */
   const sel=document.getElementById('wl-page-filter');
@@ -2008,13 +2059,16 @@ function renderWorkload(){
     pg.projects.forEach(p=>{ allProjMap[p.id]=p; });
   });
 
-  /* Calcola giorni totali per risorsa */
+  /* Calcola giorni totali per risorsa — escludi standby dal conteggio */
   const resLoad={};
-  RESOURCE_POOL.forEach(r=>{ resLoad[r.id]={days:0,tasks:[]}; });
+  RESOURCE_POOL.forEach(r=>{ resLoad[r.id]={days:0,tasks:[],standbyTasks:[]}; });
   allTasks.forEach(t=>{
     const dur=Math.max(1,diffDays(t.start,t.end));
     (t.resources||[]).forEach(rid=>{
-      if(resLoad[rid]){
+      if(!resLoad[rid]) return;
+      if(t.status==='standby'){
+        resLoad[rid].standbyTasks.push(t); /* in pausa: non conta nel carico */
+      } else {
         resLoad[rid].days+=dur;
         resLoad[rid].tasks.push(t);
       }
@@ -2042,7 +2096,12 @@ function renderWorkload(){
       const {label:lbl,color:lcol}=loadLabel(pct);
       const tasksHtml=load.tasks.length
         ? load.tasks.map(t=>`<span class="wl-task-chip" onclick="closeWorkloadPanel();switchPage('${pages.find(pg=>pg.tasks.some(tt=>tt.id===t.id))?.id||currentPageId}');setTimeout(()=>jumpToTask('${t.id}'),100)" title="${t._page}">${t.label}</span>`).join('')
-        : `<span class="wl-empty">Nessun task assegnato</span>`;
+        : `<span class="wl-empty">Nessun task attivo</span>`;
+      const standbyHtml=load.standbyTasks.length
+        ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;align-items:center">
+            <span style="font-size:10px;color:var(--text3);margin-right:2px">⏸ In pausa:</span>`+
+          load.standbyTasks.map(t=>`<span class="wl-task-chip" style="opacity:.55;text-decoration:line-through" onclick="closeWorkloadPanel();switchPage('${pages.find(pg=>pg.tasks.some(tt=>tt.id===t.id))?.id||currentPageId}');setTimeout(()=>jumpToTask('${t.id}'),100)" title="Stand-by — non conta nel carico">${t.label}</span>`).join('')+
+          `</div>` : '';
       html+=`<div class="wl-resource-card">
         <div class="wl-res-row">
           <div class="wl-avatar" style="background:${res.color}">${avatarInitials(res.id)}</div>
@@ -2051,8 +2110,9 @@ function renderWorkload(){
           <div class="wl-pct-label" style="color:${lcol}">${lbl}</div>
         </div>
         <div class="wl-bar-wrap"><div class="wl-bar-fill" style="width:${pct}%;background:${lcol}"></div></div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:5px">${load.days} giorni assegnati su ${pages.filter(p=>filterPage==='all'||p.id===filterPage).length} pagina/e · ${load.tasks.length} task</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:5px">${load.days} giorni attivi · ${load.tasks.length} task${load.standbyTasks.length?' · '+load.standbyTasks.length+' in pausa':''}</div>
         <div class="wl-tasks-list">${tasksHtml}</div>
+        ${standbyHtml}
       </div>`;
     });
   });
