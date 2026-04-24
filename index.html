@@ -165,7 +165,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 #gantt-container{border:0.5px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg)}
 #gantt-scroll{overflow-x:auto}
 #gantt-inner{display:flex}
-#sidebar{flex-shrink:0;width:280px;border-right:0.5px solid var(--border2);display:flex;flex-direction:column}
+#sidebar{flex-shrink:0;width:280px;min-width:160px;max-width:480px;border-right:0.5px solid var(--border2);display:flex;flex-direction:column;position:relative;user-select:none}
+/* Resize handle */
+#sidebar-resizer{position:absolute;right:-4px;top:0;bottom:0;width:8px;cursor:col-resize;z-index:10;display:flex;align-items:center;justify-content:center}
+#sidebar-resizer::after{content:'';width:2px;height:32px;border-radius:2px;background:var(--border2);transition:background .15s}
+#sidebar-resizer:hover::after,#sidebar-resizer.dragging::after{background:var(--indigo)}
 .sb-head{height:96px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:0.5px solid var(--border2);background:var(--bg2);padding:6px 8px 0}
 .sb-head-labels{display:flex;align-items:flex-end;padding-bottom:8px}
 .sb-head-task{flex:1;padding:0 0 0 2px;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
@@ -316,6 +320,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 #gantt-empty svg{margin:0 auto 14px;display:block;opacity:.3}
 #gantt-empty h3{font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px}
 #gantt-empty p{font-size:13px;color:var(--text3);margin-bottom:18px}
+
+/* ── EFFORT STARS ───────────────────────── */
+.effort-star{width:24px;height:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:transform .1s}
+.effort-star:hover{transform:scale(1.2)}
+.effort-star svg{pointer-events:none}
+.effort-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:2px 7px;border-radius:10px}
 
 /* ── VIEW TOGGLE ─────────────────────────── */
 .view-btn{font-size:12px;color:var(--text2);font-weight:var(--fw-label)}
@@ -666,6 +676,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
   <div id="gantt-scroll">
     <div id="gantt-inner">
       <div id="sidebar">
+        <div id="sidebar-resizer"></div>
         <div class="sb-head">
           <div class="sb-search-wrap">
             <input class="sb-search-input" id="sb-search" type="text" placeholder="🔍  Cerca task…" autocomplete="off"
@@ -717,6 +728,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
       </select>
     </div>
     <div class="form-row" id="f-parent-row" style="display:none"><label>Task padre</label><select id="f-parent"></select></div>
+
+    <div class="form-row" id="f-deps-row">
+      <label>Dipende da (inizia dopo)</label>
+      <div id="f-deps-tags" class="res-tags"></div>
+      <select id="f-deps-select" style="width:100%;margin-top:6px;font-size:12px;padding:6px 8px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);height:32px" onchange="addDepFromSelect()">
+        <option value="">+ Aggiungi dipendenza…</option>
+      </select>
+    </div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
       <div class="form-row"><label>Inizio</label><input id="f-start" type="date"></div>
       <div class="form-row" id="f-end-row"><label>Fine</label><input id="f-end" type="date"></div>
@@ -736,6 +756,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
         <option value="done">Done</option>
       </select>
     </div>
+
+    <div class="form-row" id="f-effort-row">
+      <label>Effort (impegno richiesto)</label>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+        <div id="effort-stars" style="display:flex;gap:4px"></div>
+        <span id="effort-label" style="font-size:12px;color:var(--text2);min-width:80px"></span>
+        <input type="hidden" id="f-effort" value="3">
+      </div>
+    </div>
+
     <div class="form-row">
       <label>Colore barra</label>
       <div style="display:flex;gap:8px;align-items:center">
@@ -748,14 +778,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
       <label>Risorse assegnate</label>
       <div id="res-tags" class="res-tags"></div>
       <div class="res-pool-wrap" id="res-pool-container"></div>
-    </div>
-    <div class="form-row" id="f-deps-row">
-      <label>Dipende da (inizia dopo)</label>
-      <div id="f-deps-tags" class="res-tags"></div>
-      <select id="f-deps-select" style="width:100%;margin-top:6px;font-size:12px;padding:6px 8px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);height:32px" onchange="addDepFromSelect()">
-        <option value="">+ Aggiungi dipendenza…</option>
-      </select>
-      <div style="font-size:11px;color:var(--text3);margin-top:4px">Questo task inizierà solo dopo i task selezionati.</div>
     </div>
     <div class="modal-btns">
       <button class="btn" onclick="closeModal()">Annulla</button>
@@ -984,11 +1006,11 @@ document.getElementById('challenge-code').addEventListener('keydown', e => { if(
 })();
 
 // ─── GANTT CONFIG ─────────────────────────────────────
-const ROW_H=36, HDR_H=96, HANDLE_W=8;
+const ROW_H=36, HDR_H=80, HANDLE_W=8;
 let DAY_W=22;
-const TODAY=new Date(2025,3,8);
-const START_DATE=new Date(2025,2,1);
-const TOTAL_DAYS=90;
+const TODAY=new Date(2026,3,24); // 24 aprile 2026
+const START_DATE=new Date(2026,2,1); // 1 marzo 2026
+const TOTAL_DAYS=365; // un anno intero scrollabile
 
 document.getElementById('today-label').textContent='Oggi: '+TODAY.toLocaleDateString('it-IT',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
 
@@ -1002,7 +1024,7 @@ const fromISO=s=>{const p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2])};
 const isoKey=dt=>dt.getFullYear()+'-'+(dt.getMonth()+1)+'-'+dt.getDate();
 const uid=()=>'t'+Date.now()+Math.random().toString(36).slice(2,6);
 
-const FEST=new Set(['2025-1-1','2025-1-6','2025-4-18','2025-4-20','2025-4-21','2025-4-25','2025-5-1','2025-6-2','2025-8-15','2025-11-1','2025-12-8','2025-12-25','2025-12-26']);
+const FEST=new Set(['2026-1-1','2026-1-6','2026-4-5','2026-4-6','2026-4-25','2026-5-1','2026-6-2','2026-8-15','2026-11-1','2026-12-8','2026-12-25','2026-12-26']);
 const isFest=dt=>FEST.has(isoKey(dt));
 const isWE=dt=>{const d=dt.getDay();return d===0||d===6};
 const DAY_LBL=['d','l','m','m','g','v','s'];
@@ -1089,23 +1111,23 @@ let pages = [
       {id:'p3',label:'Campagna Marketing',color:'#EF9F27'},
     ],
     tasks:[
-      {id:'t1',proj:'p1',label:'Wireframe & UX',start:D(2025,2,3),end:D(2025,2,14),progress:100,status:'done',color:'#639922',icon:'doc',resources:['r1','r2'],deps:[],parentId:null,notes:''},
-      {id:'t2',proj:'p1',label:'Design UI',start:D(2025,2,14),end:D(2025,2,28),progress:80,status:'active',color:'#378ADD',icon:'star',resources:['r2'],deps:['t1'],parentId:null,notes:''},
-      {id:'t2a',proj:'p1',label:'Homepage',start:D(2025,2,14),end:D(2025,2,20),progress:100,status:'done',color:'#639922',icon:'home',resources:['r2'],deps:[],parentId:'t2',notes:''},
-      {id:'t2b',proj:'p1',label:'Pagine interne',start:D(2025,2,20),end:D(2025,2,28),progress:60,status:'active',color:'#378ADD',icon:'doc',resources:['r2','r3'],deps:[],parentId:'t2',notes:''},
-      {id:'t3',proj:'p1',label:'Sviluppo frontend',start:D(2025,2,28),end:D(2025,3,18),progress:30,status:'active',color:'#378ADD',icon:'gear',resources:['r1'],deps:['t2'],parentId:null,notes:''},
-      {id:'t4',proj:'p1',label:'Test & QA',start:D(2025,3,18),end:D(2025,3,30),progress:0,status:'todo',color:'#B4B2A9',icon:'bug',resources:[],deps:['t3'],parentId:null,notes:''},
-      {id:'m1',proj:'p1',label:'Go-live sito',start:D(2025,3,30),end:D(2025,3,30),progress:0,status:'milestone',color:'#534AB7',icon:'rocket',resources:[],deps:['t4'],parentId:null,isMilestone:true,notes:''},
-      {id:'t5',proj:'p2',label:'Architettura & setup',start:D(2025,2,10),end:D(2025,2,21),progress:100,status:'done',color:'#639922',icon:'gear',resources:['r4'],deps:[],parentId:null,notes:''},
-      {id:'t6',proj:'p2',label:'Modulo autenticazione',start:D(2025,2,21),end:D(2025,3,4),progress:60,status:'active',color:'#378ADD',icon:'lock',resources:['r4'],deps:['t5'],parentId:null,notes:''},
-      {id:'t6a',proj:'p2',label:'Login / Register',start:D(2025,2,21),end:D(2025,2,26),progress:100,status:'done',color:'#639922',icon:'person',resources:['r4'],deps:[],parentId:'t6',notes:''},
-      {id:'t6b',proj:'p2',label:'OAuth Google',start:D(2025,2,26),end:D(2025,3,4),progress:20,status:'active',color:'#378ADD',icon:'link',resources:['r4','r5'],deps:[],parentId:'t6',notes:''},
-      {id:'t7',proj:'p2',label:'Dashboard & notifiche',start:D(2025,3,4),end:D(2025,3,25),progress:10,status:'active',color:'#378ADD',icon:'chart',resources:['r5'],deps:['t6'],parentId:null,notes:''},
-      {id:'t8',proj:'p2',label:'Beta testing',start:D(2025,3,25),end:D(2025,4,10),progress:0,status:'todo',color:'#B4B2A9',icon:'bug',resources:[],deps:['t7'],parentId:null,notes:''},
-      {id:'m2',proj:'p2',label:'Release v1.0',start:D(2025,4,10),end:D(2025,4,10),progress:0,status:'milestone',color:'#534AB7',icon:'rocket',resources:[],deps:['t8'],parentId:null,isMilestone:true,notes:''},
-      {id:'t9',proj:'p3',label:'Definizione strategia',start:D(2025,2,5),end:D(2025,2,19),progress:100,status:'done',color:'#639922',icon:'flag',resources:['r7'],deps:[],parentId:null,notes:''},
-      {id:'t10',proj:'p3',label:'Produzione contenuti',start:D(2025,2,19),end:D(2025,3,12),progress:45,status:'standby',color:'#EF9F27',icon:'doc',resources:['r7','r1'],deps:['t9'],parentId:null,notes:''},
-      {id:'t11',proj:'p3',label:'Lancio campagna',start:D(2025,3,12),end:D(2025,4,5),progress:0,status:'todo',color:'#B4B2A9',icon:'mail',resources:[],deps:['t10'],parentId:null,notes:''},
+      {id:'t1',proj:'p1',label:'Wireframe & UX',start:D(2026,2,2),end:D(2026,2,16),progress:100,status:'done',color:'#639922',icon:'doc',resources:['r1','r2'],deps:[],parentId:null,effort:3,notes:''},
+      {id:'t2',proj:'p1',label:'Design UI',start:D(2026,2,16),end:D(2026,3,2),progress:80,status:'active',color:'#378ADD',icon:'star',resources:['r2'],deps:['t1'],parentId:null,effort:3,notes:''},
+      {id:'t2a',proj:'p1',label:'Homepage',start:D(2026,2,16),end:D(2026,2,23),progress:100,status:'done',color:'#639922',icon:'home',resources:['r2'],deps:[],parentId:'t2',effort:3,notes:''},
+      {id:'t2b',proj:'p1',label:'Pagine interne',start:D(2026,2,23),end:D(2026,3,2),progress:60,status:'active',color:'#378ADD',icon:'doc',resources:['r2','r3'],deps:[],parentId:'t2',effort:3,notes:''},
+      {id:'t3',proj:'p1',label:'Sviluppo frontend',start:D(2026,3,2),end:D(2026,3,23),progress:30,status:'active',color:'#378ADD',icon:'gear',resources:['r1'],deps:['t2'],parentId:null,effort:3,notes:''},
+      {id:'t4',proj:'p1',label:'Test & QA',start:D(2026,3,23),end:D(2026,4,6),progress:0,status:'todo',color:'#B4B2A9',icon:'bug',resources:[],deps:['t3'],parentId:null,effort:3,notes:''},
+      {id:'m1',proj:'p1',label:'Go-live sito',start:D(2026,4,6),end:D(2026,4,6),progress:0,status:'milestone',color:'#534AB7',icon:'rocket',resources:[],deps:['t4'],parentId:null,isMilestone:true,effort:3,notes:''},
+      {id:'t5',proj:'p2',label:'Architettura & setup',start:D(2026,2,9),end:D(2026,2,23),progress:100,status:'done',color:'#639922',icon:'gear',resources:['r4'],deps:[],parentId:null,effort:3,notes:''},
+      {id:'t6',proj:'p2',label:'Modulo autenticazione',start:D(2026,2,23),end:D(2026,3,9),progress:60,status:'active',color:'#378ADD',icon:'lock',resources:['r4'],deps:['t5'],parentId:null,effort:3,notes:''},
+      {id:'t6a',proj:'p2',label:'Login / Register',start:D(2026,2,23),end:D(2026,3,2),progress:100,status:'done',color:'#639922',icon:'person',resources:['r4'],deps:[],parentId:'t6',effort:3,notes:''},
+      {id:'t6b',proj:'p2',label:'OAuth Google',start:D(2026,3,2),end:D(2026,3,9),progress:20,status:'active',color:'#378ADD',icon:'link',resources:['r4','r5'],deps:[],parentId:'t6',effort:3,notes:''},
+      {id:'t7',proj:'p2',label:'Dashboard & notifiche',start:D(2026,3,9),end:D(2026,3,30),progress:10,status:'active',color:'#378ADD',icon:'chart',resources:['r5'],deps:['t6'],parentId:null,effort:3,notes:''},
+      {id:'t8',proj:'p2',label:'Beta testing',start:D(2026,3,30),end:D(2026,4,27),progress:0,status:'todo',color:'#B4B2A9',icon:'bug',resources:[],deps:['t7'],parentId:null,effort:3,notes:''},
+      {id:'m2',proj:'p2',label:'Release v1.0',start:D(2026,4,27),end:D(2026,4,27),progress:0,status:'milestone',color:'#534AB7',icon:'rocket',resources:[],deps:['t8'],parentId:null,isMilestone:true,effort:3,notes:''},
+      {id:'t9',proj:'p3',label:'Definizione strategia',start:D(2026,2,2),end:D(2026,2,16),progress:100,status:'done',color:'#639922',icon:'flag',resources:['r7'],deps:[],parentId:null,effort:3,notes:''},
+      {id:'t10',proj:'p3',label:'Produzione contenuti',start:D(2026,2,16),end:D(2026,3,16),progress:45,status:'standby',color:'#EF9F27',icon:'doc',resources:['r7','r1'],deps:['t9'],parentId:null,effort:3,notes:''},
+      {id:'t11',proj:'p3',label:'Lancio campagna',start:D(2026,3,16),end:D(2026,4,27),progress:0,status:'todo',color:'#B4B2A9',icon:'mail',resources:[],deps:['t10'],parentId:null,effort:3,notes:''},
     ]
   }
 ];
@@ -1411,62 +1433,130 @@ function renderHeader(){
   svg.setAttribute('viewBox',`0 0 ${W} ${HDR_H}`);
   svg.setAttribute('height',HDR_H);
   svg.setAttribute('width',W);
+  let h=`<rect width="${W}" height="${HDR_H}" fill="#f8f9fc"/>`;
 
-  let h=`<rect width="${W}" height="${HDR_H}" fill="#ffffff"/>`;
-
-  /* Month blocks */
-  let months={};
-  for(let i=0;i<TOTAL_DAYS;i++){
-    const dt=addDays(START_DATE,i);
-    const mk=dt.getFullYear()+'-'+dt.getMonth();
-    if(!months[mk]) months[mk]={x:i*DAY_W,end:(i+1)*DAY_W,dt};
-    else months[mk].end=(i+1)*DAY_W;
+  function isoWeek(dt){
+    const d=new Date(Date.UTC(dt.getFullYear(),dt.getMonth(),dt.getDate()));
+    const day=d.getUTCDay()||7;
+    d.setUTCDate(d.getUTCDate()+4-day);
+    const y=new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    return Math.ceil((((d-y)/86400000)+1)/7);
   }
-  Object.values(months).forEach(m=>{
-    const lbl=m.dt.toLocaleDateString('it-IT',{month:'long',year:'numeric'});
-    const label=lbl.charAt(0).toUpperCase()+lbl.slice(1);
-    /* Month pill */
-    h+=`<rect x="${m.x+4}" y="6" width="${Math.min(120,m.end-m.x-8)}" height="22" rx="11" fill="var(--indigo)" opacity="0.9"/>`;
-    h+=`<text x="${m.x+12}" y="17" font-size="11" font-weight="700" fill="white" dy=".35em" font-family="-apple-system,sans-serif">${label}</text>`;
-  });
 
-  /* Day cells — no heavy grid, just subtle separator */
-  for(let i=0;i<TOTAL_DAYS;i++){
-    const dt=addDays(START_DATE,i);
-    const x=i*DAY_W;
-    const we=isWE(dt),fe=isFest(dt);
-    /* Weekend / festività soft bg */
-    if(we||fe){
-      h+=`<rect x="${x}" y="34" width="${DAY_W}" height="${HDR_H-34}" fill="${fe?'rgba(239,68,68,0.06)':'rgba(108,99,255,0.04)'}"/>`;
+  if(currentView==='day'){
+    let months={};
+    for(let i=0;i<TOTAL_DAYS;i++){
+      const dt=addDays(START_DATE,i);const mk=dt.getFullYear()+'-'+dt.getMonth();
+      if(!months[mk]) months[mk]={x:i*DAY_W,end:(i+1)*DAY_W,dt};
+      else months[mk].end=(i+1)*DAY_W;
     }
-    const dow=dt.getDay();
-    const lbl=DAY_LBL[dow];
-    const tc=fe?'#DC2626':we?'#6C63FF':'#9CA3AF';
-    const fw=we||fe?'700':'500';
-    /* Day letter */
-    h+=`<text x="${x+DAY_W/2}" y="44" font-size="9" font-weight="${fw}" fill="${tc}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${lbl}</text>`;
-    /* Day number — highlight today */
-    const isToday=isoKey(dt)===isoKey(TODAY);
-    if(isToday){
-      h+=`<circle cx="${x+DAY_W/2}" cy="${HDR_H-12}" r="9" fill="#EF4444" opacity="0.9"/>`;
-      h+=`<text x="${x+DAY_W/2}" y="${HDR_H-12}" font-size="9" font-weight="700" fill="white" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${dt.getDate()}</text>`;
-    } else {
-      h+=`<text x="${x+DAY_W/2}" y="${HDR_H-12}" font-size="9" font-weight="${fw}" fill="${tc}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${dt.getDate()}</text>`;
+    Object.values(months).forEach(m=>{
+      const bw=m.end-m.x;
+      h+=`<line x1="${m.x}" y1="0" x2="${m.x}" y2="${HDR_H}" stroke="rgba(108,99,255,0.15)" stroke-width="0.5"/>`;
+      if(bw>50){
+        const lbl=m.dt.toLocaleDateString('it-IT',{month:'long',year:'numeric'});
+        const label=lbl.charAt(0).toUpperCase()+lbl.slice(1);
+        h+=`<rect x="${m.x+6}" y="7" width="${Math.min(120,bw-12)}" height="22" rx="11" fill="#6C63FF"/>`;
+        h+=`<text x="${m.x+14}" y="18" font-size="11" font-weight="700" fill="white" dy=".35em" font-family="-apple-system,sans-serif">${label}</text>`;
+      }
+    });
+    h+=`<line x1="0" y1="36" x2="${W}" y2="36" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>`;
+    for(let i=0;i<TOTAL_DAYS;i++){
+      const dt=addDays(START_DATE,i);const x=i*DAY_W;
+      const we=isWE(dt),fe=isFest(dt);
+      if(we||fe) h+=`<rect x="${x}" y="36" width="${DAY_W}" height="${HDR_H-36}" fill="${fe?'rgba(239,68,68,0.05)':'rgba(108,99,255,0.05)'}"/>`;
+      if(dt.getDay()===1) h+=`<line x1="${x}" y1="36" x2="${x}" y2="${HDR_H}" stroke="rgba(0,0,0,0.05)" stroke-width="0.5"/>`;
+      const tc=fe?'#DC2626':we?'#6C63FF':'#94A3B8';
+      const fw=we||fe?'700':'500';
+      h+=`<text x="${x+DAY_W/2}" y="47" font-size="9" font-weight="${fw}" fill="${tc}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${DAY_LBL[dt.getDay()]}</text>`;
+      const isToday=isoKey(dt)===isoKey(TODAY);
+      if(isToday){
+        h+=`<circle cx="${x+DAY_W/2}" cy="69" r="10" fill="#EF4444"/>`;
+        h+=`<text x="${x+DAY_W/2}" y="69" font-size="9" font-weight="700" fill="white" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${dt.getDate()}</text>`;
+      } else {
+        h+=`<text x="${x+DAY_W/2}" y="69" font-size="9" font-weight="${fw}" fill="${tc}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${dt.getDate()}</text>`;
+      }
     }
-    /* Only vertical sep on Monday or month change */
-    if(dow===1||i===0){
-      h+=`<line x1="${x}" y1="34" x2="${x}" y2="${HDR_H}" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>`;
+
+  } else if(currentView==='week'){
+    let months={};
+    for(let i=0;i<TOTAL_DAYS;i++){
+      const dt=addDays(START_DATE,i);const mk=dt.getFullYear()+'-'+dt.getMonth();
+      if(!months[mk]) months[mk]={x:i*DAY_W,end:(i+1)*DAY_W,dt};
+      else months[mk].end=(i+1)*DAY_W;
     }
+    Object.values(months).forEach(m=>{
+      const bw=m.end-m.x;
+      h+=`<line x1="${m.x}" y1="0" x2="${m.x}" y2="${HDR_H}" stroke="rgba(108,99,255,0.15)" stroke-width="0.5"/>`;
+      if(bw>50){
+        const lbl=m.dt.toLocaleDateString('it-IT',{month:'long',year:'numeric'});
+        h+=`<rect x="${m.x+6}" y="7" width="${Math.min(110,bw-12)}" height="22" rx="11" fill="#6C63FF"/>`;
+        h+=`<text x="${m.x+14}" y="18" font-size="11" font-weight="700" fill="white" dy=".35em" font-family="-apple-system,sans-serif">${lbl.charAt(0).toUpperCase()+lbl.slice(1)}</text>`;
+      }
+    });
+    h+=`<line x1="0" y1="36" x2="${W}" y2="36" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>`;
+    let wStart=new Date(START_DATE);
+    const dow0=wStart.getDay()===0?7:wStart.getDay();
+    wStart.setDate(wStart.getDate()-(dow0-1));
+    while(true){
+      const dayIdx=diffDays(START_DATE,wStart);
+      if(dayIdx>=TOTAL_DAYS) break;
+      const xStart=Math.max(0,dayIdx)*DAY_W;
+      const wEnd=addDays(wStart,6);
+      const dayIdxEnd=diffDays(START_DATE,wEnd);
+      const xEnd=Math.min(TOTAL_DAYS,dayIdxEnd+1)*DAY_W;
+      const ww=xEnd-xStart;
+      if(ww>0){
+        const wnum=isoWeek(wStart);
+        const isCW=diffDays(wStart,TODAY)>=0&&diffDays(TODAY,wEnd)>=0;
+        h+=`<line x1="${xStart}" y1="36" x2="${xStart}" y2="${HDR_H}" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>`;
+        if(isCW) h+=`<rect x="${xStart}" y="36" width="${ww}" height="${HDR_H-36}" fill="rgba(108,99,255,0.08)"/>`;
+        const wc=isCW?'#6C63FF':'#6B7280';const wf=isCW?'700':'600';
+        h+=`<text x="${xStart+6}" y="52" font-size="9" font-weight="${wf}" fill="${wc}" dy=".35em" font-family="-apple-system,sans-serif">W${wnum}</text>`;
+        const elf=dayIdxEnd>=TOTAL_DAYS?addDays(START_DATE,TOTAL_DAYS-1):wEnd;
+        const rs=`${wStart.getDate()}\u2013${elf.getDate()} ${elf.toLocaleDateString('it-IT',{month:'short'})}`;
+        if(ww>40) h+=`<text x="${xStart+6}" y="68" font-size="9" font-weight="400" fill="${isCW?'#4F46E5':'#9CA3AF'}" dy=".35em" font-family="-apple-system,sans-serif">${rs}</text>`;
+        if(isCW){
+          const tdx=diffDays(START_DATE,TODAY)*DAY_W;
+          h+=`<line x1="${tdx+2}" y1="${HDR_H-5}" x2="${tdx+DAY_W-2}" y2="${HDR_H-5}" stroke="#EF4444" stroke-width="3" stroke-linecap="round"/>`;
+        }
+      }
+      wStart=addDays(wStart,7);
+    }
+
+  } else {
+    const year=START_DATE.getFullYear();
+    h+=`<rect x="0" y="0" width="${W}" height="28" fill="rgba(0,0,0,0.02)"/>`;
+    h+=`<text x="10" y="14" font-size="11" font-weight="600" fill="#9CA3AF" dy=".35em" font-family="-apple-system,sans-serif">${year}</text>`;
+    h+=`<line x1="0" y1="28" x2="${W}" y2="28" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>`;
+    let mList=[],prev=null;
+    for(let i=0;i<TOTAL_DAYS;i++){
+      const dt=addDays(START_DATE,i);const mk=dt.getFullYear()+'-'+dt.getMonth();
+      if(mk!==prev){mList.push({x:i*DAY_W,dt,dayCount:0,end:0});prev=mk;}
+      mList[mList.length-1].dayCount++;
+      mList[mList.length-1].end=(i+1)*DAY_W;
+    }
+    const todayMk=TODAY.getFullYear()+'-'+TODAY.getMonth();
+    mList.forEach(m=>{
+      const bw=m.end-m.x;const isCur=m.dt.getFullYear()+'-'+m.dt.getMonth()===todayMk;
+      h+=`<rect x="${m.x}" y="28" width="${bw}" height="${HDR_H-28}" fill="${isCur?'rgba(108,99,255,0.08)':'transparent'}"/>`;
+      h+=`<line x1="${m.x}" y1="28" x2="${m.x}" y2="${HDR_H}" stroke="rgba(0,0,0,0.07)" stroke-width="0.5"/>`;
+      const abbr=m.dt.toLocaleDateString('it-IT',{month:'short'});
+      h+=`<text x="${m.x+8}" y="46" font-size="12" font-weight="${isCur?'700':'500'}" fill="${isCur?'#6C63FF':'#374151'}" dy=".35em" font-family="-apple-system,sans-serif">${abbr.charAt(0).toUpperCase()+abbr.slice(1)}</text>`;
+      h+=`<text x="${m.x+8}" y="65" font-size="9" font-weight="400" fill="${isCur?'#818CF8':'#9CA3AF'}" dy=".35em" font-family="-apple-system,sans-serif">${m.dayCount}g</text>`;
+      if(isCur) h+=`<line x1="${m.x+4}" y1="${HDR_H-4}" x2="${m.x+bw-4}" y2="${HDR_H-4}" stroke="#6C63FF" stroke-width="2.5" stroke-linecap="round"/>`;
+    });
   }
-  /* Bottom border */
-  h+=`<line x1="0" y1="${HDR_H-0.5}" x2="${W}" y2="${HDR_H-0.5}" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>`;
-  /* Today vertical line */
-  const tx=diffDays(START_DATE,TODAY)*DAY_W+DAY_W/2;
-  if(tx>=0&&tx<=W){
-    h+=`<line x1="${tx}" y1="34" x2="${tx}" y2="${HDR_H}" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>`;
+
+  h+=`<line x1="0" y1="${HDR_H-0.5}" x2="${W}" y2="${HDR_H-0.5}" stroke="rgba(0,0,0,0.09)" stroke-width="1"/>`;
+  h+=`<line x1="${W}" y1="0" x2="${W}" y2="${HDR_H}" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>`;
+  if(currentView==='day'){
+    const tx=diffDays(START_DATE,TODAY)*DAY_W+DAY_W/2;
+    if(tx>=0&&tx<=W) h+=`<line x1="${tx}" y1="36" x2="${tx}" y2="${HDR_H}" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.5"/>`;
   }
   svg.innerHTML=h;
 }
+
 
 // ─── GANTT SVG ────────────────────────────────────────
 function renderGantt(rows){
@@ -1716,6 +1806,8 @@ function openAddModal(projId){
   document.getElementById('f-color').value=STATUS_TO_COLOR['todo'];
   modalResources=[];selectedIcon='none';modalDeps=[];
   renderResourceTags();buildResourcePool();buildIconGrid();onTypeChange();buildDepsSelect();
+  document.getElementById('f-effort').value=3;
+  buildEffortStars(3);
   document.getElementById('modal-overlay').classList.add('open');
   setTimeout(()=>document.getElementById('f-name').focus(),100);
 }
@@ -1732,6 +1824,9 @@ function openEditModal(id){
   document.getElementById('f-color').value=STATUS_TO_COLOR[t.status]||t.color||'#378ADD';
   modalResources=[...(t.resources||[])];selectedIcon=t.icon||'none';modalDeps=[...(t.deps||[])];
   renderResourceTags();buildResourcePool();buildIconGrid();onTypeChange();updateParentOptions();renderDepTags();buildDepsSelect();
+  const effortVal=t.effort||3;
+  document.getElementById('f-effort').value=effortVal;
+  buildEffortStars(effortVal);
   if(t.parentId)document.getElementById('f-parent').value=t.parentId;
   document.getElementById('modal-overlay').classList.add('open');
 }
@@ -1747,10 +1842,11 @@ function saveModal(){
   const status=type==='milestone'?'milestone':document.getElementById('f-status').value;
   const color=STATUS_TO_COLOR[status]||document.getElementById('f-color').value;
   const icon=selectedIcon;const resources=[...modalResources];const deps=[...modalDeps];
+  const effort=parseInt(document.getElementById('f-effort').value)||3;
   if(!name){document.getElementById('f-name').focus();return;}
   pushUndo();
-  if(editingId){const t=getT(editingId);if(t)Object.assign(t,{label:name,proj,parentId,start:startVal,end:endVal,progress,status,color,icon,resources,deps,isMilestone:type==='milestone'});}
-  else getTasks().push({id:uid(),proj,label:name,start:startVal,end:endVal,progress,status,color,icon,resources,deps,parentId,isMilestone:type==='milestone',notes:''});
+  if(editingId){const t=getT(editingId);if(t)Object.assign(t,{label:name,proj,parentId,start:startVal,end:endVal,progress,status,color,icon,resources,deps,effort,isMilestone:type==='milestone'});}
+  else getTasks().push({id:uid(),proj,label:name,start:startVal,end:endVal,progress,status,color,icon,resources,deps,effort,parentId,isMilestone:type==='milestone',notes:''});
   closeModal();rerender();
 }
 
@@ -1774,8 +1870,74 @@ function showTip(e,id){
 }
 function hideTip(){document.getElementById('tooltip').style.opacity='0'}
 
-// ─── VIEW SYSTEM ──────────────────────────────────────
-const VIEW_DAY_W = {day:28, week:14, month:7};
+// ─── SIDEBAR RESIZER ──────────────────────────────────
+(function(){
+  const resizer = document.getElementById('sidebar-resizer');
+  if(!resizer) return;
+  let startX=0, startW=0;
+  resizer.addEventListener('mousedown', e=>{
+    e.preventDefault();
+    startX=e.clientX;
+    startW=document.getElementById('sidebar').offsetWidth;
+    resizer.classList.add('dragging');
+    const onMove=e=>{
+      const newW=Math.max(160,Math.min(480,startW+(e.clientX-startX)));
+      document.getElementById('sidebar').style.width=newW+'px';
+    };
+    const onUp=()=>{
+      resizer.classList.remove('dragging');
+      window.removeEventListener('mousemove',onMove);
+      window.removeEventListener('mouseup',onUp);
+    };
+    window.addEventListener('mousemove',onMove);
+    window.addEventListener('mouseup',onUp);
+  });
+  resizer.addEventListener('touchstart',e=>{
+    const tc=e.touches[0];
+    startX=tc.clientX; startW=document.getElementById('sidebar').offsetWidth;
+    resizer.classList.add('dragging');
+    const onMove=e=>{
+      const newW=Math.max(160,Math.min(480,startW+(e.touches[0].clientX-startX)));
+      document.getElementById('sidebar').style.width=newW+'px';
+    };
+    const onUp=()=>{ resizer.classList.remove('dragging'); window.removeEventListener('touchmove',onMove); window.removeEventListener('touchend',onUp); };
+    window.addEventListener('touchmove',onMove,{passive:false});
+    window.addEventListener('touchend',onUp);
+  });
+})();
+
+// ─── EFFORT STAR WIDGET ───────────────────────────────
+const EFFORT_LABELS=['','Minimo','Basso','Medio','Alto','Massimo'];
+const EFFORT_COLORS=['','#22C55E','#84CC16','#F59E0B','#EF4444','#DC2626'];
+
+function buildEffortStars(val){
+  const wrap=document.getElementById('effort-stars');
+  const lbl=document.getElementById('effort-label');
+  if(!wrap||!lbl) return;
+  wrap.innerHTML='';
+  for(let i=1;i<=5;i++){
+    const s=document.createElement('div');
+    s.className='effort-star';
+    const filled=i<=val;
+    const c=filled?EFFORT_COLORS[val]:'#D1D5DB';
+    s.innerHTML=`<svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 1l2.5 5.5H18l-4.5 4 1.5 6L10 13l-5 3.5 1.5-6L2 7h5.5z" fill="${filled?c:'none'}" stroke="${c}" stroke-width="1.2" stroke-linejoin="round"/></svg>`;
+    s.onclick=(()=>{const v=i;return()=>{document.getElementById('f-effort').value=v;buildEffortStars(v);}})();
+    s.onmouseenter=(()=>{const v=i;return()=>buildEffortStars(v);})();
+    wrap.appendChild(s);
+  }
+  wrap.onmouseleave=()=>buildEffortStars(parseInt(document.getElementById('f-effort').value)||3);
+  lbl.textContent=EFFORT_LABELS[val]||'';
+  lbl.style.color=EFFORT_COLORS[val]||'var(--text2)';
+}
+
+function effortBadge(effort){
+  const e=Math.max(1,Math.min(5,effort||3));
+  const stars='★'.repeat(e)+'☆'.repeat(5-e);
+  const bg=[,'#DCFCE7','#F0FDF4','#FEF3C7','#FEF2F2','#FFE4E6'][e];
+  const col=EFFORT_COLORS[e];
+  return `<span class="effort-badge" style="background:${bg};color:${col}" title="Effort ${e}/5">${stars}</span>`;
+}
+const VIEW_DAY_W = {day:32, week:16, month:8};
 let currentView = 'day';
 
 function setView(v){
@@ -2462,31 +2624,32 @@ function renderWorkload(){
     pg.projects.forEach(p=>{ allProjMap[p.id]=p; });
   });
 
-  /* Calcola giorni totali per risorsa — escludi standby dal conteggio */
+  /* Carico pesato per risorsa: effort × log(giorni+1) — escludi standby e todo */
   const resLoad={};
-  RESOURCE_POOL.forEach(r=>{ resLoad[r.id]={days:0,tasks:[],standbyTasks:[]}; });
+  RESOURCE_POOL.forEach(r=>{ resLoad[r.id]={score:0,tasks:[],standbyTasks:[]}; });
   allTasks.forEach(t=>{
+    const effort=Math.max(1,Math.min(5,t.effort||3));
     const dur=Math.max(1,diffDays(t.start,t.end));
+    const score=effort*Math.log(dur+1);
     (t.resources||[]).forEach(rid=>{
       if(!resLoad[rid]) return;
       if(t.status==='standby'||t.status==='todo'){
-        resLoad[rid].standbyTasks.push(t); /* non conta nel carico */
+        resLoad[rid].standbyTasks.push(t);
       } else {
-        resLoad[rid].days+=dur;
+        resLoad[rid].score+=score;
         resLoad[rid].tasks.push(t);
       }
     });
   });
 
-  /* Trova il massimo per normalizzare */
-  const maxDays=Math.max(1,...Object.values(resLoad).map(r=>r.days));
-  /* Soglie carico: 0-30% libero, 31-70% medio, 71-90% alto, 91%+ full */
+  /* Normalizza su massimo score */
+  const maxScore=Math.max(1,...Object.values(resLoad).map(r=>r.score));
   function loadLabel(pct){
-    if(pct===0) return {label:'Disponibile',color:'#639922'};
-    if(pct<=30) return {label:'Leggero',color:'#1D9E75'};
-    if(pct<=70) return {label:'Medio',color:'#EF9F27'};
-    if(pct<=90) return {label:'Alto',color:'#E24B4A'};
-    return {label:'Full',color:'#B4102A'};
+    if(pct===0) return {label:'Disponibile',color:'#22C55E'};
+    if(pct<=25) return {label:'Leggero',color:'#84CC16'};
+    if(pct<=55) return {label:'Medio',color:'#F59E0B'};
+    if(pct<=80) return {label:'Alto',color:'#EF4444'};
+    return {label:'Full',color:'#DC2626'};
   }
 
   const categories=[...new Set(RESOURCE_POOL.map(r=>r.category))];
@@ -2495,15 +2658,16 @@ function renderWorkload(){
     html+=`<div class="wl-category-title">${cat}</div>`;
     RESOURCE_POOL.filter(r=>r.category===cat).forEach(res=>{
       const load=resLoad[res.id];
-      const pct=Math.round((load.days/maxDays)*100);
+      const pct=Math.round((load.score/maxScore)*100);
       const {label:lbl,color:lcol}=loadLabel(pct);
+      const effortAvg=load.tasks.length?Math.round(load.tasks.reduce((a,t)=>a+(t.effort||3),0)/load.tasks.length):0;
       const tasksHtml=load.tasks.length
-        ? load.tasks.map(t=>`<span class="wl-task-chip" onclick="closeWorkloadPanel();switchPage('${pages.find(pg=>pg.tasks.some(tt=>tt.id===t.id))?.id||currentPageId}');setTimeout(()=>jumpToTask('${t.id}'),100)" title="${t._page}">${t.label}</span>`).join('')
+        ? load.tasks.map(t=>`<span class="wl-task-chip" onclick="closeWorkloadPanel();switchPage('${pages.find(pg=>pg.tasks.some(tt=>tt.id===t.id))?.id||currentPageId}');setTimeout(()=>jumpToTask('${t.id}'),100)" title="Effort ${t.effort||3}/5 · ${t._page}">${t.label} ${effortBadge(t.effort||3)}</span>`).join('')
         : `<span class="wl-empty">Nessun task attivo</span>`;
       const standbyHtml=load.standbyTasks.length
         ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;align-items:center">
             <span style="font-size:10px;color:var(--text3);margin-right:2px">⏸ Non attivi:</span>`+
-          load.standbyTasks.map(t=>`<span class="wl-task-chip" style="opacity:.55;text-decoration:line-through" onclick="closeWorkloadPanel();switchPage('${pages.find(pg=>pg.tasks.some(tt=>tt.id===t.id))?.id||currentPageId}');setTimeout(()=>jumpToTask('${t.id}'),100)" title="${SL[t.status]||t.status} — non conta nel carico">${t.label}</span>`).join('')+
+          load.standbyTasks.map(t=>`<span class="wl-task-chip" style="opacity:.55;text-decoration:line-through">${t.label}</span>`).join('')+
           `</div>` : '';
       html+=`<div class="wl-resource-card">
         <div class="wl-res-row">
@@ -2513,7 +2677,7 @@ function renderWorkload(){
           <div class="wl-pct-label" style="color:${lcol}">${lbl}</div>
         </div>
         <div class="wl-bar-wrap"><div class="wl-bar-fill" style="width:${pct}%;background:${lcol}"></div></div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:5px">${load.days} giorni attivi · ${load.tasks.length} task${load.standbyTasks.length?' · '+load.standbyTasks.length+' in pausa':''}</div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px">${load.tasks.length} task attivi${effortAvg?` · effort medio ${effortAvg}/5`:''}${load.standbyTasks.length?' · '+load.standbyTasks.length+' in pausa':''}</div>
         <div class="wl-tasks-list">${tasksHtml}</div>
         ${standbyHtml}
       </div>`;
