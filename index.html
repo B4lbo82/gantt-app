@@ -2045,16 +2045,20 @@ function handleDeepLink(){
     attempts++;
     const row = document.querySelector(`.sb-row[data-sb-id="${taskId}"]`);
     if(row){
-      selectTask(taskId);
+      selectTask(taskId); /* selectTask chiama rerender() — il DOM viene ricostruito */
       requestAnimationFrame(()=>{
-        row.scrollIntoView({block:'center', behavior:'smooth'});
-        row.classList.remove('search-match');
-        void row.offsetWidth;
-        row.classList.add('search-match');
-        setTimeout(()=>row.classList.remove('search-match'), 3600);
+        /* Ri-query dopo il rerender: il vecchio `row` è ora stantio */
+        const freshRow = document.querySelector(`.sb-row[data-sb-id="${taskId}"]`);
+        if(freshRow){
+          freshRow.scrollIntoView({block:'center', behavior:'smooth'});
+          freshRow.classList.remove('search-match');
+          void freshRow.offsetWidth;
+          freshRow.classList.add('search-match');
+          setTimeout(()=>freshRow.classList.remove('search-match'), 3600);
+        }
       });
     } else if(attempts < 15){
-      setTimeout(tryJump, 200); /* riprova ogni 200ms fino a 3 secondi */
+      setTimeout(tryJump, 200);
     }
   };
   setTimeout(tryJump, 400);
