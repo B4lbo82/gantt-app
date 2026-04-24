@@ -1991,7 +1991,9 @@ document.getElementById('res-manager-overlay').addEventListener('click',e=>{if(e
 
 // ─── DEEP LINKING ─────────────────────────────────────
 /* Salva l'hash immediatamente al caricamento — prima di qualsiasi operazione asincrona */
-const INITIAL_HASH = location.hash;
+/* Salva l'hash immediatamente — anche in sessionStorage come backup contro refresh durante 2FA */
+const INITIAL_HASH = location.hash || sessionStorage.getItem('deepLinkHash') || '';
+if(location.hash.startsWith('#task/')) sessionStorage.setItem('deepLinkHash', location.hash);
 
 function copyTaskLink(id){
   const url = `${location.origin}${location.pathname}#task/${id}`;
@@ -2024,8 +2026,9 @@ function handleDeepLink(){
   if(!hash.startsWith('#task/')) return;
   const taskId = hash.slice(6);
 
-  /* Pulisci subito l'hash dall'URL */
+  /* Pulisci subito l'hash dall'URL e la sessionStorage */
   history.replaceState(null,'',location.pathname+location.search);
+  sessionStorage.removeItem('deepLinkHash');
 
   /* Cerca il task in tutte le pagine */
   let targetPageId = null;
