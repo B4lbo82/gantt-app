@@ -94,7 +94,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .app-shell{display:flex;height:100vh;overflow:hidden}
 
 /* ── LEFT NAV ─────────────────────────────── */
-#left-nav{width:var(--nav-width);flex-shrink:0;background:var(--nav-bg);display:flex;flex-direction:column;border-right:0.5px solid var(--nav-border);overflow-y:auto;overflow-x:hidden}
+#left-nav{width:var(--nav-width);flex-shrink:0;background:var(--nav-bg);display:flex;flex-direction:column;border-right:0.5px solid var(--nav-border);overflow-y:auto;overflow-x:hidden;transition:width .25s ease}
+#left-nav.collapsed{width:44px;overflow:hidden}
+#left-nav.collapsed .nav-brand-name,
+#left-nav.collapsed .nav-section,
+#left-nav.collapsed .nav-item span:not(.nav-item-badge),
+#left-nav.collapsed .nav-proj-dot+span,
+#left-nav.collapsed .nav-item-badge,
+#left-nav.collapsed .nav-user-info,
+#left-nav.collapsed .nav-user-email,
+#left-nav.collapsed .nav-user-role,
+#left-nav.collapsed .nav-logout,
+#left-nav.collapsed #nav-projects-list .nav-item>span,
+#left-nav.collapsed #save-status{display:none!important}
+#left-nav.collapsed .nav-item{justify-content:center;padding:7px 0;margin:1px 6px}
+#left-nav.collapsed .nav-item svg{margin:0}
+#left-nav.collapsed .nav-brand{justify-content:center;padding:14px 0}
+#left-nav.collapsed .nav-user{justify-content:center}
+#left-nav.collapsed .nav-user-avatar{margin:0}
+/* Toggle button */
+#nav-toggle{position:absolute;top:12px;left:calc(var(--nav-width) - 14px);width:22px;height:22px;background:var(--nav-bg);border:0.5px solid var(--nav-border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:100;color:var(--nav-text-muted);transition:left .25s ease;font-size:10px}
+#nav-toggle:hover{background:var(--nav-active-bg);color:var(--nav-active-text)}
+#left-nav.collapsed~#nav-toggle,
+.app-shell.nav-collapsed #nav-toggle{left:30px}
+.app-shell{position:relative}
 .nav-brand{display:flex;align-items:center;gap:10px;padding:16px 16px 12px;border-bottom:0.5px solid var(--nav-border)}
 .nav-brand-icon{width:30px;height:30px;border-radius:8px;background:var(--indigo);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .nav-brand-name{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.01em}
@@ -503,7 +526,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
      MAIN APP
 ══════════════════════════════════════ -->
 <div id="app-wrap">
-<div class="app-shell">
+<div class="app-shell" id="app-shell">
+<button id="nav-toggle" onclick="toggleNav()" title="Comprimi/espandi menu">◀</button>
 
 <!-- LEFT NAV -->
 <nav id="left-nav">
@@ -518,10 +542,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
   <a class="nav-item active">
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="12" height="2" rx="1" fill="currentColor" opacity=".5"/><rect x="1" y="6" width="8" height="2" rx="1" fill="currentColor"/><rect x="1" y="10" width="10" height="2" rx="1" fill="currentColor" opacity=".7"/></svg>
     Gantt
-  </a>
-  <a class="nav-item" style="opacity:.35;cursor:not-allowed">
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1.5" stroke="currentColor" stroke-width="1.2" fill="none"/><rect x="8" y="1" width="5" height="5" rx="1.5" stroke="currentColor" stroke-width="1.2" fill="none"/><rect x="1" y="8" width="5" height="5" rx="1.5" stroke="currentColor" stroke-width="1.2" fill="none"/><rect x="8" y="8" width="5" height="5" rx="1.5" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
-    Board <span style="font-size:9px;color:var(--nav-text-muted);margin-left:2px">soon</span>
   </a>
 
   <div class="nav-divider"></div>
@@ -578,7 +598,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
     <button class="btn" onclick="zoom(-1)">− zoom</button>
     <button class="btn" onclick="zoom(1)">+ zoom</button>
   </div>
-  <button class="btn primary" onclick="openAddModal(null)">
+  <button class="btn" style="background:#059669;color:#fff;border-color:#047857;box-shadow:0 2px 8px rgba(5,150,105,.3)" onclick="openAddModal(null)">
     <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     Aggiungi task
   </button>
@@ -1369,36 +1389,56 @@ function renderHeader(){
   svg.setAttribute('height',HDR_H);
   svg.setAttribute('width',W);
   let h='';
-  for(let i=0;i<TOTAL_DAYS;i++){
-    const dt=addDays(START_DATE,i);const x=i*DAY_W;
-    h+=`<rect x="${x}" y="0" width="${DAY_W}" height="${HDR_H}" fill="${getDayBg(dt)}"/>`;
-    h+=`<line x1="${x}" y1="0" x2="${x}" y2="${HDR_H}" stroke="${getDayBorder(dt)}" stroke-width="0.5"/>`;
-  }
-  h+=`<line x1="${W}" y1="0" x2="${W}" y2="${HDR_H}" stroke="rgba(0,0,0,0.18)" stroke-width="0.5"/>`;
-  h+=`<line x1="0" y1="0" x2="${W}" y2="0" stroke="rgba(0,0,0,0.18)" stroke-width="0.5"/>`;
+
+  /* Month band — top 40px, white/light bg with indigo accent */
   let months={};
   for(let i=0;i<TOTAL_DAYS;i++){
     const dt=addDays(START_DATE,i);const mk=dt.getFullYear()+'-'+dt.getMonth();
     if(!months[mk]) months[mk]={x:i*DAY_W,end:(i+1)*DAY_W,label:dt.toLocaleDateString('it-IT',{month:'long',year:'numeric'})};
     else months[mk].end=(i+1)*DAY_W;
   }
-  Object.values(months).forEach(m=>{
-    h+=`<rect x="${m.x}" y="0" width="${m.end-m.x}" height="40" fill="rgba(55,138,221,0.08)"/>`;
-    h+=`<line x1="${m.x}" y1="0" x2="${m.x}" y2="40" stroke="rgba(55,138,221,0.4)" stroke-width="1"/>`;
+
+  /* Full header background */
+  h+=`<rect width="${W}" height="${HDR_H}" fill="#fafafe"/>`;
+
+  /* Month blocks */
+  Object.values(months).forEach((m,idx)=>{
+    const bw=m.end-m.x;
+    const isOdd=idx%2===0;
+    h+=`<rect x="${m.x}" y="0" width="${bw}" height="40" fill="${isOdd?'rgba(91,76,245,0.05)':'rgba(91,76,245,0.02)'}"/>`;
+    h+=`<line x1="${m.x}" y1="0" x2="${m.x}" y2="${HDR_H}" stroke="rgba(91,76,245,0.15)" stroke-width="1"/>`;
     const lbl=m.label.charAt(0).toUpperCase()+m.label.slice(1);
-    h+=`<text x="${m.x+8}" y="24" font-size="13" font-weight="600" fill="rgba(0,0,0,0.55)" dy=".35em" font-family="-apple-system,sans-serif">${lbl}</text>`;
+    h+=`<text x="${m.x+10}" y="22" font-size="12" font-weight="700" fill="#4338CA" dy=".35em" font-family="-apple-system,sans-serif" letter-spacing="-0.2">${lbl}</text>`;
   });
-  h+=`<line x1="0" y1="40" x2="${W}" y2="40" stroke="rgba(0,0,0,0.18)" stroke-width="1"/>`;
+
+  /* Separator */
+  h+=`<line x1="0" y1="40" x2="${W}" y2="40" stroke="rgba(91,76,245,0.12)" stroke-width="1"/>`;
+
+  /* Day columns */
   for(let i=0;i<TOTAL_DAYS;i++){
-    const dt=addDays(START_DATE,i);const x=i*DAY_W;const dow=dt.getDay();
-    const lbl=DAY_LBL[dow];const we=isWE(dt),fe=isFest(dt);
-    const tc=fe?'#a02020':we?'#185FA5':'rgba(0,0,0,0.45)';const fw=we||fe?'700':'400';
-    h+=`<text x="${x+DAY_W/2}" y="56" font-size="9" font-weight="${fw}" fill="${tc}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${lbl}</text>`;
-    h+=`<text x="${x+DAY_W/2}" y="76" font-size="9" font-weight="${fw}" fill="${tc}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${dt.getDate()}</text>`;
+    const dt=addDays(START_DATE,i);const x=i*DAY_W;
+    const bg=getDayBg(dt);const bd=getDayBorder(dt);
+    h+=`<rect x="${x}" y="40" width="${DAY_W}" height="${HDR_H-40}" fill="${bg}"/>`;
+    h+=`<line x1="${x}" y1="40" x2="${x}" y2="${HDR_H}" stroke="${bd}" stroke-width="0.5"/>`;
+    const dow=dt.getDay();const lbl=DAY_LBL[dow];
+    const we=isWE(dt),fe=isFest(dt);
+    const tc=fe?'#dc2626':we?'#4338CA':'#6b7280';
+    const fw=we||fe?'700':'500';
+    /* Letter */
+    h+=`<text x="${x+DAY_W/2}" y="52" font-size="9" font-weight="${fw}" fill="${tc}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${lbl}</text>`;
+    /* Number — bigger on weekend */
+    h+=`<text x="${x+DAY_W/2}" y="70" font-size="${we||fe?10:9}" font-weight="${fw}" fill="${tc}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${dt.getDate()}</text>`;
   }
-  h+=`<line x1="0" y1="${HDR_H-0.5}" x2="${W}" y2="${HDR_H-0.5}" stroke="rgba(0,0,0,0.18)" stroke-width="1"/>`;
+
+  h+=`<line x1="0" y1="${HDR_H-0.5}" x2="${W}" y2="${HDR_H-0.5}" stroke="rgba(91,76,245,0.15)" stroke-width="1"/>`;
+  h+=`<line x1="${W}" y1="0" x2="${W}" y2="${HDR_H}" stroke="rgba(91,76,245,0.15)" stroke-width="0.5"/>`;
+
+  /* Today marker */
   const tx=diffDays(START_DATE,TODAY)*DAY_W+DAY_W/2;
-  if(tx>=0&&tx<=W) h+=`<line x1="${tx}" y1="40" x2="${tx}" y2="${HDR_H}" stroke="#E24B4A" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.9"/>`;
+  if(tx>=0&&tx<=W){
+    h+=`<rect x="${tx-DAY_W/2}" y="40" width="${DAY_W}" height="${HDR_H-40}" fill="rgba(239,68,68,0.07)"/>`;
+    h+=`<line x1="${tx}" y1="0" x2="${tx}" y2="${HDR_H}" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.8"/>`;
+  }
   svg.innerHTML=h;
 }
 
@@ -1425,7 +1465,7 @@ function renderGantt(rows){
     const t=r.task;const y=i*ROW_H;
     const x=diffDays(START_DATE,t.start)*DAY_W;
     const dur=Math.max(1,diffDays(t.start,t.end));const w=dur*DAY_W;
-    const col=t.color||'#B4B2A9';const cy=y+ROW_H/2;const isSub=!!t.parentId;const sel=selectedTask===t.id;
+    const col=STATUS_COLOR_MAP[t.status]||t.color||'#94A3B8';const cy=y+ROW_H/2;const isSub=!!t.parentId;const sel=selectedTask===t.id;
     if(t.isMilestone){
       const s=13;
       h+=`<g data-id="${t.id}"><polygon points="${x+DAY_W/2},${cy-s/2} ${x+DAY_W/2+s/2},${cy} ${x+DAY_W/2},${cy+s/2} ${x+DAY_W/2-s/2},${cy}" fill="${col}" opacity="0.9" stroke="${sel?'#000':col}" stroke-width="${sel?2:0.5}"/></g>`;
@@ -1688,6 +1728,15 @@ function showTip(e,id){
   tip.style.opacity='1';tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY-10)+'px';
 }
 function hideTip(){document.getElementById('tooltip').style.opacity='0'}
+
+function toggleNav(){
+  const nav=document.getElementById('left-nav');
+  const btn=document.getElementById('nav-toggle');
+  nav.classList.toggle('collapsed');
+  const collapsed=nav.classList.contains('collapsed');
+  btn.textContent=collapsed?'▶':'◀';
+  btn.style.left=collapsed?'30px':'calc(var(--nav-width) - 14px)';
+}
 
 function zoom(dir){DAY_W=Math.max(12,Math.min(60,DAY_W+dir*4));rerender()}
 
