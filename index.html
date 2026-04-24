@@ -12,48 +12,48 @@
 <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
 <style>
 :root {
-  /* Indigo Night — design tokens */
-  --bg:#ffffff;--bg2:#f8f7ff;--bg3:#f0effe;
-  --text:#1c1a2e;--text2:#6b6880;--text3:#a09db8;
-  --border:rgba(91,76,245,0.1);--border2:rgba(91,76,245,0.18);
+  /* Light theme — Odama-inspired */
+  --bg:#ffffff;--bg2:#f6f7f9;--bg3:#eef0f4;
+  --text:#111827;--text2:#4B5563;--text3:#9CA3AF;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.12);
 
   /* Brand */
-  --indigo:#5B4CF5;--indigo-dark:#4338CA;--indigo-light:#EEF2FF;
-  /* Alias per compatibilità con il resto del codice */
+  --indigo:#6C63FF;--indigo-dark:#4F46E5;--indigo-light:#EEF0FF;
   --blue:var(--indigo);--blue-dark:var(--indigo-dark);--blue-light:var(--indigo-light);
 
-  /* Status tokens semantici */
-  --status-ongoing:#5B4CF5;    --status-ongoing-bg:#EEF2FF;
-  --status-done:#16A34A;       --status-done-bg:#DCFCE7;
-  --status-standby:#D97706;    --status-standby-bg:#FEF3C7;
-  --status-todo:#94A3B8;       --status-todo-bg:#F1F5F9;
-  --status-milestone:#7C3AED;  --status-milestone-bg:#F5F3FF;
+  /* Status tokens */
+  --status-ongoing:#6C63FF;  --status-ongoing-bg:#EEF0FF;
+  --status-done:#22C55E;     --status-done-bg:#DCFCE7;
+  --status-standby:#F59E0B;  --status-standby-bg:#FEF3C7;
+  --status-todo:#94A3B8;     --status-todo-bg:#F1F5F9;
+  --status-milestone:#A855F7;--status-milestone-bg:#FAF5FF;
 
-  /* Alias legacy */
-  --green:var(--status-done);       --green-light:var(--status-done-bg);
-  --amber:var(--status-standby);    --amber-light:var(--status-standby-bg);
+  --green:var(--status-done);--green-light:var(--status-done-bg);
+  --amber:var(--status-standby);--amber-light:var(--status-standby-bg);
   --red:#EF4444;--red-light:#FEF2F2;
-  --purple:var(--status-milestone); --gray:var(--status-todo);
+  --purple:var(--status-milestone);--gray:var(--status-todo);
 
-  /* Nav */
-  --nav-bg:#1A1825;--nav-text:#c4c0d8;--nav-text-muted:#6b6880;
-  --nav-active-bg:rgba(91,76,245,.18);--nav-active-text:#a89ff9;
-  --nav-border:rgba(255,255,255,.07);
+  /* Left nav — light */
+  --nav-bg:#1E1B4B;--nav-text:#C7D2FE;--nav-text-muted:#818CF8;
+  --nav-active-bg:rgba(108,99,255,.2);--nav-active-text:#A5B4FC;
+  --nav-border:rgba(255,255,255,.08);
   --nav-width:220px;
 
-  --radius:8px;--radius-lg:14px;
-
-  /* Font */
+  --radius:10px;--radius-lg:16px;
   --fw-label:500;--fw-body:400;
+
+  /* Shadows */
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
 }
 @media(prefers-color-scheme:dark){
   :root{
     --bg:#0f0e17;--bg2:#161423;--bg3:#1e1c2e;
-    --text:#e8e6f5;--text2:#9b98b8;--text3:#5c5a72;
-    --border:rgba(91,76,245,0.15);--border2:rgba(91,76,245,0.25);
+    --text:#f1f0ff;--text2:#9b98b8;--text3:#5c5a72;
+    --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
     --indigo-light:#1e1c3a;
-    --status-ongoing-bg:#1e1c3a; --status-done-bg:#0c2018;
-    --status-standby-bg:#2a1f04; --status-todo-bg:#1a1825;
+    --status-ongoing-bg:#1e1c3a;--status-done-bg:#0c2018;
+    --status-standby-bg:#2a1f04;--status-todo-bg:#1a1825;
     --status-milestone-bg:#1e1630;
     --nav-bg:#0c0b14;
     --blue-light:#1e1c3a;--green-light:#0c2018;
@@ -317,7 +317,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 #gantt-empty h3{font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px}
 #gantt-empty p{font-size:13px;color:var(--text3);margin-bottom:18px}
 
-/* ── RESOURCE POOL PICKER ───────────────── */
+/* ── VIEW TOGGLE ─────────────────────────── */
+.view-btn{font-size:12px;color:var(--text2);font-weight:var(--fw-label)}
+.view-btn.active{background:var(--indigo);color:#fff;font-weight:600}
+/* Modern gantt look */
+#gantt-container{box-shadow:var(--shadow-md);border:0.5px solid var(--border)}
+#sidebar{background:var(--bg)}
+.sb-head{background:var(--bg2);border-bottom:0.5px solid var(--border)}
+/* Gantt rows alternating subtle */
+#gantt-svg .task-row-even{fill:rgba(0,0,0,.015)}
+/* Dep arrow more visible */
+.dep-line{stroke:#A855F7;stroke-width:1.5;stroke-dasharray:5 3;opacity:0.65}
 .res-pool-wrap{margin-top:6px}
 .res-pool-category{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin:10px 0 5px;padding-left:2px}
 .res-pool-category:first-child{margin-top:0}
@@ -594,9 +604,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 <div id="stats-bar"></div>
 
 <div class="toolbar">
+  <div class="btn-group" id="view-toggle">
+    <button class="btn view-btn active" id="vbtn-day" onclick="setView('day')">Giorno</button>
+    <button class="btn view-btn" id="vbtn-week" onclick="setView('week')">Settimana</button>
+    <button class="btn view-btn" id="vbtn-month" onclick="setView('month')">Mese</button>
+  </div>
   <div class="btn-group">
-    <button class="btn" onclick="zoom(-1)">− zoom</button>
-    <button class="btn" onclick="zoom(1)">+ zoom</button>
+    <button class="btn" onclick="zoom(-1)">−</button>
+    <button class="btn" onclick="zoom(1)">+</button>
   </div>
   <button class="btn" style="background:#059669;color:#fff;border-color:#047857;box-shadow:0 2px 8px rgba(5,150,105,.3)" onclick="openAddModal(null)">
     <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -733,6 +748,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
       <label>Risorse assegnate</label>
       <div id="res-tags" class="res-tags"></div>
       <div class="res-pool-wrap" id="res-pool-container"></div>
+    </div>
+    <div class="form-row" id="f-deps-row">
+      <label>Dipende da (inizia dopo)</label>
+      <div id="f-deps-tags" class="res-tags"></div>
+      <select id="f-deps-select" style="width:100%;margin-top:6px;font-size:12px;padding:6px 8px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);height:32px" onchange="addDepFromSelect()">
+        <option value="">+ Aggiungi dipendenza…</option>
+      </select>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">Questo task inizierà solo dopo i task selezionati.</div>
     </div>
     <div class="modal-btns">
       <button class="btn" onclick="closeModal()">Annulla</button>
@@ -1245,23 +1268,23 @@ const SL={todo:'Not started',active:'On-going',standby:'Stand-by',done:'Done',mi
 /* Status semantic color tokens — matches CSS vars */
 const STATUS_COLOR_MAP={
   todo:    '#94A3B8',
-  active:  '#5B4CF5',
-  standby: '#D97706',
-  done:    '#16A34A',
-  milestone:'#7C3AED'
+  active:  '#6C63FF',
+  standby: '#F59E0B',
+  done:    '#22C55E',
+  milestone:'#A855F7'
 };
 const STATUS_TO_COLOR={
   todo:    '#94A3B8',
-  active:  '#5B4CF5',
-  standby: '#D97706',
-  done:    '#16A34A',
-  milestone:'#7C3AED'
+  active:  '#6C63FF',
+  standby: '#F59E0B',
+  done:    '#22C55E',
+  milestone:'#A855F7'
 };
 const STATUS_BG={
-  todo:'#F1F5F9',active:'#EEF2FF',standby:'#FEF3C7',done:'#DCFCE7',milestone:'#F5F3FF'
+  todo:'#F1F5F9',active:'#EEF0FF',standby:'#FEF3C7',done:'#DCFCE7',milestone:'#FAF5FF'
 };
 const STATUS_TEXT={
-  todo:'#475569',active:'#4338CA',standby:'#92400E',done:'#15803D',milestone:'#5B21B6'
+  todo:'#475569',active:'#4F46E5',standby:'#92400E',done:'#15803D',milestone:'#7E22CE'
 };
 let dragState=null,selectedTask=null,editingId=null,demoteTarget=null;
 let modalResources=[],selectedIcon='none';
@@ -1388,56 +1411,59 @@ function renderHeader(){
   svg.setAttribute('viewBox',`0 0 ${W} ${HDR_H}`);
   svg.setAttribute('height',HDR_H);
   svg.setAttribute('width',W);
-  let h='';
 
-  /* Month band — top 40px, white/light bg with indigo accent */
-  let months={};
-  for(let i=0;i<TOTAL_DAYS;i++){
-    const dt=addDays(START_DATE,i);const mk=dt.getFullYear()+'-'+dt.getMonth();
-    if(!months[mk]) months[mk]={x:i*DAY_W,end:(i+1)*DAY_W,label:dt.toLocaleDateString('it-IT',{month:'long',year:'numeric'})};
-    else months[mk].end=(i+1)*DAY_W;
-  }
-
-  /* Full header background */
-  h+=`<rect width="${W}" height="${HDR_H}" fill="#fafafe"/>`;
+  let h=`<rect width="${W}" height="${HDR_H}" fill="#ffffff"/>`;
 
   /* Month blocks */
-  Object.values(months).forEach((m,idx)=>{
-    const bw=m.end-m.x;
-    const isOdd=idx%2===0;
-    h+=`<rect x="${m.x}" y="0" width="${bw}" height="40" fill="${isOdd?'rgba(91,76,245,0.05)':'rgba(91,76,245,0.02)'}"/>`;
-    h+=`<line x1="${m.x}" y1="0" x2="${m.x}" y2="${HDR_H}" stroke="rgba(91,76,245,0.15)" stroke-width="1"/>`;
-    const lbl=m.label.charAt(0).toUpperCase()+m.label.slice(1);
-    h+=`<text x="${m.x+10}" y="22" font-size="12" font-weight="700" fill="#4338CA" dy=".35em" font-family="-apple-system,sans-serif" letter-spacing="-0.2">${lbl}</text>`;
+  let months={};
+  for(let i=0;i<TOTAL_DAYS;i++){
+    const dt=addDays(START_DATE,i);
+    const mk=dt.getFullYear()+'-'+dt.getMonth();
+    if(!months[mk]) months[mk]={x:i*DAY_W,end:(i+1)*DAY_W,dt};
+    else months[mk].end=(i+1)*DAY_W;
+  }
+  Object.values(months).forEach(m=>{
+    const lbl=m.dt.toLocaleDateString('it-IT',{month:'long',year:'numeric'});
+    const label=lbl.charAt(0).toUpperCase()+lbl.slice(1);
+    /* Month pill */
+    h+=`<rect x="${m.x+4}" y="6" width="${Math.min(120,m.end-m.x-8)}" height="22" rx="11" fill="var(--indigo)" opacity="0.9"/>`;
+    h+=`<text x="${m.x+12}" y="17" font-size="11" font-weight="700" fill="white" dy=".35em" font-family="-apple-system,sans-serif">${label}</text>`;
   });
 
-  /* Separator */
-  h+=`<line x1="0" y1="40" x2="${W}" y2="40" stroke="rgba(91,76,245,0.12)" stroke-width="1"/>`;
-
-  /* Day columns */
+  /* Day cells — no heavy grid, just subtle separator */
   for(let i=0;i<TOTAL_DAYS;i++){
-    const dt=addDays(START_DATE,i);const x=i*DAY_W;
-    const bg=getDayBg(dt);const bd=getDayBorder(dt);
-    h+=`<rect x="${x}" y="40" width="${DAY_W}" height="${HDR_H-40}" fill="${bg}"/>`;
-    h+=`<line x1="${x}" y1="40" x2="${x}" y2="${HDR_H}" stroke="${bd}" stroke-width="0.5"/>`;
-    const dow=dt.getDay();const lbl=DAY_LBL[dow];
+    const dt=addDays(START_DATE,i);
+    const x=i*DAY_W;
     const we=isWE(dt),fe=isFest(dt);
-    const tc=fe?'#dc2626':we?'#4338CA':'#6b7280';
+    /* Weekend / festività soft bg */
+    if(we||fe){
+      h+=`<rect x="${x}" y="34" width="${DAY_W}" height="${HDR_H-34}" fill="${fe?'rgba(239,68,68,0.06)':'rgba(108,99,255,0.04)'}"/>`;
+    }
+    const dow=dt.getDay();
+    const lbl=DAY_LBL[dow];
+    const tc=fe?'#DC2626':we?'#6C63FF':'#9CA3AF';
     const fw=we||fe?'700':'500';
-    /* Letter */
-    h+=`<text x="${x+DAY_W/2}" y="52" font-size="9" font-weight="${fw}" fill="${tc}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${lbl}</text>`;
-    /* Number — bigger on weekend */
-    h+=`<text x="${x+DAY_W/2}" y="70" font-size="${we||fe?10:9}" font-weight="${fw}" fill="${tc}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${dt.getDate()}</text>`;
+    /* Day letter */
+    h+=`<text x="${x+DAY_W/2}" y="44" font-size="9" font-weight="${fw}" fill="${tc}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${lbl}</text>`;
+    /* Day number — highlight today */
+    const isToday=isoKey(dt)===isoKey(TODAY);
+    if(isToday){
+      h+=`<circle cx="${x+DAY_W/2}" cy="${HDR_H-12}" r="9" fill="#EF4444" opacity="0.9"/>`;
+      h+=`<text x="${x+DAY_W/2}" y="${HDR_H-12}" font-size="9" font-weight="700" fill="white" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${dt.getDate()}</text>`;
+    } else {
+      h+=`<text x="${x+DAY_W/2}" y="${HDR_H-12}" font-size="9" font-weight="${fw}" fill="${tc}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${dt.getDate()}</text>`;
+    }
+    /* Only vertical sep on Monday or month change */
+    if(dow===1||i===0){
+      h+=`<line x1="${x}" y1="34" x2="${x}" y2="${HDR_H}" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>`;
+    }
   }
-
-  h+=`<line x1="0" y1="${HDR_H-0.5}" x2="${W}" y2="${HDR_H-0.5}" stroke="rgba(91,76,245,0.15)" stroke-width="1"/>`;
-  h+=`<line x1="${W}" y1="0" x2="${W}" y2="${HDR_H}" stroke="rgba(91,76,245,0.15)" stroke-width="0.5"/>`;
-
-  /* Today marker */
+  /* Bottom border */
+  h+=`<line x1="0" y1="${HDR_H-0.5}" x2="${W}" y2="${HDR_H-0.5}" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>`;
+  /* Today vertical line */
   const tx=diffDays(START_DATE,TODAY)*DAY_W+DAY_W/2;
   if(tx>=0&&tx<=W){
-    h+=`<rect x="${tx-DAY_W/2}" y="40" width="${DAY_W}" height="${HDR_H-40}" fill="rgba(239,68,68,0.07)"/>`;
-    h+=`<line x1="${tx}" y1="0" x2="${tx}" y2="${HDR_H}" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.8"/>`;
+    h+=`<line x1="${tx}" y1="34" x2="${tx}" y2="${HDR_H}" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>`;
   }
   svg.innerHTML=h;
 }
@@ -1449,34 +1475,51 @@ function renderGantt(rows){
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
   svg.setAttribute('height',H);
   svg.setAttribute('width',W);
-  let h=`<defs><marker id="da" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#888780" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>`;
+  let h=`<defs><marker id="da" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>`;
+  /* Clean white background */
+  h+=`<rect width="${W}" height="${H}" fill="#ffffff"/>`;
+  /* Weekend cols + week separators */
   for(let i=0;i<TOTAL_DAYS;i++){
     const dt=addDays(START_DATE,i);const x=i*DAY_W;
-    h+=`<rect x="${x}" y="0" width="${DAY_W}" height="${H}" fill="${getDayBg(dt)}"/>`;
-    h+=`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="${getDayBorder(dt)}" stroke-width="0.5"/>`;
+    const we=isWE(dt),fe=isFest(dt);
+    if(we||fe) h+=`<rect x="${x}" y="0" width="${DAY_W}" height="${H}" fill="${fe?'rgba(239,68,68,0.03)':'rgba(108,99,255,0.025)'}"/>`;
+    if(dt.getDay()===1) h+=`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="rgba(0,0,0,0.05)" stroke-width="0.5"/>`;
   }
-  h+=`<line x1="${W}" y1="0" x2="${W}" y2="${H}" stroke="rgba(0,0,0,0.18)" stroke-width="0.5"/>`;
-  rows.forEach((_,i)=>{h+=`<line x1="0" y1="${(i+1)*ROW_H}" x2="${W}" y2="${(i+1)*ROW_H}" stroke="rgba(0,0,0,0.07)" stroke-width="0.5"/>`;});
+  /* Row separators */
+  rows.forEach((r,i)=>{
+    const isGrp=r.type==='group';
+    h+=`<line x1="0" y1="${(i+1)*ROW_H}" x2="${W}" y2="${(i+1)*ROW_H}" stroke="${isGrp?'rgba(0,0,0,0.08)':'rgba(0,0,0,0.04)'}" stroke-width="${isGrp?0.8:0.5}"/>`;
+    if(isGrp) h+=`<rect x="0" y="${i*ROW_H}" width="${W}" height="${ROW_H}" fill="rgba(0,0,0,0.015)"/>`;
+  });
+  /* Today */
   const tx=diffDays(START_DATE,TODAY)*DAY_W+DAY_W/2;
-  if(tx>=0&&tx<=W) h+=`<line x1="${tx}" y1="0" x2="${tx}" y2="${H}" stroke="#E24B4A" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.75"/>`;
+  if(tx>=0&&tx<=W){
+    h+=`<rect x="${tx-DAY_W/2}" y="0" width="${DAY_W}" height="${H}" fill="rgba(239,68,68,0.04)"/>`;
+    h+=`<line x1="${tx}" y1="0" x2="${tx}" y2="${H}" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.5"/>`;
+  }
   const taskMap={};tasks.forEach(t=>taskMap[t.id]=t);
   rows.forEach((r,i)=>{
     if(r.type!=='task') return;
     const t=r.task;const y=i*ROW_H;
     const x=diffDays(START_DATE,t.start)*DAY_W;
     const dur=Math.max(1,diffDays(t.start,t.end));const w=dur*DAY_W;
-    const col=STATUS_COLOR_MAP[t.status]||t.color||'#94A3B8';const cy=y+ROW_H/2;const isSub=!!t.parentId;const sel=selectedTask===t.id;
+    const col=STATUS_COLOR_MAP[t.status]||'#94A3B8';const cy=y+ROW_H/2;const isSub=!!t.parentId;const sel=selectedTask===t.id;
     if(t.isMilestone){
       const s=13;
-      h+=`<g data-id="${t.id}"><polygon points="${x+DAY_W/2},${cy-s/2} ${x+DAY_W/2+s/2},${cy} ${x+DAY_W/2},${cy+s/2} ${x+DAY_W/2-s/2},${cy}" fill="${col}" opacity="0.9" stroke="${sel?'#000':col}" stroke-width="${sel?2:0.5}"/></g>`;
-      h+=`<text x="${x+DAY_W/2+s/2+4}" y="${cy}" font-size="10" fill="${col}" dy=".35em" font-weight="600" font-family="-apple-system,sans-serif">${t.label}</text>`;
+      h+=`<g data-id="${t.id}"><polygon points="${x+DAY_W/2},${cy-s/2} ${x+DAY_W/2+s/2},${cy} ${x+DAY_W/2},${cy+s/2} ${x+DAY_W/2-s/2},${cy}" fill="${col}" stroke="${sel?'rgba(0,0,0,0.3)':'none'}" stroke-width="${sel?2:0}"/></g>`;
+      h+=`<text x="${x+DAY_W/2+s/2+5}" y="${cy}" font-size="10" fill="${col}" dy=".35em" font-weight="700" font-family="-apple-system,sans-serif">${t.label}</text>`;
       return;
     }
-    const barH=isSub?14:20;const barY=cy-barH/2;const rx=isSub?3:4;
-    h+=`<g class="task-bar" data-id="${t.id}"><rect x="${x+1}" y="${barY}" width="${Math.max(2,w-2)}" height="${barH}" rx="${rx}" fill="${col}" opacity="${isSub?0.68:0.9}" stroke="${sel?'rgba(0,0,0,0.5)':col}" stroke-width="${sel?2:0.5}"/>`;
-    if(t.progress>0){const pw=Math.max(2,(t.progress/100)*(w-2));h+=`<rect x="${x+1}" y="${barY}" width="${pw}" height="${barH}" rx="${rx}" fill="rgba(255,255,255,0.25)"/>`;}
-    const fs=isSub?9:10;const mw=isSub?22:28;
-    if(w>mw){const mc=Math.floor((w-12)/(fs*0.6));const lbl=t.label.length>mc?t.label.slice(0,mc-1)+'…':t.label;h+=`<text x="${x+6}" y="${cy}" font-size="${fs}" font-weight="500" fill="white" dy=".35em" style="pointer-events:none" font-family="-apple-system,sans-serif">${lbl}</text>`;}
+    const barH=isSub?13:20;const barY=cy-barH/2;const rx=barH/2;
+    if(!isSub&&w>4) h+=`<rect x="${x+1}" y="${barY+2}" width="${Math.max(2,w-2)}" height="${barH}" rx="${rx}" fill="${col}" opacity="0.15"/>`;
+    h+=`<g class="task-bar" data-id="${t.id}"><rect x="${x+1}" y="${barY}" width="${Math.max(2,w-2)}" height="${barH}" rx="${rx}" fill="${col}" opacity="${isSub?0.55:1}" stroke="${sel?'rgba(0,0,0,0.25)':'none'}" stroke-width="${sel?2:0}"/>`;
+    if(t.progress>0&&t.progress<100){
+      const pw=Math.max(2,(t.progress/100)*(w-2));
+      h+=`<rect x="${x+1}" y="${barY}" width="${pw}" height="${barH}" rx="${rx}" fill="rgba(255,255,255,0.2)"/>`;
+      h+=`<line x1="${x+1+pw}" y1="${barY+2}" x2="${x+1+pw}" y2="${barY+barH-2}" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>`;
+    }
+    const fs=isSub?9:11;const mw=isSub?20:30;
+    if(w>mw){const mc=Math.floor((w-16)/(fs*0.58));const lbl=t.label.length>mc?t.label.slice(0,mc-1)+'…':t.label;h+=`<text x="${x+rx+4}" y="${cy}" font-size="${fs}" font-weight="600" fill="white" dy=".35em" style="pointer-events:none" font-family="-apple-system,sans-serif">${lbl}</text>`;}
     h+=`<rect class="handle" data-id="${t.id}" data-side="left" x="${x+1}" y="${barY}" width="${HANDLE_W}" height="${barH}" style="cursor:ew-resize;fill:transparent"/>`;
     h+=`<rect class="handle" data-id="${t.id}" data-side="right" x="${x+w-HANDLE_W-1}" y="${barY}" width="${HANDLE_W}" height="${barH}" style="cursor:ew-resize;fill:transparent"/>`;
     h+=`<rect data-id="${t.id}" data-drag="move" x="${x+HANDLE_W+1}" y="${barY}" width="${Math.max(0,w-HANDLE_W*2-2)}" height="${barH}" fill="transparent" style="cursor:grab"/></g>`;
@@ -1486,9 +1529,11 @@ function renderGantt(rows){
     r.task.deps.forEach(depId=>{
       const dep=taskMap[depId];if(!dep) return;
       const di=rows.findIndex(rr=>rr.type==='task'&&rr.task.id===depId);if(di<0) return;
-      const x1=diffDays(START_DATE,dep.end)*DAY_W+DAY_W/2;const y1=di*ROW_H+ROW_H/2;
-      const x2=diffDays(START_DATE,r.task.start)*DAY_W+DAY_W/2;const y2=i*ROW_H+ROW_H/2;
-      h+=`<path class="dep-line" d="M${x1},${y1} C${x1+14},${y1} ${x2-14},${y2} ${x2},${y2}" marker-end="url(#da)"/>`;
+      const x1=diffDays(START_DATE,dep.end)*DAY_W+DAY_W;
+      const y1=di*ROW_H+ROW_H/2;
+      const x2=diffDays(START_DATE,r.task.start)*DAY_W;
+      const y2=i*ROW_H+ROW_H/2;
+      h+=`<path class="dep-line" d="M${x1},${y1} C${x1+16},${y1} ${x2-16},${y2} ${x2},${y2}" marker-end="url(#da)"/>`;
     });
   });
   svg.innerHTML=h;
@@ -1669,8 +1714,8 @@ function openAddModal(projId){
   document.getElementById('f-prog').value=0;document.getElementById('f-prog-val').textContent='0%';
   document.getElementById('f-status').value='todo';
   document.getElementById('f-color').value=STATUS_TO_COLOR['todo'];
-  modalResources=[];selectedIcon='none';
-  renderResourceTags();buildResourcePool();buildIconGrid();onTypeChange();
+  modalResources=[];selectedIcon='none';modalDeps=[];
+  renderResourceTags();buildResourcePool();buildIconGrid();onTypeChange();buildDepsSelect();
   document.getElementById('modal-overlay').classList.add('open');
   setTimeout(()=>document.getElementById('f-name').focus(),100);
 }
@@ -1685,8 +1730,8 @@ function openEditModal(id){
   document.getElementById('f-prog').value=t.progress;document.getElementById('f-prog-val').textContent=t.progress+'%';
   document.getElementById('f-status').value=t.status==='milestone'?'todo':t.status;
   document.getElementById('f-color').value=STATUS_TO_COLOR[t.status]||t.color||'#378ADD';
-  modalResources=[...(t.resources||[])];selectedIcon=t.icon||'none';
-  renderResourceTags();buildResourcePool();buildIconGrid();onTypeChange();updateParentOptions();
+  modalResources=[...(t.resources||[])];selectedIcon=t.icon||'none';modalDeps=[...(t.deps||[])];
+  renderResourceTags();buildResourcePool();buildIconGrid();onTypeChange();updateParentOptions();renderDepTags();buildDepsSelect();
   if(t.parentId)document.getElementById('f-parent').value=t.parentId;
   document.getElementById('modal-overlay').classList.add('open');
 }
@@ -1701,11 +1746,11 @@ function saveModal(){
   const progress=parseInt(document.getElementById('f-prog').value)||0;
   const status=type==='milestone'?'milestone':document.getElementById('f-status').value;
   const color=STATUS_TO_COLOR[status]||document.getElementById('f-color').value;
-  const icon=selectedIcon;const resources=[...modalResources];
+  const icon=selectedIcon;const resources=[...modalResources];const deps=[...modalDeps];
   if(!name){document.getElementById('f-name').focus();return;}
   pushUndo();
-  if(editingId){const t=getT(editingId);if(t)Object.assign(t,{label:name,proj,parentId,start:startVal,end:endVal,progress,status,color,icon,resources,isMilestone:type==='milestone'});}
-  else getTasks().push({id:uid(),proj,label:name,start:startVal,end:endVal,progress,status,color,icon,resources,deps:[],parentId,isMilestone:type==='milestone',notes:''});
+  if(editingId){const t=getT(editingId);if(t)Object.assign(t,{label:name,proj,parentId,start:startVal,end:endVal,progress,status,color,icon,resources,deps,isMilestone:type==='milestone'});}
+  else getTasks().push({id:uid(),proj,label:name,start:startVal,end:endVal,progress,status,color,icon,resources,deps,parentId,isMilestone:type==='milestone',notes:''});
   closeModal();rerender();
 }
 
@@ -1728,6 +1773,65 @@ function showTip(e,id){
   tip.style.opacity='1';tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY-10)+'px';
 }
 function hideTip(){document.getElementById('tooltip').style.opacity='0'}
+
+// ─── VIEW SYSTEM ──────────────────────────────────────
+const VIEW_DAY_W = {day:28, week:14, month:7};
+let currentView = 'day';
+
+function setView(v){
+  currentView = v;
+  DAY_W = VIEW_DAY_W[v];
+  ['day','week','month'].forEach(n=>{
+    const b=document.getElementById('vbtn-'+n);
+    if(b) b.classList.toggle('active', n===v);
+  });
+  rerender();
+}
+
+// ─── DEPENDENCY MANAGEMENT ────────────────────────────
+let modalDeps = [];
+
+function buildDepsSelect(){
+  const projId = document.getElementById('f-proj').value;
+  const sel = document.getElementById('f-deps-select');
+  const available = getTasks().filter(t=>
+    t.proj===projId &&
+    t.id !== editingId &&
+    !modalDeps.includes(t.id) &&
+    !t.isMilestone
+  );
+  sel.innerHTML = '<option value="">+ Aggiungi dipendenza…</option>' +
+    available.map(t=>`<option value="${t.id}">${t.label}</option>`).join('');
+}
+
+function addDepFromSelect(){
+  const sel = document.getElementById('f-deps-select');
+  const val = sel.value;
+  if(!val) return;
+  if(!modalDeps.includes(val)) modalDeps.push(val);
+  sel.value = '';
+  renderDepTags();
+  buildDepsSelect();
+}
+
+function removeDep(id){
+  modalDeps = modalDeps.filter(d=>d!==id);
+  renderDepTags();
+  buildDepsSelect();
+}
+
+function renderDepTags(){
+  const wrap = document.getElementById('f-deps-tags');
+  wrap.innerHTML = modalDeps.map(id=>{
+    const t = getT(id);
+    const col = STATUS_COLOR_MAP[t?.status]||'#94A3B8';
+    return `<div class="res-tag">
+      <div style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0"></div>
+      ${t?t.label:id}
+      <span class="rm" onclick="removeDep('${id}')">&times;</span>
+    </div>`;
+  }).join('');
+}
 
 function toggleNav(){
   const nav=document.getElementById('left-nav');
@@ -2424,7 +2528,7 @@ document.getElementById('notes-overlay').addEventListener('click',e=>{if(e.targe
 
 document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
 document.getElementById('demote-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeDemote()});
-document.getElementById('f-proj').addEventListener('change',updateParentOptions);
+document.getElementById('f-proj').addEventListener('change',()=>{updateParentOptions();buildDepsSelect()});
 document.getElementById('f-status').addEventListener('change',applyStatusColor);
 </script>
 </body>
