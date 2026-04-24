@@ -148,10 +148,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 
 /* ── STATS BAR ────────────────────────────── */
 #stats-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.stat-chip{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:var(--fw-label);border:0.5px solid transparent;cursor:default}
-.stat-num{font-size:16px;font-weight:700;line-height:1}
-.stat-label{font-size:11px;font-weight:400;color:var(--text2)}
-.stat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.stat-chip{display:flex;align-items:center;gap:5px;padding:0;font-size:12px;font-weight:var(--fw-label);cursor:default}
+.stat-num{font-size:13px;font-weight:700;line-height:1;color:var(--text)}
+.stat-label{font-size:12px;font-weight:400;color:var(--text2)}
+.stat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+#stats-bar{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
 .logout-btn{background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;padding:3px 6px;border-radius:4px}
 .logout-btn:hover{background:var(--red-light);color:var(--red)}
 .toolbar{display:flex;align-items:center;gap:7px;margin-bottom:10px;flex-wrap:wrap}
@@ -1920,7 +1921,13 @@ function buildEffortStars(val){
     s.className='effort-star';
     const filled=i<=val;
     const c=filled?EFFORT_COLORS[val]:'#D1D5DB';
-    s.innerHTML=`<svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 1l2.5 5.5H18l-4.5 4 1.5 6L10 13l-5 3.5 1.5-6L2 7h5.5z" fill="${filled?c:'none'}" stroke="${c}" stroke-width="1.2" stroke-linejoin="round"/></svg>`;
+    /* Rocket SVG — filled when active */
+    s.innerHTML=`<svg width="18" height="18" viewBox="0 0 24 24" fill="${filled?c:'none'}" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2C12 2 7 6 7 13l5 3 5-3c0-7-5-11-5-11z"/>
+      <path d="M7 13c-2 1-3 3-3 3l3 1"/>
+      <path d="M17 13c2 1 3 3 3 3l-3 1"/>
+      <circle cx="12" cy="10" r="1.5" fill="white" stroke="none"/>
+    </svg>`;
     s.onclick=(()=>{const v=i;return()=>{document.getElementById('f-effort').value=v;buildEffortStars(v);}})();
     s.onmouseenter=(()=>{const v=i;return()=>buildEffortStars(v);})();
     wrap.appendChild(s);
@@ -2050,26 +2057,26 @@ function renderStatsBar(){
   const standby = tks.filter(t=>t.status==='standby').length;
   const todo    = tks.filter(t=>t.status==='todo').length;
   bar.innerHTML=`
-    <div class="stat-chip" style="background:var(--bg2);border-color:var(--border)">
-      <span class="stat-num" style="color:var(--text)">${total}</span>
+    <div class="stat-chip">
+      <span class="stat-num">${total}</span>
       <span class="stat-label">Task totali</span>
     </div>
-    <div class="stat-chip" style="background:var(--status-ongoing-bg);border-color:rgba(91,76,245,.2)">
+    <div class="stat-chip">
       <span class="stat-dot" style="background:var(--status-ongoing)"></span>
       <span class="stat-num" style="color:var(--status-ongoing)">${ongoing}</span>
       <span class="stat-label">In corso</span>
     </div>
-    <div class="stat-chip" style="background:var(--status-done-bg);border-color:rgba(22,163,74,.2)">
+    <div class="stat-chip">
       <span class="stat-dot" style="background:var(--status-done)"></span>
       <span class="stat-num" style="color:var(--status-done)">${done}</span>
       <span class="stat-label">Completati</span>
     </div>
-    <div class="stat-chip" style="background:var(--status-standby-bg);border-color:rgba(217,119,6,.2)">
+    <div class="stat-chip">
       <span class="stat-dot" style="background:var(--status-standby)"></span>
       <span class="stat-num" style="color:var(--status-standby)">${standby}</span>
       <span class="stat-label">Stand-by</span>
     </div>
-    <div class="stat-chip" style="background:var(--status-todo-bg);border-color:rgba(148,163,184,.2)">
+    <div class="stat-chip">
       <span class="stat-dot" style="background:var(--status-todo)"></span>
       <span class="stat-num" style="color:var(--status-todo)">${todo}</span>
       <span class="stat-label">Non iniziati</span>
