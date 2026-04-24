@@ -12,69 +12,130 @@
 <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
 <style>
 :root {
-  --bg:#ffffff;--bg2:#f7f7f5;--bg3:#efefec;
-  --text:#1a1a18;--text2:#6b6b66;--text3:#9b9b96;
-  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.18);
-  --blue:#378ADD;--blue-dark:#185FA5;--blue-light:#E6F1FB;
-  --green:#639922;--green-light:#EAF3DE;
-  --amber:#EF9F27;--amber-light:#FAEEDA;
-  --red:#E24B4A;--red-light:#FCEBEB;
-  --purple:#534AB7;--gray:#B4B2A9;
-  --radius:8px;--radius-lg:12px;
+  /* Indigo Night — design tokens */
+  --bg:#ffffff;--bg2:#f8f7ff;--bg3:#f0effe;
+  --text:#1c1a2e;--text2:#6b6880;--text3:#a09db8;
+  --border:rgba(91,76,245,0.1);--border2:rgba(91,76,245,0.18);
+
+  /* Brand */
+  --indigo:#5B4CF5;--indigo-dark:#4338CA;--indigo-light:#EEF2FF;
+  /* Alias per compatibilità con il resto del codice */
+  --blue:var(--indigo);--blue-dark:var(--indigo-dark);--blue-light:var(--indigo-light);
+
+  /* Status tokens semantici */
+  --status-ongoing:#5B4CF5;    --status-ongoing-bg:#EEF2FF;
+  --status-done:#16A34A;       --status-done-bg:#DCFCE7;
+  --status-standby:#D97706;    --status-standby-bg:#FEF3C7;
+  --status-todo:#94A3B8;       --status-todo-bg:#F1F5F9;
+  --status-milestone:#7C3AED;  --status-milestone-bg:#F5F3FF;
+
+  /* Alias legacy */
+  --green:var(--status-done);       --green-light:var(--status-done-bg);
+  --amber:var(--status-standby);    --amber-light:var(--status-standby-bg);
+  --red:#EF4444;--red-light:#FEF2F2;
+  --purple:var(--status-milestone); --gray:var(--status-todo);
+
+  /* Nav */
+  --nav-bg:#1A1825;--nav-text:#c4c0d8;--nav-text-muted:#6b6880;
+  --nav-active-bg:rgba(91,76,245,.18);--nav-active-text:#a89ff9;
+  --nav-border:rgba(255,255,255,.07);
+  --nav-width:220px;
+
+  --radius:8px;--radius-lg:14px;
+
+  /* Font */
+  --fw-label:500;--fw-body:400;
 }
 @media(prefers-color-scheme:dark){
   :root{
-    --bg:#1e1e1c;--bg2:#252523;--bg3:#2c2c2a;
-    --text:#e8e8e2;--text2:#9b9b96;--text3:#6b6b66;
-    --border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.18);
-    --blue-light:#0c2a44;--green-light:#172904;
-    --amber-light:#2a1e04;--red-light:#2a0c0c;
+    --bg:#0f0e17;--bg2:#161423;--bg3:#1e1c2e;
+    --text:#e8e6f5;--text2:#9b98b8;--text3:#5c5a72;
+    --border:rgba(91,76,245,0.15);--border2:rgba(91,76,245,0.25);
+    --indigo-light:#1e1c3a;
+    --status-ongoing-bg:#1e1c3a; --status-done-bg:#0c2018;
+    --status-standby-bg:#2a1f04; --status-todo-bg:#1a1825;
+    --status-milestone-bg:#1e1630;
+    --nav-bg:#0c0b14;
+    --blue-light:#1e1c3a;--green-light:#0c2018;
+    --amber-light:#2a1f04;--red-light:#2d0f0f;
   }
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:13px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13px;font-weight:var(--fw-body)}
 
 /* ── AUTH SCREENS ─────────────────────────── */
-#auth-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:var(--bg2)}
-.auth-card{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:36px 32px;width:100%;max-width:400px}
+#auth-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:var(--nav-bg)}
+.auth-card{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:36px 32px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
 .auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
 .auth-logo svg{flex-shrink:0}
 .auth-logo span{font-size:18px;font-weight:600;color:var(--text)}
-.auth-card h2{font-size:16px;font-weight:500;margin-bottom:6px}
+.auth-card h2{font-size:16px;font-weight:600;margin-bottom:6px}
 .auth-card p{font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.5}
 .auth-field{margin-bottom:14px}
 .auth-field label{display:block;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
 .auth-field input{width:100%;padding:9px 12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-size:14px;outline:none;transition:border-color .15s}
-.auth-field input:focus{border-color:var(--blue)}
-.auth-btn{width:100%;padding:10px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;margin-top:8px;transition:background .15s}
-.auth-btn:hover{background:var(--blue-dark)}
+.auth-field input:focus{border-color:var(--indigo)}
+.auth-btn{width:100%;padding:10px;background:var(--indigo);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;transition:background .15s}
+.auth-btn:hover{background:var(--indigo-dark)}
 .auth-btn:disabled{background:var(--gray);cursor:not-allowed}
 .auth-err{background:var(--red-light);color:var(--red);border-radius:var(--radius);padding:9px 12px;font-size:13px;margin-bottom:14px;display:none}
-.auth-info{background:var(--blue-light);color:var(--blue-dark);border-radius:var(--radius);padding:9px 12px;font-size:13px;margin-bottom:14px;line-height:1.5}
+.auth-info{background:var(--indigo-light);color:var(--indigo-dark);border-radius:var(--radius);padding:9px 12px;font-size:13px;margin-bottom:14px;line-height:1.5}
 .qr-wrap{text-align:center;margin:16px 0}
 .qr-wrap img{width:180px;height:180px;border:1px solid var(--border2);border-radius:var(--radius);padding:8px;background:#fff}
 .otp-input{text-align:center;font-size:28px;font-weight:600;letter-spacing:10px;padding:12px;border:0.5px solid var(--border2);border-radius:var(--radius);width:100%;background:var(--bg);color:var(--text);outline:none}
-.otp-input:focus{border-color:var(--blue)}
+.otp-input:focus{border-color:var(--indigo)}
 .auth-back{background:none;border:none;color:var(--text2);font-size:13px;cursor:pointer;margin-top:12px;text-decoration:underline;display:block;text-align:center}
 .auth-back:hover{color:var(--text)}
 .auth-divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--text3);font-size:12px}
 .auth-divider::before,.auth-divider::after{content:'';flex:1;height:0.5px;background:var(--border2)}
 
-/* ── APP ──────────────────────────────────── */
-#app-wrap{display:none}
-.app{padding:14px 16px}
-.header-bar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-.header-bar h1{font-size:17px;font-weight:600;margin:0}
-.spacer{flex:1}
-.user-chip{display:flex;align-items:center;gap:8px;background:var(--bg2);border:0.5px solid var(--border);border-radius:20px;padding:4px 12px 4px 6px;font-size:12px;color:var(--text2)}
-.user-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;background:var(--blue);flex-shrink:0}
+/* ── APP SHELL ────────────────────────────── */
+#app-wrap{display:none;height:100vh;overflow:hidden}
+.app-shell{display:flex;height:100vh;overflow:hidden}
+
+/* ── LEFT NAV ─────────────────────────────── */
+#left-nav{width:var(--nav-width);flex-shrink:0;background:var(--nav-bg);display:flex;flex-direction:column;border-right:0.5px solid var(--nav-border);overflow-y:auto;overflow-x:hidden}
+.nav-brand{display:flex;align-items:center;gap:10px;padding:16px 16px 12px;border-bottom:0.5px solid var(--nav-border)}
+.nav-brand-icon{width:30px;height:30px;border-radius:8px;background:var(--indigo);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-brand-name{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.01em}
+.nav-section{padding:12px 10px 4px;font-size:10px;font-weight:700;color:var(--nav-text-muted);text-transform:uppercase;letter-spacing:.08em}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--radius);cursor:pointer;color:var(--nav-text);font-size:12px;font-weight:500;transition:all .12s;margin:1px 6px;text-decoration:none}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-item.active{background:var(--nav-active-bg);color:var(--nav-active-text)}
+.nav-item svg{flex-shrink:0;opacity:.7}
+.nav-item.active svg{opacity:1}
+.nav-item-badge{margin-left:auto;background:rgba(91,76,245,.35);color:var(--nav-active-text);font-size:10px;padding:1px 6px;border-radius:8px;font-weight:600}
+.nav-proj-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.nav-divider{height:0.5px;background:var(--nav-border);margin:8px 12px}
+.nav-bottom{margin-top:auto;padding:10px 6px;border-top:0.5px solid var(--nav-border)}
+.nav-user{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius);cursor:pointer;color:var(--nav-text);font-size:12px}
+.nav-user:hover{background:rgba(255,255,255,.06)}
+.nav-user-avatar{width:26px;height:26px;border-radius:50%;background:var(--indigo);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.nav-user-info{flex:1;min-width:0}
+.nav-user-email{font-size:11px;color:var(--nav-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-user-role{font-size:10px;color:var(--nav-text-muted)}
+.nav-logout{background:none;border:none;color:var(--nav-text-muted);cursor:pointer;font-size:11px;padding:2px 6px;border-radius:4px}
+.nav-logout:hover{color:#EF4444}
+
+/* ── MAIN CONTENT ─────────────────────────── */
+#main-content{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+#main-topbar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:0.5px solid var(--border);flex-shrink:0;min-height:48px;background:var(--bg)}
+#main-topbar h2{font-size:15px;font-weight:700;color:var(--text)}
+#main-scroll{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:0}
+
+/* ── STATS BAR ────────────────────────────── */
+#stats-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.stat-chip{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:var(--fw-label);border:0.5px solid transparent;cursor:default}
+.stat-num{font-size:16px;font-weight:700;line-height:1}
+.stat-label{font-size:11px;font-weight:400;color:var(--text2)}
+.stat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .logout-btn{background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;padding:3px 6px;border-radius:4px}
 .logout-btn:hover{background:var(--red-light);color:var(--red)}
-.toolbar{display:flex;align-items:center;gap:7px;margin-bottom:12px;flex-wrap:wrap}
-.btn{font-size:12px;padding:0 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);cursor:pointer;height:30px;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;transition:background .15s}
-.btn:hover{background:var(--bg2)}
-.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue-dark)}
-.btn.primary:hover{background:var(--blue-dark)}
+.toolbar{display:flex;align-items:center;gap:7px;margin-bottom:10px;flex-wrap:wrap}
+.btn{font-size:12px;padding:0 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);cursor:pointer;height:30px;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;transition:all .15s;font-weight:var(--fw-label)}
+.btn:hover{background:var(--bg2);border-color:var(--indigo)}
+.btn.primary{background:var(--indigo);color:#fff;border-color:var(--indigo-dark);box-shadow:0 2px 8px rgba(91,76,245,.3)}
+.btn.primary:hover{background:var(--indigo-dark)}
 .btn-group{display:flex;border:0.5px solid var(--border2);border-radius:var(--radius);overflow:hidden}
 .btn-group .btn{border:none;border-radius:0;border-right:0.5px solid var(--border2)}
 .btn-group .btn:last-child{border-right:none}
@@ -199,19 +260,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .avatar-row{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
 .avatar{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;background:var(--blue);flex-shrink:0}
 /* ── PAGES TABS ─────────────────────────── */
-#pages-bar{display:flex;align-items:center;gap:6px;margin-bottom:12px;border-bottom:0.5px solid var(--border2);padding-bottom:10px;flex-wrap:wrap}
-#page-tabs{display:flex;flex-wrap:wrap;gap:6px}
-.page-tab{font-size:12px;padding:5px 10px 5px 14px;border:0.5px solid var(--border2);border-radius:20px;background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
-.page-tab:hover{background:var(--bg3);color:var(--text)}
-.page-tab.active{background:var(--blue);color:#fff;border-color:var(--blue-dark);font-weight:500}
+#pages-bar{display:flex;align-items:center;gap:5px;margin-bottom:10px;flex-wrap:wrap}
+#page-tabs{display:flex;flex-wrap:wrap;gap:5px}
+.page-tab{font-size:12px;padding:5px 10px 5px 14px;border:0.5px solid var(--border2);border-radius:20px;background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;font-weight:var(--fw-label)}
+.page-tab:hover{background:var(--bg3);color:var(--text);border-color:var(--indigo)}
+.page-tab.active{background:var(--indigo);color:#fff;border-color:var(--indigo-dark);font-weight:600;box-shadow:0 2px 8px rgba(91,76,245,.25)}
 .tab-rename{font-size:11px;opacity:0;background:none;border:none;color:inherit;cursor:pointer;padding:1px 3px;border-radius:3px;transition:opacity .15s;line-height:1}
 .page-tab:hover .tab-rename{opacity:.7}
 .page-tab:hover .tab-rename:hover{opacity:1;background:rgba(0,0,0,.12)}
 .page-tab .tab-del{font-size:11px;opacity:0;line-height:1;background:none;border:none;color:inherit;cursor:pointer;padding:1px 3px;border-radius:3px;transition:opacity .15s}
 .page-tab:hover .tab-del{opacity:.7}
 .page-tab:hover .tab-del:hover{opacity:1;background:rgba(0,0,0,.12)}
-.page-tab-add{font-size:18px;width:28px;height:28px;border-radius:50%;border:0.5px dashed var(--border2);background:transparent;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
-.page-tab-add:hover{border-color:var(--blue);color:var(--blue)}
+.page-tab-add{font-size:16px;width:28px;height:28px;border-radius:50%;border:1px dashed var(--border2);background:transparent;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.page-tab-add:hover{border-color:var(--indigo);color:var(--indigo)}
 /* Mobile: tabs in verticale */
 @media(max-width:600px){
   #pages-bar{flex-direction:column;align-items:stretch}
@@ -220,6 +281,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   .tab-rename,.tab-del{opacity:.6!important}
   .page-tab-add{width:100%;border-radius:var(--radius);height:34px}
 }
+/* Skeleton loader */
+#gantt-skeleton{display:none}
+.skel-row{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--border)}
+.skel-block{background:linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-label{width:130px;height:11px}
+.skel-bar{height:18px;border-radius:8px}
+/* Empty state */
+#gantt-empty{display:none;padding:60px 20px;text-align:center}
+#gantt-empty svg{margin:0 auto 14px;display:block;opacity:.3}
+#gantt-empty h3{font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px}
+#gantt-empty p{font-size:13px;color:var(--text3);margin-bottom:18px}
 
 /* ── RESOURCE POOL PICKER ───────────────── */
 .res-pool-wrap{margin-top:6px}
@@ -227,8 +300,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .res-pool-category:first-child{margin-top:0}
 .res-pool-grid{display:flex;flex-wrap:wrap;gap:5px}
 .res-pill{display:flex;align-items:center;gap:4px;padding:4px 10px 4px 6px;border:0.5px solid var(--border2);border-radius:12px;cursor:pointer;font-size:12px;background:var(--bg2);color:var(--text2);transition:all .12s;user-select:none}
-.res-pill:hover{border-color:var(--blue);color:var(--text)}
-.res-pill.selected{background:var(--blue-light);border-color:var(--blue);color:var(--blue-dark);font-weight:500}
+.res-pill:hover{border-color:var(--indigo);color:var(--text)}
+.res-pill.selected{background:var(--indigo-light);border-color:var(--indigo);color:var(--indigo-dark);font-weight:500}
 .res-pill .res-pill-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 
 /* ── WORKLOAD PANEL ─────────────────────── */
@@ -238,7 +311,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .wl-filter{font-size:12px;padding:4px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);height:28px}
 .wl-category-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 8px;padding-bottom:4px;border-bottom:0.5px solid var(--border)}
 .wl-category-title:first-of-type{margin-top:0}
-.wl-resource-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:6px}
+.wl-resource-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:6px;transition:border-color .12s}
+.wl-resource-card:hover{border-color:var(--indigo)}
 .wl-res-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .wl-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
 .wl-res-name{font-size:13px;font-weight:500;flex:1}
@@ -290,17 +364,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 @keyframes fadeOutToast{from{opacity:1}to{opacity:0;transform:translateY(10px)}}
 
 /* ── RESPONSIVE ──────────────────────────── */
-
-/* Tablet (768–1200px) */
 @media(max-width:1200px){
+  :root{--nav-width:200px}
   #sidebar{width:240px}
   .sb-head-task{font-size:10px}
-  .app{padding:10px 12px}
-  .header-bar h1{font-size:15px}
 }
-
-/* Tablet stretto / Mobile landscape (max 900px) */
 @media(max-width:900px){
+  :root{--nav-width:180px}
   #sidebar{width:200px}
   .sb-row{font-size:11px}
   .sb-head-pct{width:40px}
@@ -310,47 +380,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   .btn-group .btn{height:28px}
   #gantt-outer #detail-panel.open{width:200px}
   .dg{font-size:11px}
+  .nav-brand-name{font-size:13px}
 }
-
-/* Mobile portrait (max 600px) */
 @media(max-width:600px){
-  .app{padding:8px 8px}
-  .header-bar{gap:6px;margin-bottom:8px}
-  .header-bar h1{font-size:14px}
+  #left-nav{display:none}
+  #main-content{width:100%}
+  #main-scroll{padding:8px}
+  #main-topbar{padding:8px 10px}
   #today-label{display:none}
   #save-status{display:none!important}
-  .user-chip{padding:3px 8px 3px 4px}
-  #user-email-label{display:none}
-
-  /* Toolbar su due righe */
   .toolbar{flex-wrap:wrap;gap:5px}
-  .toolbar .btn-group{order:3;width:100%}
-  .toolbar .btn-group .btn{flex:1;justify-content:center}
+  .toolbar .btn-group:last-of-type{order:3;width:100%}
+  .toolbar .btn-group:last-of-type .btn{flex:1;justify-content:center}
   .toolbar>span{display:none}
-
-  /* Sidebar ridotta */
   #sidebar{width:160px}
   .sb-head-pct{width:34px}
   .sb-pct-cell{width:34px}
   .pct-badge{font-size:10px;padding:1px 4px}
   .row-label{font-size:11px}
-
-  /* Modali a schermo intero su mobile */
   .modal-backdrop{padding-top:0;align-items:flex-end}
   .modal{width:100%!important;max-width:100%!important;border-radius:var(--radius-lg) var(--radius-lg) 0 0;max-height:90vh}
-  #notes-modal{max-height:95vh}
-  #workload-modal{max-height:95vh}
-  #res-manager-modal{max-height:95vh}
-
-  /* Detail panel sotto invece che a lato su mobile */
+  #notes-modal,#workload-modal,#res-manager-modal{max-height:95vh}
   #gantt-outer{flex-direction:column}
   #gantt-outer #gantt-container{border-radius:var(--radius-lg)!important}
   #detail-panel{width:100%!important;border-radius:0 0 var(--radius-lg) var(--radius-lg)!important;border-left:0.5px solid var(--border2)!important;border-top:none!important}
   #detail-panel.open{width:100%!important;padding:12px}
-
-  /* Legenda compatta */
   #legend{gap:8px;font-size:10px}
   .leg-sw,.leg-dia{width:9px;height:9px}
+  #stats-bar{gap:5px}
+  .stat-chip{padding:4px 8px}
+  .stat-num{font-size:13px}
 }
 </style>
 <body>
@@ -444,24 +503,75 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
      MAIN APP
 ══════════════════════════════════════ -->
 <div id="app-wrap">
-<div class="app">
+<div class="app-shell">
 
-<div class="header-bar">
-  <h1>Project Planner</h1>
-  <span style="font-size:11px;color:var(--text3)" id="today-label"></span>
-  <span id="save-status" style="font-size:11px;display:none;align-items:center;gap:5px"></span>
-  <div class="spacer"></div>
-  <div class="user-chip">
-    <div class="user-avatar" id="user-avatar">?</div>
-    <span id="user-email-label">—</span>
-    <button class="logout-btn" onclick="doLogout()" title="Esci">Esci</button>
+<!-- LEFT NAV -->
+<nav id="left-nav">
+  <div class="nav-brand">
+    <div class="nav-brand-icon">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2.5" rx="1.25" fill="white"/><rect x="1" y="7" width="9" height="2.5" rx="1.25" fill="white" opacity=".7"/><rect x="1" y="11" width="11" height="2.5" rx="1.25" fill="white" opacity=".5"/></svg>
+    </div>
+    <span class="nav-brand-name">Planner</span>
   </div>
+
+  <div class="nav-section">Workspace</div>
+  <a class="nav-item active">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="12" height="2" rx="1" fill="currentColor" opacity=".5"/><rect x="1" y="6" width="8" height="2" rx="1" fill="currentColor"/><rect x="1" y="10" width="10" height="2" rx="1" fill="currentColor" opacity=".7"/></svg>
+    Gantt
+  </a>
+  <a class="nav-item" style="opacity:.35;cursor:not-allowed">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1.5" stroke="currentColor" stroke-width="1.2" fill="none"/><rect x="8" y="1" width="5" height="5" rx="1.5" stroke="currentColor" stroke-width="1.2" fill="none"/><rect x="1" y="8" width="5" height="5" rx="1.5" stroke="currentColor" stroke-width="1.2" fill="none"/><rect x="8" y="8" width="5" height="5" rx="1.5" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+    Board <span style="font-size:9px;color:var(--nav-text-muted);margin-left:2px">soon</span>
+  </a>
+
+  <div class="nav-divider"></div>
+  <div class="nav-section">Progetti</div>
+  <div id="nav-projects-list"></div>
+  <a class="nav-item" onclick="addPage()" style="color:var(--nav-text-muted)">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Nuovo progetto
+  </a>
+
+  <div class="nav-divider"></div>
+  <div class="nav-section">Team</div>
+  <a class="nav-item" onclick="openWorkloadPanel()">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="7" width="3" height="6" rx="1" fill="currentColor" opacity=".6"/><rect x="5.5" y="4" width="3" height="9" rx="1" fill="currentColor"/><rect x="10" y="2" width="3" height="11" rx="1" fill="currentColor" opacity=".8"/></svg>
+    Workload
+  </a>
+  <a class="nav-item" onclick="openResManager()">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="5" cy="4.5" r="2.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M1 12c0-2.5 1.8-4 4-4s4 1.5 4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><circle cx="10.5" cy="4" r="1.8" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M10 7.5c1.5 0 3 1 3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>
+    Roster
+  </a>
+
+  <div class="nav-bottom">
+    <span id="save-status" style="font-size:11px;display:none;align-items:center;gap:5px;padding:4px 10px;margin-bottom:4px;color:var(--nav-text)"></span>
+    <div class="nav-user">
+      <div class="nav-user-avatar" id="user-avatar">?</div>
+      <div class="nav-user-info">
+        <div class="nav-user-email" id="user-email-label">—</div>
+        <div class="nav-user-role">Member</div>
+      </div>
+      <button class="nav-logout" onclick="doLogout()" title="Esci">⏻</button>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div id="main-content">
+<div id="main-topbar">
+  <h2 id="main-title">Gantt</h2>
+  <span style="font-size:11px;color:var(--text3);margin-left:8px" id="today-label"></span>
+  <div style="flex:1"></div>
 </div>
+
+<div id="main-scroll">
 
 <div id="pages-bar">
   <div id="page-tabs"></div>
   <button class="page-tab-add" onclick="addPage()" title="Nuova pagina">+</button>
 </div>
+
+<div id="stats-bar"></div>
 
 <div class="toolbar">
   <div class="btn-group">
@@ -472,20 +582,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     Aggiungi task
   </button>
-  <button class="btn" onclick="openWorkloadPanel()">
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="5" r="2.5" stroke="currentColor" stroke-width="1.1" fill="none"/><path d="M1.5 12c0-2.8 2.2-4.5 5-4.5s5 1.7 5 4.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M9 5.5h2.5M10.5 4.5v2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
-    Risorse
-  </button>
-  <button class="btn" onclick="openResManager()">
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="4.5" cy="4" r="2" stroke="currentColor" stroke-width="1.1" fill="none"/><circle cx="9" cy="4" r="2" stroke="currentColor" stroke-width="1.1" fill="none"/><path d="M1 11c0-2 1.6-3 3.5-3M7 11c0-2 1.6-3 3.5-3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M6 7.5v3M4.5 9h3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
-    Roster
-  </button>
   <div class="btn-group">
     <button class="btn" onclick="exportPDF()">
-      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="2" stroke="#E24B4A" stroke-width="1"/><path d="M4 4h3.5a1.5 1.5 0 010 3H4V4zM4 7h5" stroke="#E24B4A" stroke-width="1.1" stroke-linecap="round"/></svg>PDF
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="2" stroke="var(--red)" stroke-width="1"/><path d="M4 4h3.5a1.5 1.5 0 010 3H4V4zM4 7h5" stroke="var(--red)" stroke-width="1.1" stroke-linecap="round"/></svg>PDF
     </button>
     <button class="btn" onclick="exportPNG()">
-      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="2" stroke="#378ADD" stroke-width="1"/><circle cx="4.5" cy="4.5" r="1" fill="#378ADD"/><path d="M1 9l3-3 2 2 2-2.5 3 3.5" stroke="#378ADD" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>PNG
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="2" stroke="var(--indigo)" stroke-width="1"/><circle cx="4.5" cy="4.5" r="1" fill="var(--indigo)"/><path d="M1 9l3-3 2 2 2-2.5 3 3.5" stroke="var(--indigo)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>PNG
     </button>
   </div>
   <span style="font-size:11px;color:var(--text3);margin-left:auto">Trascina · Maniglie per ridimensionare</span>
@@ -493,13 +595,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div id="legend">
   <span style="font-weight:600">Legenda:</span>
-  <div class="leg-item"><div class="leg-sw" style="background:#378ADD"></div>On-going</div>
-  <div class="leg-item"><div class="leg-sw" style="background:#639922"></div>Done</div>
-  <div class="leg-item"><div class="leg-sw" style="background:#EF9F27"></div>Stand-by</div>
-  <div class="leg-item"><div class="leg-sw" style="background:#B4B2A9"></div>Not started</div>
-  <div class="leg-item"><div class="leg-dia" style="background:#534AB7"></div>Milestone</div>
-  <div class="leg-item"><div class="leg-sw" style="background:#C8DCEF;border:0.5px solid #aac"></div>Weekend</div>
+  <div class="leg-item"><div class="leg-sw" style="background:var(--status-ongoing)"></div>On-going</div>
+  <div class="leg-item"><div class="leg-sw" style="background:var(--status-done)"></div>Done</div>
+  <div class="leg-item"><div class="leg-sw" style="background:var(--status-standby)"></div>Stand-by</div>
+  <div class="leg-item"><div class="leg-sw" style="background:var(--status-todo)"></div>Not started</div>
+  <div class="leg-item"><div class="leg-dia" style="background:var(--status-milestone)"></div>Milestone</div>
+  <div class="leg-item"><div class="leg-sw" style="background:#C0D8EF;border:0.5px solid #a0b8d8"></div>Weekend</div>
   <div class="leg-item"><div class="leg-sw" style="background:#fce8e8;border:0.5px solid #daa"></div>Festività</div>
+</div>
+
+<!-- Skeleton loader -->
+<div id="gantt-skeleton">
+  <div style="border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;padding:14px 16px">
+    <div class="skel-row"><div class="skel-block skel-label"></div><div class="skel-block skel-bar" style="width:180px;margin-left:20px"></div></div>
+    <div class="skel-row"><div class="skel-block skel-label" style="width:150px"></div><div class="skel-block skel-bar" style="width:240px;margin-left:60px"></div></div>
+    <div class="skel-row"><div class="skel-block skel-label" style="width:100px"></div><div class="skel-block skel-bar" style="width:160px;margin-left:40px"></div></div>
+    <div class="skel-row"><div class="skel-block skel-label" style="width:170px"></div><div class="skel-block skel-bar" style="width:200px;margin-left:100px"></div></div>
+    <div class="skel-row"><div class="skel-block skel-label" style="width:120px"></div><div class="skel-block skel-bar" style="width:140px;margin-left:80px"></div></div>
+  </div>
+</div>
+
+<!-- Empty state -->
+<div id="gantt-empty">
+  <svg width="64" height="64" viewBox="0 0 64 64" fill="none"><rect x="8" y="16" width="48" height="36" rx="6" stroke="var(--text3)" stroke-width="2" fill="none"/><path d="M8 26h48" stroke="var(--text3)" stroke-width="1.5"/><path d="M20 36h12M20 43h8" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/><circle cx="48" cy="42" r="10" fill="var(--indigo)" opacity=".12" stroke="var(--indigo)" stroke-width="1.5"/><path d="M48 38v4M46 42h4" stroke="var(--indigo)" stroke-width="1.5" stroke-linecap="round"/></svg>
+  <h3>Nessun task ancora</h3>
+  <p>Aggiungi il primo task per iniziare a pianificare questo progetto.</p>
+  <button class="btn primary" onclick="openAddModal(null)" style="margin:0 auto;height:34px;padding:0 18px;font-size:13px">
+    <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Aggiungi il primo task
+  </button>
 </div>
 
 <div id="gantt-outer">
@@ -538,6 +662,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div id="tooltip"></div>
 
+</div><!-- #main-scroll -->
+</div><!-- #main-content -->
+</div><!-- .app-shell -->
+
+<!-- MODALS (outside app-shell to avoid stacking context issues) -->
+
 <!-- ADD/EDIT MODAL -->
 <div class="modal-backdrop" id="modal-overlay">
   <div class="modal">
@@ -574,7 +704,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="form-row">
       <label>Colore barra</label>
       <div style="display:flex;gap:8px;align-items:center">
-        <input id="f-color" type="color" value="#378ADD" style="width:48px;flex-shrink:0">
+        <input id="f-color" type="color" value="#5B4CF5" style="width:48px;flex-shrink:0">
         <div style="display:flex;gap:5px;flex-wrap:wrap" id="color-presets"></div>
       </div>
     </div>
@@ -636,7 +766,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="modal-backdrop" id="notes-overlay">
   <div class="modal" id="notes-modal">
     <h3>
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M3 1h7l3 3v10H3V1z" stroke="var(--blue)" stroke-width="1.3" fill="none" stroke-linejoin="round"/><path d="M10 1v3h3M5 6h5M5 8.5h5M5 11h3" stroke="var(--blue)" stroke-width="1.1" stroke-linecap="round"/></svg>
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M3 1h7l3 3v10H3V1z" stroke="var(--indigo)" stroke-width="1.3" fill="none" stroke-linejoin="round"/><path d="M10 1v3h3M5 6h5M5 8.5h5M5 11h3" stroke="var(--indigo)" stroke-width="1.1" stroke-linecap="round"/></svg>
       <span id="notes-modal-title">Note</span>
     </h3>
     <div class="notes-subtitle" id="notes-modal-subtitle"></div>
@@ -645,11 +775,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="modal-btns">
       <div class="notes-export-btns">
-        <button class="btn" onclick="exportNotesWord()" title="Esporta in Word">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="#185FA5" stroke-width="1"/><path d="M3 4l1.5 4L6 5l1.5 3L9 4" stroke="#185FA5" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>Word
+        <button class="btn" onclick="exportNotesWord()">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="var(--indigo-dark)" stroke-width="1"/><path d="M3 4l1.5 4L6 5l1.5 3L9 4" stroke="var(--indigo-dark)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>Word
         </button>
-        <button class="btn" onclick="exportNotesPDF()" title="Esporta in PDF">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="#E24B4A" stroke-width="1"/><path d="M3.5 3.5h3a1.5 1.5 0 010 3H3.5V3.5zM3.5 6.5h5" stroke="#E24B4A" stroke-width="1" stroke-linecap="round"/></svg>PDF
+        <button class="btn" onclick="exportNotesPDF()">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="var(--red)" stroke-width="1"/><path d="M3.5 3.5h3a1.5 1.5 0 010 3H3.5V3.5zM3.5 6.5h5" stroke="var(--red)" stroke-width="1" stroke-linecap="round"/></svg>PDF
         </button>
       </div>
       <button class="btn" onclick="closeNotesModal()">Annulla</button>
@@ -658,7 +788,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
-</div><!-- .app -->
 </div><!-- #app-wrap -->
 
 <script>
@@ -775,8 +904,13 @@ async function enterApp() {
   document.getElementById('user-avatar').textContent = email.slice(0,2).toUpperCase();
   document.getElementById('auth-wrap').style.display = 'none';
   document.getElementById('app-wrap').style.display = 'block';
+  /* Show skeleton while loading */
+  document.getElementById('gantt-skeleton').style.display = 'block';
+  document.getElementById('gantt-outer').style.display = 'none';
+  document.getElementById('gantt-empty').style.display = 'none';
   await loadFromSupabase();
   await subscribeRealtime();
+  document.getElementById('gantt-skeleton').style.display = 'none';
   rerender();
   handleDeepLink();
 }
@@ -868,7 +1002,7 @@ function iconSVG(key,size=12,color='currentColor'){
 }
 
 // Build color presets
-const COLOR_PRESETS=['#378ADD','#639922','#534AB7','#EF9F27','#E24B4A','#D4537E','#1D9E75','#888780'];
+const COLOR_PRESETS=['#5B4CF5','#16A34A','#7C3AED','#D97706','#EF4444','#D4537E','#0891B2','#94A3B8'];
 const cpWrap=document.getElementById('color-presets');
 COLOR_PRESETS.forEach(c=>{
   const d=document.createElement('div');
@@ -1088,6 +1222,27 @@ async function showRealtimeToast(userId){
 }
 
 const SL={todo:'Not started',active:'On-going',standby:'Stand-by',done:'Done',milestone:'Milestone'};
+/* Status semantic color tokens — matches CSS vars */
+const STATUS_COLOR_MAP={
+  todo:    '#94A3B8',
+  active:  '#5B4CF5',
+  standby: '#D97706',
+  done:    '#16A34A',
+  milestone:'#7C3AED'
+};
+const STATUS_TO_COLOR={
+  todo:    '#94A3B8',
+  active:  '#5B4CF5',
+  standby: '#D97706',
+  done:    '#16A34A',
+  milestone:'#7C3AED'
+};
+const STATUS_BG={
+  todo:'#F1F5F9',active:'#EEF2FF',standby:'#FEF3C7',done:'#DCFCE7',milestone:'#F5F3FF'
+};
+const STATUS_TEXT={
+  todo:'#475569',active:'#4338CA',standby:'#92400E',done:'#15803D',milestone:'#5B21B6'
+};
 let dragState=null,selectedTask=null,editingId=null,demoteTarget=null;
 let modalResources=[],selectedIcon='none';
 const svgW=()=>TOTAL_DAYS*DAY_W;
@@ -1161,10 +1316,8 @@ function buildRows(){
 
 // ─── PCT BADGE ────────────────────────────────────────
 function pctBadge(p,status){
-  let bg='#f0f0f0',fg='#555';
-  if(p===100||status==='done'){bg='#EAF3DE';fg='#3B6D11';}
-  else if(status==='standby'){bg='#FAEEDA';fg='#854F0B';}
-  else if(p>0){bg='#E6F1FB';fg='#185FA5';}
+  const bg = STATUS_BG[status] || '#F1F5F9';
+  const fg = STATUS_TEXT[status] || '#475569';
   return `<span class="pct-badge" style="background:${bg};color:${fg}">${p}%</span>`;
 }
 function avatarInitials(nameOrId){
@@ -1445,18 +1598,10 @@ function renderResourceTags(){
   }).join('');
 }
 
-/* Colori automatici per stato */
-const STATUS_TO_COLOR={
-  todo:    '#B4B2A9',
-  active:  '#378ADD',
-  standby: '#EF9F27',
-  done:    '#639922',
-  milestone:'#534AB7'
-};
-
+/* applyStatusColor usa STATUS_TO_COLOR definito sopra */
 function applyStatusColor(){
   const status=document.getElementById('f-status').value;
-  const col=STATUS_TO_COLOR[status]||'#378ADD';
+  const col=STATUS_TO_COLOR[status]||'#5B4CF5';
   document.getElementById('f-color').value=col;
 }
 function onTypeChange(){
@@ -1546,8 +1691,75 @@ function hideTip(){document.getElementById('tooltip').style.opacity='0'}
 
 function zoom(dir){DAY_W=Math.max(12,Math.min(60,DAY_W+dir*4));rerender()}
 
-function rerenderOnly(){syncPageData();const rows=buildRows();renderPageTabs();renderSidebar(rows);renderHeader();renderGantt(rows);}
+function rerenderOnly(){
+  syncPageData();
+  const rows=buildRows();
+  renderPageTabs();
+  renderNavProjects();
+  renderSidebar(rows);
+  renderHeader();
+  renderGantt(rows);
+  renderStatsBar();
+  /* Show/hide gantt vs empty state */
+  const hasTasks = getTasks().length > 0;
+  document.getElementById('gantt-outer').style.display = hasTasks ? 'flex' : 'none';
+  document.getElementById('gantt-empty').style.display = hasTasks ? 'none' : 'block';
+}
 function rerender(){rerenderOnly();scheduleSave();}
+
+/* Render project list in left nav */
+function renderNavProjects(){
+  const list = document.getElementById('nav-projects-list');
+  if(!list) return;
+  list.innerHTML = pages.map(pg=>{
+    const taskCount = pg.tasks.length;
+    const isActive = pg.id === currentPageId;
+    const col = pg.projects[0]?.color || '#5B4CF5';
+    return `<a class="nav-item${isActive?' active':''}" onclick="switchPage('${pg.id}')">
+      <div class="nav-proj-dot" style="background:${col}"></div>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${pg.label}</span>
+      ${taskCount>0?`<span class="nav-item-badge">${taskCount}</span>`:''}
+    </a>`;
+  }).join('');
+}
+
+/* Stats bar above gantt */
+function renderStatsBar(){
+  const bar = document.getElementById('stats-bar');
+  if(!bar) return;
+  const tks = getTasks().filter(t=>!t.isMilestone);
+  const total = tks.length;
+  if(!total){ bar.innerHTML=''; return; }
+  const ongoing = tks.filter(t=>t.status==='active').length;
+  const done    = tks.filter(t=>t.status==='done').length;
+  const standby = tks.filter(t=>t.status==='standby').length;
+  const todo    = tks.filter(t=>t.status==='todo').length;
+  bar.innerHTML=`
+    <div class="stat-chip" style="background:var(--bg2);border-color:var(--border)">
+      <span class="stat-num" style="color:var(--text)">${total}</span>
+      <span class="stat-label">Task totali</span>
+    </div>
+    <div class="stat-chip" style="background:var(--status-ongoing-bg);border-color:rgba(91,76,245,.2)">
+      <span class="stat-dot" style="background:var(--status-ongoing)"></span>
+      <span class="stat-num" style="color:var(--status-ongoing)">${ongoing}</span>
+      <span class="stat-label">In corso</span>
+    </div>
+    <div class="stat-chip" style="background:var(--status-done-bg);border-color:rgba(22,163,74,.2)">
+      <span class="stat-dot" style="background:var(--status-done)"></span>
+      <span class="stat-num" style="color:var(--status-done)">${done}</span>
+      <span class="stat-label">Completati</span>
+    </div>
+    <div class="stat-chip" style="background:var(--status-standby-bg);border-color:rgba(217,119,6,.2)">
+      <span class="stat-dot" style="background:var(--status-standby)"></span>
+      <span class="stat-num" style="color:var(--status-standby)">${standby}</span>
+      <span class="stat-label">Stand-by</span>
+    </div>
+    <div class="stat-chip" style="background:var(--status-todo-bg);border-color:rgba(148,163,184,.2)">
+      <span class="stat-dot" style="background:var(--status-todo)"></span>
+      <span class="stat-num" style="color:var(--status-todo)">${todo}</span>
+      <span class="stat-label">Non iniziati</span>
+    </div>`;
+}
 
 function exportXLSX(){
   try {
