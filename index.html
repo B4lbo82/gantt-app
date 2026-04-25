@@ -325,7 +325,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 #gantt-empty h3{font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px}
 #gantt-empty p{font-size:13px;color:var(--text3);margin-bottom:18px}
 
-/* ── EFFORT STARS ───────────────────────── */
+/* ── CUSTOM DATE PICKER ──────────────────── */
+.date-field-wrap{position:relative}
+.date-display{width:100%;padding:7px 10px 7px 34px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-size:13px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:6px;transition:border-color .15s;height:34px;box-sizing:border-box;user-select:none}
+.date-display:hover{border-color:var(--indigo)}
+.date-display.open{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(108,99,255,0.12)}
+.date-display-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text3)}
+.date-display-placeholder{color:var(--text3)}
+#dp-popup{position:fixed;background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);box-shadow:0 8px 32px rgba(0,0,0,0.14);z-index:9000;width:280px;padding:0;display:none;overflow:hidden}
+.dp-header{display:flex;align-items:center;padding:12px 14px 8px;gap:4px}
+.dp-nav{width:28px;height:28px;border:none;border-radius:50%;background:var(--bg2);color:var(--text2);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
+.dp-nav:hover{background:var(--indigo);color:#fff}
+.dp-month-year{flex:1;text-align:center;font-size:13px;font-weight:700;color:var(--text)}
+.dp-month-btn{background:none;border:none;cursor:pointer;font-size:13px;font-weight:700;color:var(--text);padding:0 2px;border-radius:4px;transition:color .12s}
+.dp-month-btn:hover{color:var(--indigo)}
+.dp-year-btn{background:none;border:none;cursor:pointer;font-size:13px;font-weight:700;color:var(--text2);padding:0 2px;border-radius:4px;transition:color .12s}
+.dp-year-btn:hover{color:var(--indigo)}
+.dp-weekdays{display:grid;grid-template-columns:repeat(7,1fr);padding:4px 10px 6px;border-bottom:0.5px solid var(--border)}
+.dp-weekday{text-align:center;font-size:10px;font-weight:700;color:var(--text3);padding:3px 0;text-transform:uppercase;letter-spacing:.04em}
+.dp-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:8px 10px 12px}
+.dp-day{height:32px;width:100%;border:none;border-radius:var(--radius);background:transparent;color:var(--text);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;font-weight:400}
+.dp-day:hover{background:var(--indigo-light);color:var(--indigo)}
+.dp-day.today{font-weight:700;color:var(--indigo)}
+.dp-day.selected{background:var(--indigo);color:#fff;font-weight:700}
+.dp-day.selected:hover{background:var(--indigo-dark)}
+.dp-day.other-month{color:var(--text3);opacity:.5}
+.dp-day.weekend{color:var(--indigo)}
+.dp-day.selected.weekend{color:#fff}
+.dp-day:disabled{opacity:.3;cursor:default}
+/* Year picker overlay */
+.dp-year-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:10px}
+.dp-year-item{height:34px;border:none;border-radius:var(--radius);background:var(--bg2);color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;transition:all .12s;display:flex;align-items:center;justify-content:center}
+.dp-year-item:hover{background:var(--indigo-light);color:var(--indigo)}
+.dp-year-item.selected{background:var(--indigo);color:#fff}
+
 .effort-star{width:24px;height:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:transform .1s}
 .effort-star:hover{transform:scale(1.2)}
 .effort-star svg{pointer-events:none}
@@ -764,8 +797,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <div class="form-row"><label>Inizio</label><input id="f-start" type="date"></div>
-      <div class="form-row" id="f-end-row"><label>Fine</label><input id="f-end" type="date"></div>
+      <div class="form-row">
+        <label>Inizio</label>
+        <div class="date-field-wrap">
+          <span class="date-display-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="10" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M4 1v2M9 1v2M1 5h11" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></span>
+          <div class="date-display" id="f-start-display" onclick="openDatePicker('f-start',this)">
+            <span class="date-display-placeholder" id="f-start-text">Seleziona data…</span>
+          </div>
+          <input type="hidden" id="f-start">
+        </div>
+      </div>
+      <div class="form-row" id="f-end-row">
+        <label>Fine</label>
+        <div class="date-field-wrap">
+          <span class="date-display-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="10" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M4 1v2M9 1v2M1 5h11" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></span>
+          <div class="date-display" id="f-end-display" onclick="openDatePicker('f-end',this)">
+            <span class="date-display-placeholder" id="f-end-text">Seleziona data…</span>
+          </div>
+          <input type="hidden" id="f-end">
+        </div>
+      </div>
     </div>
     <div class="form-row" id="f-prog-row">
       <label>Avanzamento</label>
@@ -892,6 +943,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
       <button class="btn ok" onclick="saveNotes()">Salva note</button>
     </div>
   </div>
+</div>
+<!-- CUSTOM DATE PICKER POPUP -->
+<div id="dp-popup">
+  <div class="dp-header">
+    <button class="dp-nav" id="dp-prev" onclick="dpNavigate(-1)">&#8249;</button>
+    <div class="dp-month-year">
+      <button class="dp-month-btn" id="dp-month-btn" onclick="dpShowMonthList()"></button>
+      <button class="dp-year-btn" id="dp-year-btn" onclick="dpShowYearGrid()"></button>
+    </div>
+    <button class="dp-nav" id="dp-next" onclick="dpNavigate(1)">&#8250;</button>
+  </div>
+  <div class="dp-weekdays">
+    <div class="dp-weekday">L</div><div class="dp-weekday">M</div>
+    <div class="dp-weekday">M</div><div class="dp-weekday">G</div>
+    <div class="dp-weekday">V</div><div class="dp-weekday">S</div>
+    <div class="dp-weekday">D</div>
+  </div>
+  <div id="dp-days" class="dp-days"></div>
 </div>
 
 </div><!-- #app-wrap -->
@@ -1884,6 +1953,7 @@ function openAddModal(projId){
   document.getElementById('f-name').value='';
   document.getElementById('f-start').value=toISO(TODAY);
   document.getElementById('f-end').value=toISO(addDays(TODAY,7));
+  dpSyncDisplay('f-start');dpSyncDisplay('f-end');
   document.getElementById('f-prog').value=0;document.getElementById('f-prog-val').textContent='0%';
   document.getElementById('f-status').value='todo';
   document.getElementById('f-color').value=STATUS_TO_COLOR['todo'];
@@ -1902,6 +1972,7 @@ function openEditModal(id){
   document.getElementById('f-name').value=t.label;
   document.getElementById('f-start').value=toISO(t.start);
   document.getElementById('f-end').value=toISO(t.end);
+  dpSyncDisplay('f-start');dpSyncDisplay('f-end');
   document.getElementById('f-prog').value=t.progress;document.getElementById('f-prog-val').textContent=t.progress+'%';
   document.getElementById('f-status').value=t.status==='milestone'?'todo':t.status;
   document.getElementById('f-color').value=STATUS_TO_COLOR[t.status]||t.color||'#378ADD';
@@ -2769,6 +2840,126 @@ function handleDeepLink(){
   };
   setTimeout(tryJump, 400);
 }
+// ─── CUSTOM DATE PICKER ───────────────────────────────
+const MONTHS_IT=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const MONTHS_SHORT_IT=['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+
+let dpState={targetId:null,year:2026,month:2,selected:null,mode:'days'};
+
+function dpIsoToDate(s){if(!s)return null;const p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+function dpDateToIso(dt){if(!dt)return '';return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;}
+function dpFmtIt(dt){if(!dt)return '';return `${dt.getDate()} ${MONTHS_SHORT_IT[dt.getMonth()]} ${dt.getFullYear()}`;}
+
+function openDatePicker(targetId,el){
+  if(dpState.targetId===targetId&&document.getElementById('dp-popup').style.display==='block'){closeDatePicker();return;}
+  dpState.targetId=targetId;dpState.mode='days';
+  const cur=document.getElementById(targetId).value;
+  const d=cur?dpIsoToDate(cur):new Date();
+  dpState.selected=cur?dpIsoToDate(cur):null;
+  dpState.year=d.getFullYear();dpState.month=d.getMonth();
+  const popup=document.getElementById('dp-popup');
+  popup.style.display='block';
+  const rect=el.getBoundingClientRect();
+  const pw=popup.offsetWidth,ph=popup.offsetHeight;
+  let left=rect.left+window.scrollX;
+  let top=rect.bottom+window.scrollY+4;
+  if(left+pw>window.innerWidth-8)left=window.innerWidth-pw-8;
+  if(top+ph>window.innerHeight+window.scrollY-8)top=rect.top+window.scrollY-ph-4;
+  popup.style.left=left+'px';popup.style.top=top+'px';
+  document.querySelectorAll('.date-display').forEach(d=>d.classList.remove('open'));
+  el.classList.add('open');
+  dpRenderDays();
+}
+
+function closeDatePicker(){
+  document.getElementById('dp-popup').style.display='none';
+  document.querySelectorAll('.date-display').forEach(d=>d.classList.remove('open'));
+  dpState.targetId=null;
+}
+
+function dpNavigate(dir){
+  if(dpState.mode==='years'){dpState.year+=dir*12;dpRenderYears();return;}
+  dpState.month+=dir;
+  if(dpState.month>11){dpState.month=0;dpState.year++;}
+  if(dpState.month<0){dpState.month=11;dpState.year--;}
+  dpRenderDays();
+}
+
+function dpRenderDays(){
+  dpState.mode='days';
+  document.getElementById('dp-month-btn').textContent=MONTHS_IT[dpState.month];
+  document.getElementById('dp-year-btn').textContent=dpState.year;
+  const today=new Date();today.setHours(0,0,0,0);
+  const sel=dpState.selected;
+  let startDow=new Date(dpState.year,dpState.month,1).getDay()-1;
+  if(startDow<0)startDow=6;
+  const dim=new Date(dpState.year,dpState.month+1,0).getDate();
+  const dip=new Date(dpState.year,dpState.month,0).getDate();
+  let html='';
+  for(let i=startDow-1;i>=0;i--)html+=`<button class="dp-day other-month" onclick="dpSelectAdj(-1,${dip-i})">${dip-i}</button>`;
+  for(let d=1;d<=dim;d++){
+    const dt=new Date(dpState.year,dpState.month,d);
+    const isSel=sel&&dt.getTime()===sel.getTime();
+    const isToday=dt.getTime()===today.getTime();
+    const dow=dt.getDay();const isWE=dow===0||dow===6;
+    let cls='dp-day';
+    if(isSel)cls+=' selected';
+    else if(isToday)cls+=' today';
+    if(isWE&&!isSel)cls+=' weekend';
+    html+=`<button class="${cls}" onclick="dpSelectDay(${d})">${d}</button>`;
+  }
+  const total=startDow+dim;const trailing=total%7===0?0:7-total%7;
+  for(let d=1;d<=trailing;d++)html+=`<button class="dp-day other-month" onclick="dpSelectAdj(1,${d})">${d}</button>`;
+  const daysEl=document.getElementById('dp-days');
+  daysEl.innerHTML=html;daysEl.style.display='grid';
+}
+
+function dpSelectDay(day){
+  const dt=new Date(dpState.year,dpState.month,day);
+  dpState.selected=dt;
+  document.getElementById(dpState.targetId).value=dpDateToIso(dt);
+  dpSyncDisplay(dpState.targetId);
+  closeDatePicker();
+}
+function dpSelectAdj(dir,day){dpNavigate(dir);dpSelectDay(day);}
+
+function dpShowYearGrid(){
+  dpState.mode='years';dpRenderYears();
+}
+function dpRenderYears(){
+  const base=dpState.year-5;
+  let html='<div class="dp-year-grid">';
+  for(let y=base;y<base+12;y++)html+=`<button class="dp-year-item${y===dpState.year?' selected':''}" onclick="dpPickYear(${y})">${y}</button>`;
+  html+='</div>';
+  const daysEl=document.getElementById('dp-days');
+  daysEl.innerHTML=html;daysEl.style.display='block';
+  document.getElementById('dp-month-btn').textContent=MONTHS_IT[dpState.month];
+  document.getElementById('dp-year-btn').textContent=dpState.year;
+}
+function dpPickYear(y){dpState.year=y;dpRenderDays();}
+
+function dpShowMonthList(){
+  let html='<div class="dp-year-grid">';
+  MONTHS_SHORT_IT.forEach((m,i)=>html+=`<button class="dp-year-item${i===dpState.month?' selected':''}" onclick="dpPickMonth(${i})">${m}</button>`);
+  html+='</div>';
+  const daysEl=document.getElementById('dp-days');
+  daysEl.innerHTML=html;daysEl.style.display='block';
+}
+function dpPickMonth(m){dpState.month=m;dpRenderDays();}
+
+function dpSyncDisplay(fieldId){
+  const val=document.getElementById(fieldId).value;
+  const textEl=document.getElementById(fieldId+'-text');
+  if(!textEl)return;
+  if(val){textEl.textContent=dpFmtIt(dpIsoToDate(val));textEl.classList.remove('date-display-placeholder');}
+  else{textEl.textContent='Seleziona data…';textEl.classList.add('date-display-placeholder');}
+}
+
+document.addEventListener('mousedown',e=>{
+  const p=document.getElementById('dp-popup');
+  if(p.style.display==='block'&&!p.contains(e.target)&&!e.target.closest('.date-display'))closeDatePicker();
+});
+
 function openWorkloadPanel(){
   /* Popola filtro pagine */
   const sel=document.getElementById('wl-page-filter');
