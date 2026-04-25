@@ -359,6 +359,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .dp-year-item:hover{background:var(--indigo-light);color:var(--indigo)}
 .dp-year-item.selected{background:var(--indigo);color:#fff}
 
+/* ── MODAL HEADER & CLOSE ───────────────── */
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.modal-header-title{font-size:14px;font-weight:700;color:var(--text)}
+.modal-close-btn{width:28px;height:28px;border:0.5px solid var(--border2);border-radius:50%;background:var(--bg2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:all .12s;flex-shrink:0}
+.modal-close-btn:hover{background:var(--red-light);border-color:var(--red);color:var(--red)}
+/* Draggable sections */
+#modal-sortable{display:flex;flex-direction:column}
+.modal-section{display:flex;align-items:flex-start;gap:6px;padding:2px 0;border-radius:var(--radius);transition:background .15s;position:relative}
+.modal-section.drag-over-top::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--indigo);border-radius:1px}
+.modal-section.drag-over-bot::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--indigo);border-radius:1px}
+.modal-section.dragging{opacity:.35;background:var(--indigo-light)}
+.modal-grip{flex-shrink:0;width:14px;padding-top:26px;cursor:grab;color:var(--text3);font-size:14px;line-height:1;user-select:none;opacity:0;transition:opacity .15s;letter-spacing:-3px;text-align:center}
+.modal-grip:active{cursor:grabbing}
+.modal-section:hover .modal-grip{opacity:0.5}
+.modal-section-body{flex:1;min-width:0}
+/* ── EFFORT STARS ───────────────────────── */
 .effort-star{width:24px;height:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:transform .1s}
 .effort-star:hover{transform:scale(1.2)}
 .effort-star svg{pointer-events:none}
@@ -683,7 +699,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
     <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     Nuovo progetto
   </button>
-  <button id="btn-add-task" class="btn" style="background:var(--indigo);color:#fff;border-color:var(--indigo-dark);box-shadow:0 2px 6px rgba(108,99,255,.25);height:32px" onclick="openAddModal(null)">
+  <button id="btn-add-task" class="btn" style="background:#C2820A;color:#fff;border-color:#92600A;box-shadow:0 2px 6px rgba(194,130,10,.3);height:32px" onclick="openAddModal(null)">
     <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     Aggiungi task
   </button>
@@ -775,8 +791,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 
 <!-- ADD/EDIT MODAL -->
 <div class="modal-backdrop" id="modal-overlay">
-  <div class="modal">
-    <h3 id="modal-title">Nuovo task</h3>
+  <div class="modal" id="task-modal">
+    <div class="modal-header">
+      <span id="modal-title" class="modal-header-title">Nuovo task</span>
+      <button class="modal-close-btn" onclick="closeModal()" title="Chiudi">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <!-- Fixed top: Name, Project, Type -->
     <div class="form-row"><label>Nome</label><input id="f-name" type="text" placeholder="Nome attività…"></div>
     <div class="form-row"><label>Progetto</label><select id="f-proj"></select></div>
     <div class="form-row"><label>Tipo</label>
@@ -788,74 +811,124 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
     </div>
     <div class="form-row" id="f-parent-row" style="display:none"><label>Task padre</label><select id="f-parent"></select></div>
 
-    <div class="form-row" id="f-deps-row">
-      <label>Dipende da (inizia dopo)</label>
-      <div id="f-deps-tags" class="res-tags"></div>
-      <select id="f-deps-select" style="width:100%;margin-top:6px;font-size:12px;padding:6px 8px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);height:32px" onchange="addDepFromSelect()">
-        <option value="">+ Aggiungi dipendenza…</option>
-      </select>
-    </div>
+    <!-- DRAGGABLE SECTIONS CONTAINER -->
+    <div id="modal-sortable">
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <div class="form-row">
-        <label>Inizio</label>
-        <div class="date-field-wrap">
-          <span class="date-display-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="10" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M4 1v2M9 1v2M1 5h11" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></span>
-          <div class="date-display" id="f-start-display" onclick="openDatePicker('f-start',this)">
-            <span class="date-display-placeholder" id="f-start-text">Seleziona data…</span>
+      <div class="modal-section" data-sec="deps">
+        <div class="modal-grip" title="Trascina per riordinare">⠿</div>
+        <div class="modal-section-body">
+          <div class="form-row" id="f-deps-row">
+            <label>Dipende da (inizia dopo)</label>
+            <div id="f-deps-tags" class="res-tags"></div>
+            <select id="f-deps-select" style="width:100%;margin-top:6px;font-size:12px;padding:6px 8px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);height:32px" onchange="addDepFromSelect()">
+              <option value="">+ Aggiungi dipendenza…</option>
+            </select>
           </div>
-          <input type="hidden" id="f-start">
         </div>
       </div>
-      <div class="form-row" id="f-end-row">
-        <label>Fine</label>
-        <div class="date-field-wrap">
-          <span class="date-display-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="10" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M4 1v2M9 1v2M1 5h11" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></span>
-          <div class="date-display" id="f-end-display" onclick="openDatePicker('f-end',this)">
-            <span class="date-display-placeholder" id="f-end-text">Seleziona data…</span>
+
+      <div class="modal-section" data-sec="dates">
+        <div class="modal-grip" title="Trascina per riordinare">⠿</div>
+        <div class="modal-section-body" style="flex:1">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="form-row">
+              <label>Inizio</label>
+              <div class="date-field-wrap">
+                <span class="date-display-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="10" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M4 1v2M9 1v2M1 5h11" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></span>
+                <div class="date-display" id="f-start-display" onclick="openDatePicker('f-start',this)">
+                  <span class="date-display-placeholder" id="f-start-text">Seleziona data…</span>
+                </div>
+                <input type="hidden" id="f-start">
+              </div>
+            </div>
+            <div class="form-row" id="f-end-row">
+              <label>Fine</label>
+              <div class="date-field-wrap">
+                <span class="date-display-icon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="10" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M4 1v2M9 1v2M1 5h11" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></span>
+                <div class="date-display" id="f-end-display" onclick="openDatePicker('f-end',this)">
+                  <span class="date-display-placeholder" id="f-end-text">Seleziona data…</span>
+                </div>
+                <input type="hidden" id="f-end">
+              </div>
+            </div>
           </div>
-          <input type="hidden" id="f-end">
         </div>
       </div>
-    </div>
-    <div class="form-row" id="f-prog-row">
-      <label>Avanzamento</label>
-      <div class="pct-row">
-        <input id="f-prog" type="range" min="0" max="100" value="0" step="1" oninput="document.getElementById('f-prog-val').textContent=this.value+'%'">
-        <span id="f-prog-val">0%</span>
-      </div>
-    </div>
-    <div class="form-row"><label>Stato</label>
-      <select id="f-status">
-        <option value="todo">Not started</option>
-        <option value="active">On-going</option>
-        <option value="standby">Stand-by</option>
-        <option value="done">Done</option>
-      </select>
-    </div>
 
-    <div class="form-row" id="f-effort-row">
-      <label>Effort (impegno richiesto)</label>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
-        <div id="effort-stars" style="display:flex;gap:4px"></div>
-        <span id="effort-label" style="font-size:12px;color:var(--text2);min-width:80px"></span>
-        <input type="hidden" id="f-effort" value="3">
+      <div class="modal-section" data-sec="progress">
+        <div class="modal-grip" title="Trascina per riordinare">⠿</div>
+        <div class="modal-section-body" style="flex:1">
+          <div class="form-row" id="f-prog-row">
+            <label>Avanzamento</label>
+            <div class="pct-row">
+              <input id="f-prog" type="range" min="0" max="100" value="0" step="1" oninput="document.getElementById('f-prog-val').textContent=this.value+'%'">
+              <span id="f-prog-val">0%</span>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="form-row">
-      <label>Colore barra</label>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input id="f-color" type="color" value="#5B4CF5" style="width:48px;flex-shrink:0">
-        <div style="display:flex;gap:5px;flex-wrap:wrap" id="color-presets"></div>
+      <div class="modal-section" data-sec="status">
+        <div class="modal-grip" title="Trascina per riordinare">⠿</div>
+        <div class="modal-section-body" style="flex:1">
+          <div class="form-row"><label>Stato</label>
+            <select id="f-status">
+              <option value="todo">Not started</option>
+              <option value="active">On-going</option>
+              <option value="standby">Stand-by</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="form-row"><label>Icona</label><div class="icon-grid" id="icon-grid"></div></div>
-    <div class="form-row">
-      <label>Risorse assegnate</label>
-      <div id="res-tags" class="res-tags"></div>
-      <div class="res-pool-wrap" id="res-pool-container"></div>
-    </div>
+
+      <div class="modal-section" data-sec="effort">
+        <div class="modal-grip" title="Trascina per riordinare">⠿</div>
+        <div class="modal-section-body" style="flex:1">
+          <div class="form-row" id="f-effort-row">
+            <label>Effort (impegno richiesto)</label>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+              <div id="effort-stars" style="display:flex;gap:4px"></div>
+              <span id="effort-label" style="font-size:12px;color:var(--text2);min-width:80px"></span>
+              <input type="hidden" id="f-effort" value="3">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section" data-sec="color">
+        <div class="modal-grip" title="Trascina per riordinare">⠿</div>
+        <div class="modal-section-body" style="flex:1">
+          <div class="form-row">
+            <label>Colore barra</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input id="f-color" type="color" value="#5B4CF5" style="width:48px;flex-shrink:0">
+              <div style="display:flex;gap:5px;flex-wrap:wrap" id="color-presets"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section" data-sec="icon">
+        <div class="modal-grip" title="Trascina per riordinare">⠿</div>
+        <div class="modal-section-body" style="flex:1">
+          <div class="form-row"><label>Icona</label><div class="icon-grid" id="icon-grid"></div></div>
+        </div>
+      </div>
+
+      <div class="modal-section" data-sec="resources">
+        <div class="modal-grip" title="Trascina per riordinare">⠿</div>
+        <div class="modal-section-body" style="flex:1">
+          <div class="form-row">
+            <label>Risorse assegnate</label>
+            <div id="res-tags" class="res-tags"></div>
+            <div class="res-pool-wrap" id="res-pool-container"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- #modal-sortable -->
+
     <div class="modal-btns">
       <button class="btn" onclick="closeModal()">Annulla</button>
       <button class="btn ok" onclick="saveModal()">Salva</button>
@@ -1962,6 +2035,8 @@ function openAddModal(projId){
   document.getElementById('f-effort').value=3;
   buildEffortStars(3);
   document.getElementById('modal-overlay').classList.add('open');
+  applyModalSectionOrder();
+  initModalDragDrop();
   setTimeout(()=>document.getElementById('f-name').focus(),100);
 }
 function openEditModal(id){
@@ -1983,6 +2058,7 @@ function openEditModal(id){
   buildEffortStars(effortVal);
   if(t.parentId)document.getElementById('f-parent').value=t.parentId;
   document.getElementById('modal-overlay').classList.add('open');
+  applyModalSectionOrder();initModalDragDrop();
 }
 function closeModal(){document.getElementById('modal-overlay').classList.remove('open');editingId=null}
 function saveModal(){
@@ -2959,6 +3035,63 @@ document.addEventListener('mousedown',e=>{
   const p=document.getElementById('dp-popup');
   if(p.style.display==='block'&&!p.contains(e.target)&&!e.target.closest('.date-display'))closeDatePicker();
 });
+
+// ─── MODAL SECTION DRAG & DROP ────────────────────────
+const MODAL_ORDER_KEY='gantt_modal_section_order';
+
+function initModalDragDrop(){
+  const container=document.getElementById('modal-sortable');if(!container)return;
+  let dragSrc=null;
+  container.querySelectorAll('.modal-section').forEach(sec=>{
+    /* Drag only from grip handle */
+    sec.setAttribute('draggable','false');
+    const grip=sec.querySelector('.modal-grip');
+    if(grip){
+      grip.addEventListener('mousedown',()=>sec.setAttribute('draggable','true'));
+      grip.addEventListener('touchstart',()=>sec.setAttribute('draggable','true'),{passive:true});
+    }
+    sec.addEventListener('dragstart',e=>{
+      dragSrc=sec;sec.classList.add('dragging');
+      e.dataTransfer.effectAllowed='move';
+    });
+    sec.addEventListener('dragend',()=>{
+      dragSrc=null;
+      container.querySelectorAll('.modal-section').forEach(s=>s.classList.remove('dragging','drag-over-top','drag-over-bot'));
+      sec.setAttribute('draggable','false');
+      saveModalSectionOrder();
+    });
+    sec.addEventListener('dragover',e=>{
+      e.preventDefault();if(!dragSrc||dragSrc===sec)return;
+      container.querySelectorAll('.modal-section').forEach(s=>s.classList.remove('drag-over-top','drag-over-bot'));
+      const mid=sec.getBoundingClientRect().top+sec.getBoundingClientRect().height/2;
+      sec.classList.add(e.clientY<mid?'drag-over-top':'drag-over-bot');
+    });
+    sec.addEventListener('dragleave',()=>sec.classList.remove('drag-over-top','drag-over-bot'));
+    sec.addEventListener('drop',e=>{
+      e.preventDefault();if(!dragSrc||dragSrc===sec)return;
+      const mid=sec.getBoundingClientRect().top+sec.getBoundingClientRect().height/2;
+      if(e.clientY<mid) container.insertBefore(dragSrc,sec);
+      else container.insertBefore(dragSrc,sec.nextSibling);
+      container.querySelectorAll('.modal-section').forEach(s=>s.classList.remove('drag-over-top','drag-over-bot'));
+    });
+  });
+}
+
+function saveModalSectionOrder(){
+  const c=document.getElementById('modal-sortable');if(!c)return;
+  const order=[...c.querySelectorAll('.modal-section')].map(s=>s.dataset.sec);
+  try{localStorage.setItem(MODAL_ORDER_KEY,JSON.stringify(order));}catch(_){}
+}
+
+function applyModalSectionOrder(){
+  const c=document.getElementById('modal-sortable');if(!c)return;
+  try{
+    const saved=JSON.parse(localStorage.getItem(MODAL_ORDER_KEY)||'[]');
+    if(!saved.length)return;
+    const map={};c.querySelectorAll('.modal-section').forEach(s=>map[s.dataset.sec]=s);
+    saved.forEach(id=>{if(map[id])c.appendChild(map[id]);});
+  }catch(_){}
+}
 
 function openWorkloadPanel(){
   /* Popola filtro pagine */
