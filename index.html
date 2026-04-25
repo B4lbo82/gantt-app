@@ -165,13 +165,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .btn-group .btn:last-child{border-right:none}
 #gantt-container{border:0.5px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg)}
 #gantt-scroll{overflow-x:auto}
-/* Sticky sidebar within horizontal scroll */
-#gantt-inner{display:flex}
-#sidebar{flex-shrink:0;width:280px;min-width:160px;max-width:480px;border-right:3px solid var(--indigo);display:flex;flex-direction:column;position:sticky;left:0;z-index:10;background:var(--bg);box-shadow:2px 0 8px rgba(0,0,0,0.08)}
-/* Resize handle */
+/* Gantt layout: sidebar fixed, chart scrolls */
+#gantt-container{display:flex;border:0.5px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg);box-shadow:var(--shadow-md)}
+#sidebar{flex-shrink:0;width:280px;min-width:160px;max-width:480px;border-right:3px solid var(--indigo);display:flex;flex-direction:column;position:relative;background:var(--bg);z-index:2;box-shadow:3px 0 10px rgba(108,99,255,0.1)}
 #sidebar-resizer{position:absolute;right:-6px;top:0;bottom:0;width:10px;cursor:col-resize;z-index:20;display:flex;align-items:center;justify-content:center}
-#sidebar-resizer::after{content:'';width:3px;height:40px;border-radius:2px;background:var(--indigo);opacity:0.5;transition:opacity .15s}
+#sidebar-resizer::after{content:'';width:3px;height:40px;border-radius:2px;background:var(--indigo);opacity:0.6;transition:opacity .15s}
 #sidebar-resizer:hover::after,#sidebar-resizer.dragging::after{opacity:1}
+#gantt-scroll{flex:1;min-width:0;overflow-x:auto;overflow-y:hidden}
+#chart-area{display:inline-block;min-width:100%}
 .sb-head{height:96px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:0.5px solid var(--border2);background:var(--bg2);padding:6px 8px 0}
 .sb-head-labels{display:flex;align-items:flex-end;padding-bottom:8px}
 .sb-head-task{flex:1;padding:0 0 0 2px;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
@@ -607,29 +608,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
   <div style="flex:1"></div>
   <!-- Toolbar moved to top-right -->
   <div style="display:flex;align-items:center;gap:6px">
-    <div class="btn-group" id="view-toggle">
-      <button class="btn view-btn active" id="vbtn-day" onclick="setView('day')">Giorno</button>
-      <button class="btn view-btn" id="vbtn-week" onclick="setView('week')">Settimana</button>
-      <button class="btn view-btn" id="vbtn-month" onclick="setView('month')">Mese</button>
+    <!-- View toggle: subtle neutral pills -->
+    <div class="btn-group" id="view-toggle" style="background:var(--bg2);border-radius:20px;overflow:hidden;border:0.5px solid var(--border2)">
+      <button class="view-btn" id="vbtn-day" onclick="setView('day')" style="border:none;height:28px;padding:0 12px;font-size:12px;font-weight:500;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s">Giorno</button>
+      <button class="view-btn" id="vbtn-week" onclick="setView('week')" style="border:none;height:28px;padding:0 12px;font-size:12px;font-weight:500;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;border-left:0.5px solid var(--border2);border-right:0.5px solid var(--border2)">Settimana</button>
+      <button class="view-btn" id="vbtn-month" onclick="setView('month')" style="border:none;height:28px;padding:0 12px;font-size:12px;font-weight:500;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s">Mese</button>
     </div>
-    <div class="btn-group">
-      <button class="btn" onclick="zoom(-1)" title="Zoom out">−</button>
-      <button class="btn" onclick="zoom(1)" title="Zoom in">+</button>
+    <!-- Zoom: minimal icon buttons -->
+    <div style="display:flex;border:0.5px solid var(--border2);border-radius:var(--radius);overflow:hidden">
+      <button onclick="zoom(-1)" title="Zoom out" style="border:none;background:var(--bg);color:var(--text2);cursor:pointer;width:28px;height:28px;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background .12s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--bg)'">−</button>
+      <button onclick="zoom(1)" title="Zoom in" style="border:none;border-left:0.5px solid var(--border2);background:var(--bg);color:var(--text2);cursor:pointer;width:28px;height:28px;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background .12s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--bg)'">+</button>
     </div>
-    <!-- Export dropdown -->
+    <!-- Export dropdown: neutral gray -->
     <div style="position:relative" id="export-wrap">
-      <button class="btn" onclick="toggleExportMenu()" id="export-btn" style="gap:4px">
+      <button onclick="toggleExportMenu()" id="export-btn" style="display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text2);cursor:pointer;font-size:12px;font-weight:500" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--bg)'">
         Export
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <div id="export-menu" style="display:none;position:absolute;top:calc(100% + 4px);right:0;background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius);box-shadow:var(--shadow-md);min-width:110px;z-index:200;padding:4px">
         <button onclick="exportPDF();closeExportMenu()" style="display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;border:none;background:none;cursor:pointer;font-size:13px;color:var(--text);border-radius:6px" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='none'">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="#EF4444" stroke-width="1.2"/><path d="M4 4h4a2 2 0 010 4H4V4zM4 8h6" stroke="#EF4444" stroke-width="1.1" stroke-linecap="round"/></svg>
-          PDF
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="#EF4444" stroke-width="1.2"/><path d="M4 4h4a2 2 0 010 4H4V4zM4 8h6" stroke="#EF4444" stroke-width="1.1" stroke-linecap="round"/></svg>PDF
         </button>
         <button onclick="exportPNG();closeExportMenu()" style="display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;border:none;background:none;cursor:pointer;font-size:13px;color:var(--text);border-radius:6px" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='none'">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="var(--indigo)" stroke-width="1.2"/><circle cx="4.5" cy="4.5" r="1" fill="var(--indigo)"/><path d="M1 10l3.5-3.5 2 2 2.5-3 3 4" stroke="var(--indigo)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          PNG
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="var(--indigo)" stroke-width="1.2"/><circle cx="4.5" cy="4.5" r="1" fill="var(--indigo)"/><path d="M1 10l3.5-3.5 2 2 2.5-3 3 4" stroke="var(--indigo)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>PNG
         </button>
       </div>
     </div>
@@ -649,7 +650,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
     <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     Nuovo progetto
   </button>
-  <button class="btn" style="background:var(--indigo);color:#fff;border-color:var(--indigo-dark);box-shadow:0 2px 6px rgba(108,99,255,.25);height:32px" onclick="openAddModal(null)">
+  <button id="btn-add-task" class="btn" style="background:var(--indigo);color:#fff;border-color:var(--indigo-dark);box-shadow:0 2px 6px rgba(108,99,255,.25);height:32px" onclick="openAddModal(null)">
     <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     Aggiungi task
   </button>
@@ -698,28 +699,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 
 <div id="gantt-outer">
 <div id="gantt-container">
+  <!-- Sidebar is OUTSIDE the scroll area so it's always visible -->
+  <div id="sidebar">
+    <div id="sidebar-resizer"></div>
+    <div class="sb-head">
+      <div class="sb-search-wrap">
+        <input class="sb-search-input" id="sb-search" type="text" placeholder="🔍  Cerca task…" autocomplete="off"
+          oninput="onSearchInput()" onkeydown="onSearchKey(event)" onfocus="onSearchInput()">
+        <button class="sb-search-clear" id="sb-search-clear" onclick="clearSearch()" title="Cancella">✕</button>
+        <div class="sb-suggestions" id="sb-suggestions"></div>
+      </div>
+      <div class="sb-head-labels">
+        <div class="sb-head-task">Task / Progetto</div>
+        <div class="sb-head-pct">%</div>
+      </div>
+    </div>
+    <div id="sb-rows"></div>
+  </div>
+  <!-- Only chart scrolls horizontally -->
   <div id="gantt-scroll">
-    <div id="gantt-inner">
-      <div id="sidebar">
-        <div id="sidebar-resizer"></div>
-        <div class="sb-head">
-          <div class="sb-search-wrap">
-            <input class="sb-search-input" id="sb-search" type="text" placeholder="🔍  Cerca task…" autocomplete="off"
-              oninput="onSearchInput()" onkeydown="onSearchKey(event)" onfocus="onSearchInput()">
-            <button class="sb-search-clear" id="sb-search-clear" onclick="clearSearch()" title="Cancella">✕</button>
-            <div class="sb-suggestions" id="sb-suggestions"></div>
-          </div>
-          <div class="sb-head-labels">
-            <div class="sb-head-task">Task / Progetto</div>
-            <div class="sb-head-pct">%</div>
-          </div>
-        </div>
-        <div id="sb-rows"></div>
-      </div>
-      <div id="chart-area">
-        <svg id="header-svg"></svg>
-        <svg id="gantt-svg"></svg>
-      </div>
+    <div id="chart-area">
+      <svg id="header-svg"></svg>
+      <svg id="gantt-svg"></svg>
     </div>
   </div>
 </div>
@@ -1482,7 +1483,6 @@ function renderHeader(){
   svg.setAttribute('viewBox',`0 0 ${W} ${HDR_H}`);
   svg.setAttribute('height',HDR_H);
   svg.setAttribute('width',W);
-  let h=`<rect width="${W}" height="${HDR_H}" fill="#f8f9fc"/>`;
 
   function isoWeek(dt){
     const d=new Date(Date.UTC(dt.getFullYear(),dt.getMonth(),dt.getDate()));
@@ -1492,61 +1492,89 @@ function renderHeader(){
     return Math.ceil((((d-y)/86400000)+1)/7);
   }
 
-  if(currentView==='day'){
-    let months={};
+  /* Shared: build month map */
+  function buildMonths(){
+    const m={};
     for(let i=0;i<TOTAL_DAYS;i++){
-      const dt=addDays(START_DATE,i);const mk=dt.getFullYear()+'-'+dt.getMonth();
-      if(!months[mk]) months[mk]={x:i*DAY_W,end:(i+1)*DAY_W,dt};
-      else months[mk].end=(i+1)*DAY_W;
+      const dt=addDays(START_DATE,i);
+      const mk=dt.getFullYear()+'-'+dt.getMonth();
+      if(!m[mk]) m[mk]={x:i*DAY_W,end:(i+1)*DAY_W,dt};
+      else m[mk].end=(i+1)*DAY_W;
     }
-    Object.values(months).forEach(m=>{
+    return Object.values(m);
+  }
+
+  if(currentView==='day'){
+    /* Clean white/light-gray background like reference image */
+    let h=`<rect width="${W}" height="${HDR_H}" fill="#ffffff"/>`;
+
+    /* Month row (top 32px): MARZO 2026 in bold uppercase, no pill */
+    buildMonths().forEach(m=>{
       const bw=m.end-m.x;
-      h+=`<line x1="${m.x}" y1="0" x2="${m.x}" y2="${HDR_H}" stroke="rgba(108,99,255,0.15)" stroke-width="0.5"/>`;
-      if(bw>50){
-        const lbl=m.dt.toLocaleDateString('it-IT',{month:'long',year:'numeric'});
-        const label=lbl.charAt(0).toUpperCase()+lbl.slice(1);
-        h+=`<rect x="${m.x+6}" y="7" width="${Math.min(120,bw-12)}" height="22" rx="11" fill="#6C63FF"/>`;
-        h+=`<text x="${m.x+14}" y="18" font-size="11" font-weight="700" fill="white" dy=".35em" font-family="-apple-system,sans-serif">${label}</text>`;
+      h+=`<line x1="${m.x}" y1="0" x2="${m.x}" y2="${HDR_H}" stroke="#E2E8F0" stroke-width="1"/>`;
+      if(bw>30){
+        const lbl=m.dt.toLocaleDateString('it-IT',{month:'long',year:'numeric'}).toUpperCase();
+        h+=`<text x="${m.x+8}" y="18" font-size="10" font-weight="800" fill="#374151" dy=".35em" font-family="-apple-system,sans-serif" letter-spacing="0.5">${lbl}</text>`;
       }
     });
-    h+=`<line x1="0" y1="36" x2="${W}" y2="36" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>`;
+    h+=`<line x1="0" y1="32" x2="${W}" y2="32" stroke="#E2E8F0" stroke-width="1"/>`;
+
+    /* Day columns: alternating bg, numbers row, letters row */
     for(let i=0;i<TOTAL_DAYS;i++){
       const dt=addDays(START_DATE,i);const x=i*DAY_W;
       const we=isWE(dt),fe=isFest(dt);
-      if(we||fe) h+=`<rect x="${x}" y="36" width="${DAY_W}" height="${HDR_H-36}" fill="${fe?'rgba(239,68,68,0.05)':'rgba(108,99,255,0.05)'}"/>`;
-      if(dt.getDay()===1) h+=`<line x1="${x}" y1="36" x2="${x}" y2="${HDR_H}" stroke="rgba(0,0,0,0.05)" stroke-width="0.5"/>`;
-      const tc=fe?'#DC2626':we?'#6C63FF':'#94A3B8';
-      const fw=we||fe?'700':'500';
-      h+=`<text x="${x+DAY_W/2}" y="47" font-size="9" font-weight="${fw}" fill="${tc}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${DAY_LBL[dt.getDay()]}</text>`;
+      /* Column bg: weekend=light pink-ish, festivity=salmon tint, weekday alternating */
+      const isOddDay=Math.floor(i/1)%2===0;
+      let colBg;
+      if(fe) colBg='rgba(254,226,226,0.7)';
+      else if(we) colBg='rgba(239,246,255,0.8)';
+      else colBg=isOddDay?'#ffffff':'#F8FAFC';
+      h+=`<rect x="${x}" y="32" width="${DAY_W}" height="${HDR_H-32}" fill="${colBg}"/>`;
+      /* Column separator: only on Mon or month boundary */
+      if(dt.getDay()===1||i===0) h+=`<line x1="${x}" y1="32" x2="${x}" y2="${HDR_H}" stroke="#CBD5E1" stroke-width="0.8"/>`;
+      else h+=`<line x1="${x}" y1="32" x2="${x}" y2="${HDR_H}" stroke="#F1F5F9" stroke-width="0.5"/>`;
+
+      /* Number row (y 32-56) */
       const isToday=isoKey(dt)===isoKey(TODAY);
+      const numCol=fe?'#EF4444':we?'#6C63FF':isToday?'#EF4444':'#374151';
+      const numFw=we||fe||isToday?'700':'400';
       if(isToday){
-        h+=`<circle cx="${x+DAY_W/2}" cy="69" r="10" fill="#EF4444"/>`;
-        h+=`<text x="${x+DAY_W/2}" y="69" font-size="9" font-weight="700" fill="white" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${dt.getDate()}</text>`;
+        h+=`<circle cx="${x+DAY_W/2}" cy="44" r="${Math.min(DAY_W/2-1,10)}" fill="#EF4444" opacity="0.12"/>`;
+        h+=`<text x="${x+DAY_W/2}" y="44" font-size="10" font-weight="700" fill="#EF4444" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${dt.getDate()}</text>`;
+        /* OGGI label above */
+        h+=`<text x="${x+DAY_W/2}" y="34" font-size="8" font-weight="700" fill="#EF4444" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">OGGI</text>`;
       } else {
-        h+=`<text x="${x+DAY_W/2}" y="69" font-size="9" font-weight="${fw}" fill="${tc}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${dt.getDate()}</text>`;
+        h+=`<text x="${x+DAY_W/2}" y="44" font-size="9" font-weight="${numFw}" fill="${numCol}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${dt.getDate()}</text>`;
       }
+
+      /* Letter row (y 56-80) */
+      const lbl=DAY_LBL[dt.getDay()].toUpperCase();
+      const ltrCol=fe?'#EF4444':we?'#6C63FF':'#94A3B8';
+      h+=`<text x="${x+DAY_W/2}" y="67" font-size="8" font-weight="${we||fe?'700':'400'}" fill="${ltrCol}" text-anchor="middle" dy=".35em" font-family="-apple-system,sans-serif">${lbl}</text>`;
     }
+    h+=`<line x1="0" y1="${HDR_H-0.5}" x2="${W}" y2="${HDR_H-0.5}" stroke="#CBD5E1" stroke-width="1"/>`;
+    /* Today vertical guide */
+    const tx=diffDays(START_DATE,TODAY)*DAY_W+DAY_W/2;
+    if(tx>=0&&tx<=W) h+=`<line x1="${tx}" y1="32" x2="${tx}" y2="${HDR_H}" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>`;
+    svg.innerHTML=h;
 
   } else if(currentView==='week'){
-    let months={};
-    for(let i=0;i<TOTAL_DAYS;i++){
-      const dt=addDays(START_DATE,i);const mk=dt.getFullYear()+'-'+dt.getMonth();
-      if(!months[mk]) months[mk]={x:i*DAY_W,end:(i+1)*DAY_W,dt};
-      else months[mk].end=(i+1)*DAY_W;
-    }
-    Object.values(months).forEach(m=>{
+    let h=`<rect width="${W}" height="${HDR_H}" fill="#ffffff"/>`;
+    /* Month names bold, no pill */
+    buildMonths().forEach(m=>{
       const bw=m.end-m.x;
-      h+=`<line x1="${m.x}" y1="0" x2="${m.x}" y2="${HDR_H}" stroke="rgba(108,99,255,0.15)" stroke-width="0.5"/>`;
-      if(bw>50){
-        const lbl=m.dt.toLocaleDateString('it-IT',{month:'long',year:'numeric'});
-        h+=`<rect x="${m.x+6}" y="7" width="${Math.min(110,bw-12)}" height="22" rx="11" fill="#6C63FF"/>`;
-        h+=`<text x="${m.x+14}" y="18" font-size="11" font-weight="700" fill="white" dy=".35em" font-family="-apple-system,sans-serif">${lbl.charAt(0).toUpperCase()+lbl.slice(1)}</text>`;
+      h+=`<line x1="${m.x}" y1="0" x2="${m.x}" y2="${HDR_H}" stroke="#CBD5E1" stroke-width="1"/>`;
+      if(bw>30){
+        const lbl=m.dt.toLocaleDateString('it-IT',{month:'long',year:'numeric'}).toUpperCase();
+        h+=`<text x="${m.x+8}" y="18" font-size="10" font-weight="800" fill="#374151" dy=".35em" font-family="-apple-system,sans-serif">${lbl}</text>`;
       }
     });
-    h+=`<line x1="0" y1="36" x2="${W}" y2="36" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>`;
+    h+=`<line x1="0" y1="32" x2="${W}" y2="32" stroke="#E2E8F0" stroke-width="1"/>`;
+    /* Week blocks */
     let wStart=new Date(START_DATE);
     const dow0=wStart.getDay()===0?7:wStart.getDay();
     wStart.setDate(wStart.getDate()-(dow0-1));
+    let wIdx=0;
     while(true){
       const dayIdx=diffDays(START_DATE,wStart);
       if(dayIdx>=TOTAL_DAYS) break;
@@ -1558,26 +1586,34 @@ function renderHeader(){
       if(ww>0){
         const wnum=isoWeek(wStart);
         const isCW=diffDays(wStart,TODAY)>=0&&diffDays(TODAY,wEnd)>=0;
-        h+=`<line x1="${xStart}" y1="36" x2="${xStart}" y2="${HDR_H}" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>`;
-        if(isCW) h+=`<rect x="${xStart}" y="36" width="${ww}" height="${HDR_H-36}" fill="rgba(108,99,255,0.08)"/>`;
-        const wc=isCW?'#6C63FF':'#6B7280';const wf=isCW?'700':'600';
-        h+=`<text x="${xStart+6}" y="52" font-size="9" font-weight="${wf}" fill="${wc}" dy=".35em" font-family="-apple-system,sans-serif">W${wnum}</text>`;
-        const elf=dayIdxEnd>=TOTAL_DAYS?addDays(START_DATE,TOTAL_DAYS-1):wEnd;
-        const rs=`${wStart.getDate()}\u2013${elf.getDate()} ${elf.toLocaleDateString('it-IT',{month:'short'})}`;
-        if(ww>40) h+=`<text x="${xStart+6}" y="68" font-size="9" font-weight="400" fill="${isCW?'#4F46E5':'#9CA3AF'}" dy=".35em" font-family="-apple-system,sans-serif">${rs}</text>`;
-        if(isCW){
-          const tdx=diffDays(START_DATE,TODAY)*DAY_W;
-          h+=`<line x1="${tdx+2}" y1="${HDR_H-5}" x2="${tdx+DAY_W-2}" y2="${HDR_H-5}" stroke="#EF4444" stroke-width="3" stroke-linecap="round"/>`;
+        /* Alternating week background */
+        const wbg=isCW?'rgba(108,99,255,0.06)':(wIdx%2===0?'#ffffff':'#F8FAFC');
+        h+=`<rect x="${xStart}" y="32" width="${ww}" height="${HDR_H-32}" fill="${wbg}"/>`;
+        h+=`<line x1="${xStart}" y1="32" x2="${xStart}" y2="${HDR_H}" stroke="${isCW?'#6C63FF':'#CBD5E1'}" stroke-width="${isCW?1.5:0.8}"/>`;
+        const wc=isCW?'#6C63FF':'#64748B';
+        if(ww>30){
+          h+=`<text x="${xStart+6}" y="50" font-size="9" font-weight="${isCW?'700':'600'}" fill="${wc}" dy=".35em" font-family="-apple-system,sans-serif">W${wnum}</text>`;
+          const elf=dayIdxEnd>=TOTAL_DAYS?addDays(START_DATE,TOTAL_DAYS-1):wEnd;
+          const rs=`${wStart.getDate()}\u2013${elf.getDate()} ${elf.toLocaleDateString('it-IT',{month:'short'})}`;
+          h+=`<text x="${xStart+6}" y="66" font-size="9" font-weight="400" fill="${isCW?'#4F46E5':'#9CA3AF'}" dy=".35em" font-family="-apple-system,sans-serif">${rs}</text>`;
         }
+        if(isCW){
+          const tdx=diffDays(START_DATE,TODAY)*DAY_W+DAY_W/2;
+          if(tdx>=0&&tdx<=W) h+=`<line x1="${tdx}" y1="32" x2="${tdx}" y2="${HDR_H}" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.7"/>`;
+        }
+        wIdx++;
       }
       wStart=addDays(wStart,7);
     }
+    h+=`<line x1="0" y1="${HDR_H-0.5}" x2="${W}" y2="${HDR_H-0.5}" stroke="#CBD5E1" stroke-width="1"/>`;
+    svg.innerHTML=h;
 
   } else {
+    /* Month view */
+    let h=`<rect width="${W}" height="${HDR_H}" fill="#ffffff"/>`;
     const year=START_DATE.getFullYear();
-    h+=`<rect x="0" y="0" width="${W}" height="28" fill="rgba(0,0,0,0.02)"/>`;
-    h+=`<text x="10" y="14" font-size="11" font-weight="600" fill="#9CA3AF" dy=".35em" font-family="-apple-system,sans-serif">${year}</text>`;
-    h+=`<line x1="0" y1="28" x2="${W}" y2="28" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>`;
+    h+=`<text x="10" y="18" font-size="11" font-weight="700" fill="#6B7280" dy=".35em" font-family="-apple-system,sans-serif">${year}</text>`;
+    h+=`<line x1="0" y1="32" x2="${W}" y2="32" stroke="#E2E8F0" stroke-width="1"/>`;
     let mList=[],prev=null;
     for(let i=0;i<TOTAL_DAYS;i++){
       const dt=addDays(START_DATE,i);const mk=dt.getFullYear()+'-'+dt.getMonth();
@@ -1586,24 +1622,22 @@ function renderHeader(){
       mList[mList.length-1].end=(i+1)*DAY_W;
     }
     const todayMk=TODAY.getFullYear()+'-'+TODAY.getMonth();
-    mList.forEach(m=>{
+    mList.forEach((m,idx)=>{
       const bw=m.end-m.x;const isCur=m.dt.getFullYear()+'-'+m.dt.getMonth()===todayMk;
-      h+=`<rect x="${m.x}" y="28" width="${bw}" height="${HDR_H-28}" fill="${isCur?'rgba(108,99,255,0.08)':'transparent'}"/>`;
-      h+=`<line x1="${m.x}" y1="28" x2="${m.x}" y2="${HDR_H}" stroke="rgba(0,0,0,0.07)" stroke-width="0.5"/>`;
-      const abbr=m.dt.toLocaleDateString('it-IT',{month:'short'});
-      h+=`<text x="${m.x+8}" y="46" font-size="12" font-weight="${isCur?'700':'500'}" fill="${isCur?'#6C63FF':'#374151'}" dy=".35em" font-family="-apple-system,sans-serif">${abbr.charAt(0).toUpperCase()+abbr.slice(1)}</text>`;
-      h+=`<text x="${m.x+8}" y="65" font-size="9" font-weight="400" fill="${isCur?'#818CF8':'#9CA3AF'}" dy=".35em" font-family="-apple-system,sans-serif">${m.dayCount}g</text>`;
-      if(isCur) h+=`<line x1="${m.x+4}" y1="${HDR_H-4}" x2="${m.x+bw-4}" y2="${HDR_H-4}" stroke="#6C63FF" stroke-width="2.5" stroke-linecap="round"/>`;
+      const mbg=isCur?'rgba(108,99,255,0.06)':(idx%2===0?'#ffffff':'#F8FAFC');
+      h+=`<rect x="${m.x}" y="32" width="${bw}" height="${HDR_H-32}" fill="${mbg}"/>`;
+      h+=`<line x1="${m.x}" y1="0" x2="${m.x}" y2="${HDR_H}" stroke="${isCur?'#6C63FF':'#CBD5E1'}" stroke-width="${isCur?1.5:0.8}"/>`;
+      const abbr=m.dt.toLocaleDateString('it-IT',{month:'short'}).toUpperCase();
+      h+=`<text x="${m.x+8}" y="50" font-size="12" font-weight="${isCur?'800':'600'}" fill="${isCur?'#6C63FF':'#374151'}" dy=".35em" font-family="-apple-system,sans-serif">${abbr}</text>`;
+      h+=`<text x="${m.x+8}" y="67" font-size="9" font-weight="400" fill="${isCur?'#818CF8':'#94A3B8'}" dy=".35em" font-family="-apple-system,sans-serif">${m.dayCount}g</text>`;
+      if(isCur){
+        const tdx=diffDays(START_DATE,TODAY)*DAY_W;
+        if(tdx>=0&&tdx<=W) h+=`<line x1="${tdx}" y1="32" x2="${tdx}" y2="${HDR_H}" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.7"/>`;
+      }
     });
+    h+=`<line x1="0" y1="${HDR_H-0.5}" x2="${W}" y2="${HDR_H-0.5}" stroke="#CBD5E1" stroke-width="1"/>`;
+    svg.innerHTML=h;
   }
-
-  h+=`<line x1="0" y1="${HDR_H-0.5}" x2="${W}" y2="${HDR_H-0.5}" stroke="rgba(0,0,0,0.09)" stroke-width="1"/>`;
-  h+=`<line x1="${W}" y1="0" x2="${W}" y2="${HDR_H}" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>`;
-  if(currentView==='day'){
-    const tx=diffDays(START_DATE,TODAY)*DAY_W+DAY_W/2;
-    if(tx>=0&&tx<=W) h+=`<line x1="${tx}" y1="36" x2="${tx}" y2="${HDR_H}" stroke="#EF4444" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.5"/>`;
-  }
-  svg.innerHTML=h;
 }
 
 
@@ -1919,6 +1953,13 @@ function showTip(e,id){
 }
 function hideTip(){document.getElementById('tooltip').style.opacity='0'}
 
+// ─── SCROLL SYNC (sidebar rows ↔ chart vertical) ─────
+let _scrollSyncDone=false;
+function ensureScrollSync(){
+  if(_scrollSyncDone) return; _scrollSyncDone=true;
+  /* no-op: sidebar is now separate from scroll, vertical sync not needed */
+}
+
 // ─── SIDEBAR RESIZER ──────────────────────────────────
 (function(){
   const resizer = document.getElementById('sidebar-resizer');
@@ -2075,7 +2116,12 @@ function setView(v){
   DAY_W = VIEW_DAY_W[v];
   ['day','week','month'].forEach(n=>{
     const b=document.getElementById('vbtn-'+n);
-    if(b) b.classList.toggle('active', n===v);
+    if(!b) return;
+    if(n===v){
+      b.style.background='var(--indigo)';b.style.color='#fff';b.style.fontWeight='600';
+    } else {
+      b.style.background='transparent';b.style.color='var(--text2)';b.style.fontWeight='500';
+    }
   });
   rerender();
 }
@@ -2136,6 +2182,15 @@ function toggleNav(){
 
 function zoom(dir){DAY_W=Math.max(12,Math.min(60,DAY_W+dir*4));rerender()}
 
+function updateTaskBtnState(){
+  const btn=document.getElementById('btn-add-task');if(!btn)return;
+  const hasProj=getProjects().length>0;
+  btn.disabled=!hasProj;
+  btn.style.opacity=hasProj?'1':'0.45';
+  btn.style.cursor=hasProj?'pointer':'not-allowed';
+  btn.title=hasProj?'':'Prima crea un progetto per questa tab';
+}
+
 function rerenderOnly(){
   syncPageData();
   const rows=buildRows();
@@ -2145,12 +2200,12 @@ function rerenderOnly(){
   renderHeader();
   renderGantt(rows);
   renderStatsBar();
-  /* Show/hide gantt vs empty state */
-  const hasProjects = getProjects().length > 0;
-  const hasTasks = getTasks().length > 0;
-  document.getElementById('gantt-outer').style.display = (hasProjects && hasTasks) ? 'flex' : 'none';
-  document.getElementById('gantt-empty').style.display = (!hasProjects || !hasTasks) ? 'block' : 'none';
-  document.getElementById('gantt-empty').style.display = hasTasks ? 'none' : 'block';
+  updateTaskBtnState();
+  const hasProjects=getProjects().length>0;
+  const hasTasks=getTasks().length>0;
+  document.getElementById('gantt-outer').style.display=(hasProjects&&hasTasks)?'flex':'none';
+  document.getElementById('gantt-empty').style.display=(!hasProjects||!hasTasks)?'block':'none';
+  ensureScrollSync();
 }
 function rerender(){rerenderOnly();scheduleSave();}
 
@@ -2236,40 +2291,21 @@ function exportXLSX(){
 function captureFullGantt(scale){
   return new Promise(resolve=>{
     if(typeof html2canvas==='undefined'){resolve(null);return;}
-    const SIDEBAR_W=280;
+    const SIDEBAR_W=document.getElementById('sidebar').offsetWidth;
     const fullChartW=TOTAL_DAYS*DAY_W;
     const fullW=SIDEBAR_W+fullChartW;
     const container=document.getElementById('gantt-container');
     const scroll=document.getElementById('gantt-scroll');
-    const inner=document.getElementById('gantt-inner');
-    /* Salva stili originali */
-    const origContainerOverflow=container.style.overflow;
-    const origContainerWidth=container.style.width;
+    const chart=document.getElementById('chart-area');
     const origScrollOverflow=scroll.style.overflow;
     const origScrollWidth=scroll.style.width;
-    const origInnerWidth=inner.style.width;
-    /* Espandi a tutta la larghezza */
-    container.style.overflow='visible';
-    container.style.width=fullW+'px';
+    const origChartDisplay=chart.style.display;
     scroll.style.overflow='visible';
-    scroll.style.width=fullW+'px';
-    inner.style.width=fullW+'px';
-    /* Aspetta un frame per il layout, poi cattura */
+    scroll.style.width=fullChartW+'px';
     requestAnimationFrame(()=>{
-      html2canvas(container,{
-        scale:scale,
-        backgroundColor:'#ffffff',
-        useCORS:true,
-        width:fullW,
-        windowWidth:fullW+100,
-        scrollX:0, scrollY:0
-      }).then(canvas=>{
-        /* Ripristina */
-        container.style.overflow=origContainerOverflow;
-        container.style.width=origContainerWidth;
+      html2canvas(container,{scale,backgroundColor:'#ffffff',useCORS:true,width:fullW,windowWidth:fullW+300,scrollX:0,scrollY:0}).then(canvas=>{
         scroll.style.overflow=origScrollOverflow;
         scroll.style.width=origScrollWidth;
-        inner.style.width=origInnerWidth;
         resolve(canvas);
       });
     });
