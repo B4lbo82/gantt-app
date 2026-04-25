@@ -152,7 +152,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .stat-num{font-size:13px;font-weight:700;line-height:1;color:var(--text)}
 .stat-label{font-size:12px;font-weight:400;color:var(--text2)}
 .stat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-#stats-bar{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+#stats-bar{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
 .logout-btn{background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;padding:3px 6px;border-radius:4px}
 .logout-btn:hover{background:var(--red-light);color:var(--red)}
 .toolbar{display:flex;align-items:center;gap:7px;margin-bottom:10px;flex-wrap:wrap}
@@ -165,12 +165,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .btn-group .btn:last-child{border-right:none}
 #gantt-container{border:0.5px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg)}
 #gantt-scroll{overflow-x:auto}
+/* Sticky sidebar within horizontal scroll */
 #gantt-inner{display:flex}
-#sidebar{flex-shrink:0;width:280px;min-width:160px;max-width:480px;border-right:0.5px solid var(--border2);display:flex;flex-direction:column;position:relative;user-select:none}
+#sidebar{flex-shrink:0;width:280px;min-width:160px;max-width:480px;border-right:3px solid var(--indigo);display:flex;flex-direction:column;position:sticky;left:0;z-index:10;background:var(--bg);box-shadow:2px 0 8px rgba(0,0,0,0.08)}
 /* Resize handle */
-#sidebar-resizer{position:absolute;right:-4px;top:0;bottom:0;width:8px;cursor:col-resize;z-index:10;display:flex;align-items:center;justify-content:center}
-#sidebar-resizer::after{content:'';width:2px;height:32px;border-radius:2px;background:var(--border2);transition:background .15s}
-#sidebar-resizer:hover::after,#sidebar-resizer.dragging::after{background:var(--indigo)}
+#sidebar-resizer{position:absolute;right:-6px;top:0;bottom:0;width:10px;cursor:col-resize;z-index:20;display:flex;align-items:center;justify-content:center}
+#sidebar-resizer::after{content:'';width:3px;height:40px;border-radius:2px;background:var(--indigo);opacity:0.5;transition:opacity .15s}
+#sidebar-resizer:hover::after,#sidebar-resizer.dragging::after{opacity:1}
 .sb-head{height:96px;display:flex;flex-direction:column;justify-content:flex-end;border-bottom:0.5px solid var(--border2);background:var(--bg2);padding:6px 8px 0}
 .sb-head-labels{display:flex;align-items:flex-end;padding-bottom:8px}
 .sb-head-task{flex:1;padding:0 0 0 2px;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
@@ -207,6 +208,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .sb-row{height:36px;display:flex;align-items:center;border-bottom:0.5px solid var(--border);position:relative}
 .sb-row:hover .row-actions{opacity:1}
 .sb-row.group-row{background:var(--bg3);height:32px}
+.sb-row.group-row:hover .row-actions{opacity:1!important}
 .sb-row.selected-row .row-label{color:var(--blue)}
 .sb-task-part{flex:1;display:flex;align-items:center;gap:4px;overflow:hidden;padding:0 4px 0 8px;min-width:0}
 .row-icon{width:16px;height:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
@@ -603,6 +605,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
   <h2 id="main-title">Gantt</h2>
   <span style="font-size:11px;color:var(--text3);margin-left:8px" id="today-label"></span>
   <div style="flex:1"></div>
+  <!-- Toolbar moved to top-right -->
+  <div style="display:flex;align-items:center;gap:6px">
+    <div class="btn-group" id="view-toggle">
+      <button class="btn view-btn active" id="vbtn-day" onclick="setView('day')">Giorno</button>
+      <button class="btn view-btn" id="vbtn-week" onclick="setView('week')">Settimana</button>
+      <button class="btn view-btn" id="vbtn-month" onclick="setView('month')">Mese</button>
+    </div>
+    <div class="btn-group">
+      <button class="btn" onclick="zoom(-1)" title="Zoom out">−</button>
+      <button class="btn" onclick="zoom(1)" title="Zoom in">+</button>
+    </div>
+    <!-- Export dropdown -->
+    <div style="position:relative" id="export-wrap">
+      <button class="btn" onclick="toggleExportMenu()" id="export-btn" style="gap:4px">
+        Export
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div id="export-menu" style="display:none;position:absolute;top:calc(100% + 4px);right:0;background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius);box-shadow:var(--shadow-md);min-width:110px;z-index:200;padding:4px">
+        <button onclick="exportPDF();closeExportMenu()" style="display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;border:none;background:none;cursor:pointer;font-size:13px;color:var(--text);border-radius:6px" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='none'">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="#EF4444" stroke-width="1.2"/><path d="M4 4h4a2 2 0 010 4H4V4zM4 8h6" stroke="#EF4444" stroke-width="1.1" stroke-linecap="round"/></svg>
+          PDF
+        </button>
+        <button onclick="exportPNG();closeExportMenu()" style="display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;border:none;background:none;cursor:pointer;font-size:13px;color:var(--text);border-radius:6px" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='none'">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="var(--indigo)" stroke-width="1.2"/><circle cx="4.5" cy="4.5" r="1" fill="var(--indigo)"/><path d="M1 10l3.5-3.5 2 2 2.5-3 3 4" stroke="var(--indigo)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          PNG
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div id="main-scroll">
@@ -612,42 +643,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
   <button class="page-tab-add" onclick="addPage()" title="Nuova pagina">+</button>
 </div>
 
-<div id="stats-bar"></div>
-
-<div class="toolbar">
-  <div class="btn-group" id="view-toggle">
-    <button class="btn view-btn active" id="vbtn-day" onclick="setView('day')">Giorno</button>
-    <button class="btn view-btn" id="vbtn-week" onclick="setView('week')">Settimana</button>
-    <button class="btn view-btn" id="vbtn-month" onclick="setView('month')">Mese</button>
-  </div>
-  <div class="btn-group">
-    <button class="btn" onclick="zoom(-1)">−</button>
-    <button class="btn" onclick="zoom(1)">+</button>
-  </div>
-  <button class="btn" style="background:#059669;color:#fff;border-color:#047857;box-shadow:0 2px 8px rgba(5,150,105,.3)" onclick="openAddModal(null)">
+<!-- Add project/task buttons above stats -->
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+  <button class="btn" style="background:#059669;color:#fff;border-color:#047857;box-shadow:0 2px 6px rgba(5,150,105,.25);height:32px" onclick="openAddProjectModal()">
+    <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Nuovo progetto
+  </button>
+  <button class="btn" style="background:var(--indigo);color:#fff;border-color:var(--indigo-dark);box-shadow:0 2px 6px rgba(108,99,255,.25);height:32px" onclick="openAddModal(null)">
     <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     Aggiungi task
   </button>
-  <div class="btn-group">
-    <button class="btn" onclick="exportPDF()">
-      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="2" stroke="var(--red)" stroke-width="1"/><path d="M4 4h3.5a1.5 1.5 0 010 3H4V4zM4 7h5" stroke="var(--red)" stroke-width="1.1" stroke-linecap="round"/></svg>PDF
-    </button>
-    <button class="btn" onclick="exportPNG()">
-      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="2" stroke="var(--indigo)" stroke-width="1"/><circle cx="4.5" cy="4.5" r="1" fill="var(--indigo)"/><path d="M1 9l3-3 2 2 2-2.5 3 3.5" stroke="var(--indigo)" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>PNG
-    </button>
-  </div>
-  <span style="font-size:11px;color:var(--text3);margin-left:auto">Trascina · Maniglie per ridimensionare</span>
+  <div style="flex:1"></div>
+  <div id="stats-bar" style="margin-bottom:0"></div>
 </div>
 
 <div id="legend">
-  <span style="font-weight:600">Legenda:</span>
-  <div class="leg-item"><div class="leg-sw" style="background:var(--status-ongoing)"></div>On-going</div>
-  <div class="leg-item"><div class="leg-sw" style="background:var(--status-done)"></div>Done</div>
-  <div class="leg-item"><div class="leg-sw" style="background:var(--status-standby)"></div>Stand-by</div>
-  <div class="leg-item"><div class="leg-sw" style="background:var(--status-todo)"></div>Not started</div>
-  <div class="leg-item"><div class="leg-dia" style="background:var(--status-milestone)"></div>Milestone</div>
-  <div class="leg-item"><div class="leg-sw" style="background:#C0D8EF;border:0.5px solid #a0b8d8"></div>Weekend</div>
-  <div class="leg-item"><div class="leg-sw" style="background:#fce8e8;border:0.5px solid #daa"></div>Festività</div>
+  <span style="font-weight:600;color:var(--text2)">Legenda:</span>
+  <div class="leg-item"><div style="width:10px;height:10px;border-radius:50%;background:var(--status-ongoing);flex-shrink:0"></div><span>In corso</span></div>
+  <div class="leg-item"><div style="width:10px;height:10px;border-radius:50%;background:var(--status-done);flex-shrink:0"></div><span>Completate</span></div>
+  <div class="leg-item"><div style="width:10px;height:10px;border-radius:50%;background:var(--status-standby);flex-shrink:0"></div><span>Stand-by</span></div>
+  <div class="leg-item"><div style="width:10px;height:10px;border-radius:50%;background:var(--status-todo);flex-shrink:0"></div><span>Non iniziate</span></div>
+  <div class="leg-item"><div style="width:10px;height:10px;border-radius:50%;background:#EF4444;flex-shrink:0"></div><span>Scaduta</span></div>
+  <div class="leg-item"><div style="width:10px;height:10px;transform:rotate(45deg);background:var(--status-milestone);flex-shrink:0"></div><span>Milestone</span></div>
+  <div class="leg-item"><div style="width:12px;height:10px;border-radius:2px;background:rgba(108,99,255,0.08);border:0.5px solid rgba(108,99,255,0.2);flex-shrink:0"></div><span>Weekend</span></div>
+  <div class="leg-item">
+    <div style="width:12px;height:10px;border-radius:2px;overflow:hidden;flex-shrink:0;background:repeating-linear-gradient(45deg,rgba(239,68,68,0.15) 0px,rgba(239,68,68,0.15) 2px,transparent 2px,transparent 5px)"></div>
+    <span>Festività</span>
+  </div>
 </div>
 
 <!-- Skeleton loader -->
@@ -664,12 +686,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 <!-- Empty state -->
 <div id="gantt-empty">
   <svg width="64" height="64" viewBox="0 0 64 64" fill="none"><rect x="8" y="16" width="48" height="36" rx="6" stroke="var(--text3)" stroke-width="2" fill="none"/><path d="M8 26h48" stroke="var(--text3)" stroke-width="1.5"/><path d="M20 36h12M20 43h8" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/><circle cx="48" cy="42" r="10" fill="var(--indigo)" opacity=".12" stroke="var(--indigo)" stroke-width="1.5"/><path d="M48 38v4M46 42h4" stroke="var(--indigo)" stroke-width="1.5" stroke-linecap="round"/></svg>
-  <h3>Nessun task ancora</h3>
-  <p>Aggiungi il primo task per iniziare a pianificare questo progetto.</p>
-  <button class="btn primary" onclick="openAddModal(null)" style="margin:0 auto;height:34px;padding:0 18px;font-size:13px">
-    <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-    Aggiungi il primo task
-  </button>
+  <h3>Nessun progetto ancora</h3>
+  <p>Crea il primo progetto per iniziare a pianificare le attività.</p>
+  <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+    <button class="btn" onclick="openAddProjectModal()" style="background:#059669;color:#fff;border-color:#047857;height:34px;padding:0 18px;font-size:13px">
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Nuovo progetto
+    </button>
+  </div>
 </div>
 
 <div id="gantt-outer">
@@ -783,6 +807,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
     <div class="modal-btns">
       <button class="btn" onclick="closeModal()">Annulla</button>
       <button class="btn ok" onclick="saveModal()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT PROJECT MODAL -->
+<div class="modal-backdrop" id="project-modal-overlay">
+  <div class="modal" style="width:340px">
+    <h3 id="project-modal-title">Nuovo progetto</h3>
+    <div class="form-row"><label>Nome progetto</label><input id="proj-name-input" type="text" placeholder="Es. Sito Web Cliente X…"></div>
+    <div class="form-row"><label>Colore</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px" id="proj-color-grid"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn" onclick="closeProjectModal()">Annulla</button>
+      <button class="btn ok" onclick="saveProjectModal()">Salva</button>
     </div>
   </div>
 </div>
@@ -1009,7 +1048,7 @@ document.getElementById('challenge-code').addEventListener('keydown', e => { if(
 // ─── GANTT CONFIG ─────────────────────────────────────
 const ROW_H=36, HDR_H=80, HANDLE_W=8;
 let DAY_W=22;
-const TODAY=new Date(2026,3,24); // 24 aprile 2026
+const TODAY=new Date(2026,3,25); // 25 aprile 2026
 const START_DATE=new Date(2026,2,1); // 1 marzo 2026
 const TOTAL_DAYS=365; // un anno intero scrollabile
 
@@ -1408,7 +1447,16 @@ function renderSidebar(rows){
     div.className='sb-row';
     if(r.type==='group'){
       div.classList.add('group-row');
-      div.innerHTML=`<div class="sb-task-part"><div style="width:9px;height:9px;border-radius:2px;background:${r.proj.color};flex-shrink:0;margin:0 4px 0 10px"></div><span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${r.proj.label}</span><div class="row-actions"><button class="ra" onclick="openAddModal('${r.proj.id}')">+</button></div></div><div class="sb-pct-cell"></div>`;
+      const proj=r.proj;
+      div.innerHTML=`<div class="sb-task-part">
+        <div style="width:9px;height:9px;border-radius:2px;background:${proj.color};flex-shrink:0;margin:0 4px 0 10px"></div>
+        <span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${proj.label}</span>
+        <div class="row-actions" style="opacity:0">
+          <button class="ra" title="Aggiungi task" onclick="openAddModal('${proj.id}')" style="font-size:12px">+</button>
+          <button class="ra" title="Rinomina progetto" onclick="openRenameProject('${proj.id}')">✎</button>
+          <button class="ra del" title="Elimina progetto" onclick="deleteProject('${proj.id}')">✕</button>
+        </div>
+      </div><div class="sb-pct-cell"></div>`;
     } else {
       const t=r.task;
       if(selectedTask===t.id) div.classList.add('selected-row');
@@ -1601,7 +1649,7 @@ function renderGantt(rows){
       h+=`<text x="${x+DAY_W/2+s/2+5}" y="${cy}" font-size="10" fill="${col}" dy=".35em" font-weight="700" font-family="-apple-system,sans-serif">${t.label}</text>`;
       return;
     }
-    const barH=isSub?13:20;const barY=cy-barH/2;const rx=barH/2;
+    const barH=isSub?14:ROW_H-8;const barY=cy-barH/2;const rx=isSub?7:6;
     if(!isSub&&w>4) h+=`<rect x="${x+1}" y="${barY+2}" width="${Math.max(2,w-2)}" height="${barH}" rx="${rx}" fill="${col}" opacity="0.15"/>`;
     h+=`<g class="task-bar" data-id="${t.id}"><rect x="${x+1}" y="${barY}" width="${Math.max(2,w-2)}" height="${barH}" rx="${rx}" fill="${col}" opacity="${isSub?0.55:1}" stroke="${sel?'rgba(0,0,0,0.25)':'none'}" stroke-width="${sel?2:0}"/>`;
     if(t.progress>0&&t.progress<100){
@@ -1939,11 +1987,86 @@ function buildEffortStars(val){
 
 function effortBadge(effort){
   const e=Math.max(1,Math.min(5,effort||3));
-  const stars='★'.repeat(e)+'☆'.repeat(5-e);
+  const rockets='🚀'.repeat(e)+'○'.repeat(5-e);
   const bg=[,'#DCFCE7','#F0FDF4','#FEF3C7','#FEF2F2','#FFE4E6'][e];
   const col=EFFORT_COLORS[e];
-  return `<span class="effort-badge" style="background:${bg};color:${col}" title="Effort ${e}/5">${stars}</span>`;
+  return `<span class="effort-badge" style="background:${bg};color:${col}" title="Effort ${e}/5">${rockets}</span>`;
 }
+
+// ─── EXPORT MENU ──────────────────────────────────────
+function toggleExportMenu(){
+  const m=document.getElementById('export-menu');
+  m.style.display=m.style.display==='none'?'block':'none';
+}
+function closeExportMenu(){
+  const m=document.getElementById('export-menu');
+  if(m) m.style.display='none';
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#export-wrap')) closeExportMenu();
+});
+
+// ─── PROJECT CRUD ─────────────────────────────────────
+let editingProjectId=null;
+const PROJ_COLORS=['#6C63FF','#22C55E','#F59E0B','#EF4444','#A855F7','#0891B2','#EC4899','#64748B'];
+
+function openAddProjectModal(){
+  editingProjectId=null;
+  document.getElementById('project-modal-title').textContent='Nuovo progetto';
+  document.getElementById('proj-name-input').value='';
+  buildProjColorGrid('#6C63FF');
+  document.getElementById('project-modal-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('proj-name-input').focus(),100);
+}
+function openRenameProject(id){
+  const pg=curPage();const proj=pg.projects.find(p=>p.id===id);if(!proj)return;
+  editingProjectId=id;
+  document.getElementById('project-modal-title').textContent='Rinomina progetto';
+  document.getElementById('proj-name-input').value=proj.label;
+  buildProjColorGrid(proj.color);
+  document.getElementById('project-modal-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('proj-name-input').focus(),100);
+}
+function buildProjColorGrid(selected){
+  const grid=document.getElementById('proj-color-grid');
+  grid.innerHTML=PROJ_COLORS.map(c=>`<div onclick="selectProjColor('${c}')" style="width:24px;height:24px;border-radius:50%;background:${c};cursor:pointer;${c===selected?'outline:3px solid '+c+';outline-offset:2px;box-shadow:0 0 0 2px white,0 0 0 4px '+c:''}" data-color="${c}"></div>`).join('');
+}
+function selectProjColor(col){
+  document.querySelectorAll('#proj-color-grid div').forEach(d=>{
+    const c=d.dataset.color;const sel=c===col;
+    d.style.outline=sel?`3px solid ${c}`:'none';
+    d.style.boxShadow=sel?`0 0 0 2px white,0 0 0 4px ${c}`:'none';
+  });
+}
+function getSelectedProjColor(){
+  const s=document.querySelector('#proj-color-grid div');
+  if(!s) return PROJ_COLORS[0];
+  let sel=null;
+  document.querySelectorAll('#proj-color-grid div').forEach(d=>{if(d.style.outline&&d.style.outline!=='none')sel=d.dataset.color;});
+  return sel||PROJ_COLORS[0];
+}
+function closeProjectModal(){document.getElementById('project-modal-overlay').classList.remove('open');editingProjectId=null;}
+function saveProjectModal(){
+  const name=document.getElementById('proj-name-input').value.trim();
+  if(!name){document.getElementById('proj-name-input').focus();return;}
+  const color=getSelectedProjColor();const pg=curPage();
+  if(editingProjectId){const proj=pg.projects.find(p=>p.id===editingProjectId);if(proj){proj.label=name;proj.color=color;}}
+  else pg.projects.push({id:'pp'+Date.now(),label:name,color});
+  closeProjectModal();rerender();
+}
+function deleteProject(id){
+  const pg=curPage();const proj=pg.projects.find(p=>p.id===id);if(!proj)return;
+  if(!confirm(`Sei sicuro di voler eliminare il progetto "${proj.label}" e tutte le sue attività?`))return;
+  pg.projects=pg.projects.filter(p=>p.id!==id);
+  pg.tasks=pg.tasks.filter(t=>t.proj!==id);
+  if(selectedTask&&!getT(selectedTask)){selectedTask=null;document.getElementById('detail-panel').classList.remove('open');document.getElementById('gantt-container').style.borderRadius='';}
+  rerender();
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const po=document.getElementById('project-modal-overlay');
+  if(po) po.addEventListener('click',e=>{if(e.target===e.currentTarget)closeProjectModal();});
+});
+
 const VIEW_DAY_W = {day:32, week:16, month:8};
 let currentView = 'day';
 
@@ -2023,8 +2146,10 @@ function rerenderOnly(){
   renderGantt(rows);
   renderStatsBar();
   /* Show/hide gantt vs empty state */
+  const hasProjects = getProjects().length > 0;
   const hasTasks = getTasks().length > 0;
-  document.getElementById('gantt-outer').style.display = hasTasks ? 'flex' : 'none';
+  document.getElementById('gantt-outer').style.display = (hasProjects && hasTasks) ? 'flex' : 'none';
+  document.getElementById('gantt-empty').style.display = (!hasProjects || !hasTasks) ? 'block' : 'none';
   document.getElementById('gantt-empty').style.display = hasTasks ? 'none' : 'block';
 }
 function rerender(){rerenderOnly();scheduleSave();}
