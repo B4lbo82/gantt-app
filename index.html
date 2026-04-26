@@ -60,6 +60,10 @@
     --amber-light:#2a1f04;--red-light:#2d0f0f;
   }
 }
+/* ═══════════════════════════════════════════
+   BASE RESET & BODY
+   Reset box-sizing e stili base del documento
+═══════════════════════════════════════════ */
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13px;font-weight:var(--fw-body)}
 
@@ -94,6 +98,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .app-shell{display:flex;height:100vh;overflow:hidden}
 
 /* ── LEFT NAV ─────────────────────────────── */
+/* ═══════════════════════════════════════════
+   LEFT NAVIGATION
+   Sidebar di navigazione sinistra (scura)
+   - nav-brand: logo + nome app
+   - nav-section: titoli sezioni (Workspace, Progetti, Team)
+   - nav-item: voci di menu singole
+   - nav-bottom: avatar utente + logout
+═══════════════════════════════════════════ */
 #left-nav{width:var(--nav-width);flex-shrink:0;background:var(--nav-bg);display:flex;flex-direction:column;border-right:0.5px solid var(--nav-border);overflow-y:auto;overflow-x:hidden;transition:width .25s ease}
 #left-nav.collapsed{width:44px;overflow:hidden}
 #left-nav.collapsed .nav-brand-name,
@@ -141,6 +153,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .nav-logout:hover{color:#EF4444}
 
 /* ── MAIN CONTENT ─────────────────────────── */
+/* ═══════════════════════════════════════════
+   MAIN CONTENT AREA
+   Area principale: topbar + scrollable content
+═══════════════════════════════════════════ */
 #main-content{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
 #main-topbar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:0.5px solid var(--border);flex-shrink:0;min-height:48px;background:var(--bg)}
 #main-topbar h2{font-size:15px;font-weight:700;color:var(--text)}
@@ -165,6 +181,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .btn-group .btn:last-child{border-right:none}
 #gantt-container{border:0.5px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg)}
 #gantt-scroll{overflow-x:auto}
+/* ═══════════════════════════════════════════
+   GANTT LAYOUT
+   Layout a due colonne:
+   - #sidebar: lista task fissa a sinistra (non scrolla)
+   - #gantt-scroll: griglia calendario scrollabile orizzontalmente
+═══════════════════════════════════════════ */
 /* Gantt layout: sidebar fixed, chart scrolls */
 #gantt-container{display:flex;border:0.5px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg);box-shadow:var(--shadow-md)}
 #sidebar{flex-shrink:0;width:280px;min-width:160px;max-width:480px;border-right:3px solid var(--indigo);display:flex;flex-direction:column;position:relative;background:var(--bg);z-index:2;box-shadow:3px 0 10px rgba(108,99,255,0.1)}
@@ -228,6 +250,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .dep-line{fill:none;stroke:#888780;stroke-width:1.2;stroke-dasharray:4 3;opacity:0.5}
 .today-line{stroke:var(--red);stroke-width:1.5;stroke-dasharray:4 3;opacity:0.8}
 #tooltip{position:fixed;pointer-events:none;background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--text);opacity:0;transition:opacity .12s;z-index:1000;max-width:220px;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+/* ═══════════════════════════════════════════
+   MODALI
+   Backdrop semitrasparente + card modale centrale
+   .modal-backdrop: overlay scuro
+   .modal: contenitore bianco con scroll
+═══════════════════════════════════════════ */
 .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;align-items:flex-start;justify-content:center;padding-top:60px}
 .modal-backdrop.open{display:flex}
 .modal{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:20px;width:360px;max-width:96vw;max-height:80vh;overflow-y:auto}
@@ -332,6 +360,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .date-display.open{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(108,99,255,0.12)}
 .date-display-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text3)}
 .date-display-placeholder{color:var(--text3)}
+/* ═══════════════════════════════════════════
+   DATE PICKER CUSTOM
+   Calendario popup per selezione date nelle form
+   - dp-header: navigazione mese/anno
+   - dp-days: griglia giorni 7x5
+   - dp-year-grid: griglia anni per selezione rapida
+═══════════════════════════════════════════ */
 #dp-popup{position:fixed;background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);box-shadow:0 8px 32px rgba(0,0,0,0.14);z-index:9000;width:280px;padding:0;display:none;overflow:hidden}
 .dp-header{display:flex;align-items:center;padding:12px 14px 8px;gap:4px}
 .dp-nav{width:28px;height:28px;border:none;border-radius:50%;background:var(--bg2);color:var(--text2);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
@@ -359,7 +394,83 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .dp-year-item:hover{background:var(--indigo-light);color:var(--indigo)}
 .dp-year-item.selected{background:var(--indigo);color:#fff}
 
-/* ── MODAL HEADER & CLOSE ───────────────── */
+/* ═══════════════════════════════════════════
+   CARDS MODAL
+   Pannello note evoluto in sistema di card.
+   Ogni task può avere N card (titolo + corpo rich text + link + data).
+   - .card-item: singola card nella lista
+   - .card-header: titolo card + azioni (modifica/elimina)
+   - .card-body: contenuto rich text (Quill)
+   - .card-add-btn: pulsante per aggiungere nuova card
+═══════════════════════════════════════════ */
+#cards-modal{width:680px;max-width:96vw;max-height:90vh;overflow-y:auto;display:flex;flex-direction:column}
+.cards-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.card-item{border:0.5px solid var(--border2);border-radius:var(--radius-lg);background:var(--bg);overflow:hidden;transition:box-shadow .15s}
+.card-item:hover{box-shadow:var(--shadow-sm)}
+/* Barra colorata laterale che indica lo status del task */
+.card-item-bar{width:4px;flex-shrink:0;border-radius:2px 0 0 2px}
+.card-inner{display:flex;flex:1;min-width:0}
+.card-content{flex:1;padding:10px 12px;min-width:0}
+.card-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.card-title-input{flex:1;font-size:13px;font-weight:600;color:var(--text);border:none;background:transparent;outline:none;padding:0;min-width:0}
+.card-title-input::placeholder{color:var(--text3);font-weight:400}
+.card-meta{font-size:10px;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+/* Editor Quill dentro le card: stile compatto */
+.card-quill-wrap{min-height:60px;max-height:300px;overflow-y:auto}
+.card-quill-wrap .ql-toolbar{border-radius:var(--radius) var(--radius) 0 0;border-color:var(--border2);padding:4px 6px}
+.card-quill-wrap .ql-container{border-radius:0 0 var(--radius) var(--radius);border-color:var(--border2);font-size:12px;min-height:50px}
+.card-actions{display:flex;gap:4px;flex-shrink:0;padding:8px 8px 8px 0;align-items:flex-start}
+.card-action-btn{width:26px;height:26px;border:0.5px solid var(--border2);border-radius:50%;background:var(--bg2);color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .12s}
+.card-action-btn:hover{background:var(--red-light);border-color:var(--red);color:var(--red)}
+.card-add-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border:1.5px dashed var(--border2);border-radius:var(--radius-lg);background:transparent;color:var(--text3);cursor:pointer;font-size:13px;width:100%;transition:all .15s}
+.card-add-btn:hover{border-color:var(--indigo);color:var(--indigo);background:var(--indigo-light)}
+/* Badge "N card" nella sidebar accanto al pulsante note */
+.cards-count-badge{font-size:9px;background:var(--indigo);color:#fff;border-radius:8px;padding:1px 5px;font-weight:700}
+
+/* ═══════════════════════════════════════════
+   KANBAN BOARD
+   Vista alternativa al Gantt: colonne per status.
+   - #kanban-wrap: contenitore orizzontale delle colonne
+   - .kb-col: singola colonna (uno per status)
+   - .kb-col-header: intestazione colonna con nome + count
+   - .kb-cards: lista card nella colonna (droppable)
+   - .kb-card: singola task card nella colonna
+   Il drag & drop aggiorna lo status del task in tempo reale.
+═══════════════════════════════════════════ */
+#kanban-wrap{display:none;gap:12px;padding:4px 2px;overflow-x:auto;min-height:400px}
+#kanban-wrap.active{display:flex}
+.kb-col{flex:0 0 260px;display:flex;flex-direction:column;gap:8px}
+.kb-col-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--radius-lg);background:var(--bg2);border:0.5px solid var(--border)}
+.kb-col-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.kb-col-title{font-size:12px;font-weight:700;color:var(--text);flex:1;text-transform:uppercase;letter-spacing:.04em}
+.kb-col-count{font-size:11px;color:var(--text3);background:var(--bg3);border-radius:10px;padding:1px 7px}
+.kb-cards{display:flex;flex-direction:column;gap:7px;min-height:80px;padding:4px 2px;flex:1}
+/* Zona di drop evidenziata durante drag */
+.kb-cards.drag-over{background:var(--indigo-light);border-radius:var(--radius-lg);border:2px dashed var(--indigo)}
+/* Card singola nel kanban */
+.kb-card{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:10px 12px;cursor:grab;box-shadow:var(--shadow-sm);transition:all .12s;border-left:3px solid transparent}
+.kb-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.kb-card.dragging{opacity:.4;cursor:grabbing}
+.kb-card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.3}
+.kb-card-proj{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;opacity:.7}
+.kb-card-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}
+.kb-card-date{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:3px}
+.kb-card-avatars{display:flex;gap:2px;margin-left:auto}
+.kb-card-cards-count{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:3px;cursor:pointer}
+.kb-card-cards-count:hover{color:var(--indigo)}
+/* Barra effort sotto la card */
+.kb-card-effort{margin-top:6px;display:flex;gap:2px}
+.kb-effort-dot{width:6px;height:4px;border-radius:2px;background:var(--border2)}
+.kb-effort-dot.filled{background:var(--indigo)}
+/* Toggle Gantt/Kanban nella topbar */
+.view-mode-toggle{display:flex;border:0.5px solid var(--border2);border-radius:var(--radius);overflow:hidden;background:var(--bg2)}
+.view-mode-btn{border:none;background:transparent;padding:0 10px;height:28px;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s}
+.view-mode-btn:hover{background:var(--bg3);color:var(--text)}
+.view-mode-btn.active{background:var(--indigo);color:#fff}
+/* Empty Kanban state */
+.kb-empty{text-align:center;padding:24px 12px;color:var(--text3);font-size:12px;border:1px dashed var(--border2);border-radius:var(--radius-lg)}
+
+
 .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .modal-header-title{font-size:14px;font-weight:700;color:var(--text)}
 .modal-close-btn{width:28px;height:28px;border:0.5px solid var(--border2);border-radius:50%;background:var(--bg2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:all .12s;flex-shrink:0}
@@ -703,9 +814,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
     <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     Aggiungi task
   </button>
+  <!-- Toggle Gantt ↔ Kanban -->
+  <div class="view-mode-toggle" title="Cambia vista">
+    <button class="view-mode-btn active" id="vmode-gantt" onclick="setViewMode('gantt')">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="2" rx="1" fill="currentColor" opacity=".5"/><rect x="1" y="5.5" width="7" height="2" rx="1" fill="currentColor"/><rect x="1" y="9" width="9" height="2" rx="1" fill="currentColor" opacity=".7"/></svg>
+      Gantt
+    </button>
+    <button class="view-mode-btn" id="vmode-kanban" onclick="setViewMode('kanban')">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="3" height="11" rx="1" fill="currentColor" opacity=".7"/><rect x="5" y="1" width="3" height="8" rx="1" fill="currentColor"/><rect x="9" y="1" width="3" height="9" rx="1" fill="currentColor" opacity=".8"/></svg>
+      Kanban
+    </button>
+  </div>
   <div style="flex:1"></div>
   <div id="stats-bar" style="margin-bottom:0"></div>
 </div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     KANBAN BOARD
+     Vista alternativa al Gantt: task organizzati in colonne per status.
+     Visibile solo quando setViewMode('kanban') è attivo.
+     Ogni colonna corrisponde a uno status (todo/active/standby/done).
+     Il drag & drop tra colonne aggiorna lo status del task.
+     Popolato da renderKanban() in JS.
+═══════════════════════════════════════════════════════════ -->
+<div id="kanban-wrap"></div>
 
 <div id="legend">
   <span style="font-weight:600;color:var(--text2)">Legenda:</span>
@@ -1040,28 +1172,59 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
   </div>
 </div>
 
-<!-- NOTES MODAL -->
-<div class="modal-backdrop" id="notes-overlay">
+<!-- ═══════════════════════════════════════════════════════════
+     CARDS MODAL
+     Sostituisce il vecchio editor note con un sistema di card.
+     Ogni card ha: titolo, corpo rich text, data creazione.
+     Le card sono associate al singolo task (t.cards[]).
+═══════════════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="cards-overlay">
+  <div class="modal" id="cards-modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-header-title" id="cards-modal-title">📋 Note & Card</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px" id="cards-modal-subtitle"></div>
+      </div>
+      <button class="modal-close-btn" onclick="closeCardsModal()" title="Chiudi">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <!-- Lista card esistenti: popolata dinamicamente da renderCardsModal() -->
+    <div id="cards-list" class="cards-list"></div>
+    <!-- Pulsante aggiungi nuova card -->
+    <button class="card-add-btn" onclick="addCard()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Aggiungi card
+    </button>
+    <div class="modal-btns" style="margin-top:14px">
+      <div class="notes-export-btns">
+        <button class="btn" onclick="exportCardsWord()">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="var(--indigo-dark)" stroke-width="1"/><path d="M3 4l1.5 4L6 5l1.5 3L9 4" stroke="var(--indigo-dark)" stroke-width="1" stroke-linecap="round"/></svg>Word
+        </button>
+        <button class="btn" onclick="exportCardsPDF()">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="var(--red)" stroke-width="1"/><path d="M3.5 3.5h3a1.5 1.5 0 010 3H3.5V3.5zM3.5 6.5h5" stroke="var(--red)" stroke-width="1"/></svg>PDF
+        </button>
+      </div>
+      <button class="btn" onclick="closeCardsModal()">Chiudi</button>
+      <button class="btn ok" onclick="saveCards()">Salva tutte le card</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     LEGACY NOTES MODAL (mantenuto per compatibilità export)
+     Visibile solo per exportNotesWord / exportNotesPDF
+     Non viene più aperto direttamente — ora si usa #cards-overlay
+═══════════════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="notes-overlay" style="display:none!important">
   <div class="modal" id="notes-modal">
-    <h3>
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M3 1h7l3 3v10H3V1z" stroke="var(--indigo)" stroke-width="1.3" fill="none" stroke-linejoin="round"/><path d="M10 1v3h3M5 6h5M5 8.5h5M5 11h3" stroke="var(--indigo)" stroke-width="1.1" stroke-linecap="round"/></svg>
-      <span id="notes-modal-title">Note</span>
-    </h3>
+    <h3><span id="notes-modal-title">Note</span></h3>
     <div class="notes-subtitle" id="notes-modal-subtitle"></div>
-    <div id="notes-editor-wrap">
+    <div id="notes-editor-wrap" style="display:none">
       <div id="notes-quill-editor"></div>
     </div>
     <div class="modal-btns">
-      <div class="notes-export-btns">
-        <button class="btn" onclick="exportNotesWord()">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="var(--indigo-dark)" stroke-width="1"/><path d="M3 4l1.5 4L6 5l1.5 3L9 4" stroke="var(--indigo-dark)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>Word
-        </button>
-        <button class="btn" onclick="exportNotesPDF()">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="var(--red)" stroke-width="1"/><path d="M3.5 3.5h3a1.5 1.5 0 010 3H3.5V3.5zM3.5 6.5h5" stroke="var(--red)" stroke-width="1" stroke-linecap="round"/></svg>PDF
-        </button>
-      </div>
-      <button class="btn" onclick="closeNotesModal()">Annulla</button>
-      <button class="btn ok" onclick="saveNotes()">Salva note</button>
+      <button class="btn" onclick="document.getElementById('notes-overlay').classList.remove('open')">Chiudi</button>
     </div>
   </div>
 </div>
@@ -1255,6 +1418,14 @@ const fromISO=s=>{const p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2])};
 const isoKey=dt=>dt.getFullYear()+'-'+(dt.getMonth()+1)+'-'+dt.getDate();
 const uid=()=>'t'+Date.now()+Math.random().toString(36).slice(2,6);
 
+// ═══════════════════════════════════════════════════════════
+// COSTANTI E CONFIGURAZIONE
+// FEST: giorni festivi italiani 2026 (formato YYYY-M-D)
+// START_DATE: inizio timeline | TODAY: data odierna
+// TOTAL_DAYS: giorni totali nella timeline (365 = 1 anno)
+// ROW_H: altezza riga px | HDR_H: altezza header px | HANDLE_W: larghezza maniglie resize
+// DAY_W: larghezza colonna giorno (varia con lo zoom: 32/16/8 px)
+// ═══════════════════════════════════════════════════════════
 const FEST=new Set(['2026-1-1','2026-1-6','2026-4-5','2026-4-6','2026-4-25','2026-5-1','2026-6-2','2026-8-15','2026-11-1','2026-12-8','2026-12-25','2026-12-26']);
 const isFest=dt=>FEST.has(isoKey(dt));
 const isWE=dt=>{const d=dt.getDay();return d===0||d===6};
@@ -1309,6 +1480,13 @@ COLOR_PRESETS.forEach(c=>{
 });
 
 // ─── RESOURCE POOL ────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// RESOURCE POOL
+// Pool centralizzato di tutte le risorse disponibili.
+// Ogni risorsa ha: id, name, role, category, color.
+// Categorie: Sviluppatori (6), Content Manager (4), Project Manager (4)
+// RES_BY_ID: dizionario {id → risorsa} per lookup veloce
+// ═══════════════════════════════════════════════════════════
 const RESOURCE_POOL = [
   // Sviluppatori (6)
   {id:'r1', name:'Marco Ferretti',   role:'Senior Dev',      category:'Sviluppatori', color:'#378ADD'},
@@ -1333,6 +1511,23 @@ RESOURCE_POOL.forEach(r=>RES_BY_ID[r.id]=r);
 const resById = id => RES_BY_ID[id] || {name:id, color:'#888', role:'', category:''};
 
 // ─── PAGES ────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// STRUTTURA DATI PRINCIPALE
+// pages[]: array di pagine (una per cliente/workspace)
+//   └─ page.id, page.label
+//   └─ page.projects[]: array progetti nella pagina
+//        └─ project.id, project.label, project.color
+//   └─ page.tasks[]: array task nella pagina
+//        └─ task.id, task.proj (FK → project.id)
+//        └─ task.label, task.start, task.end (Date)
+//        └─ task.progress (0-100), task.status (todo/active/standby/done/milestone)
+//        └─ task.resources[] (array di resource id)
+//        └─ task.deps[] (array di task id da cui dipende)
+//        └─ task.parentId (FK → task.id padre, per subtask)
+//        └─ task.effort (1-5), task.notes (HTML string)
+//        └─ task.isMilestone (bool), task.icon, task.color
+// currentPageId: id della pagina attualmente visualizzata
+// ═══════════════════════════════════════════════════════════
 let pages = [
   {
     id:'pg1', label:'Cliente A',
@@ -1342,23 +1537,23 @@ let pages = [
       {id:'p3',label:'Campagna Marketing',color:'#EF9F27'},
     ],
     tasks:[
-      {id:'t1',proj:'p1',label:'Wireframe & UX',start:D(2026,2,2),end:D(2026,2,16),progress:100,status:'done',color:'#639922',icon:'doc',resources:['r1','r2'],deps:[],parentId:null,effort:3,notes:''},
-      {id:'t2',proj:'p1',label:'Design UI',start:D(2026,2,16),end:D(2026,3,2),progress:80,status:'active',color:'#378ADD',icon:'star',resources:['r2'],deps:['t1'],parentId:null,effort:3,notes:''},
-      {id:'t2a',proj:'p1',label:'Homepage',start:D(2026,2,16),end:D(2026,2,23),progress:100,status:'done',color:'#639922',icon:'home',resources:['r2'],deps:[],parentId:'t2',effort:3,notes:''},
-      {id:'t2b',proj:'p1',label:'Pagine interne',start:D(2026,2,23),end:D(2026,3,2),progress:60,status:'active',color:'#378ADD',icon:'doc',resources:['r2','r3'],deps:[],parentId:'t2',effort:3,notes:''},
-      {id:'t3',proj:'p1',label:'Sviluppo frontend',start:D(2026,3,2),end:D(2026,3,23),progress:30,status:'active',color:'#378ADD',icon:'gear',resources:['r1'],deps:['t2'],parentId:null,effort:3,notes:''},
-      {id:'t4',proj:'p1',label:'Test & QA',start:D(2026,3,23),end:D(2026,4,6),progress:0,status:'todo',color:'#B4B2A9',icon:'bug',resources:[],deps:['t3'],parentId:null,effort:3,notes:''},
-      {id:'m1',proj:'p1',label:'Go-live sito',start:D(2026,4,6),end:D(2026,4,6),progress:0,status:'milestone',color:'#534AB7',icon:'rocket',resources:[],deps:['t4'],parentId:null,isMilestone:true,effort:3,notes:''},
-      {id:'t5',proj:'p2',label:'Architettura & setup',start:D(2026,2,9),end:D(2026,2,23),progress:100,status:'done',color:'#639922',icon:'gear',resources:['r4'],deps:[],parentId:null,effort:3,notes:''},
-      {id:'t6',proj:'p2',label:'Modulo autenticazione',start:D(2026,2,23),end:D(2026,3,9),progress:60,status:'active',color:'#378ADD',icon:'lock',resources:['r4'],deps:['t5'],parentId:null,effort:3,notes:''},
-      {id:'t6a',proj:'p2',label:'Login / Register',start:D(2026,2,23),end:D(2026,3,2),progress:100,status:'done',color:'#639922',icon:'person',resources:['r4'],deps:[],parentId:'t6',effort:3,notes:''},
-      {id:'t6b',proj:'p2',label:'OAuth Google',start:D(2026,3,2),end:D(2026,3,9),progress:20,status:'active',color:'#378ADD',icon:'link',resources:['r4','r5'],deps:[],parentId:'t6',effort:3,notes:''},
-      {id:'t7',proj:'p2',label:'Dashboard & notifiche',start:D(2026,3,9),end:D(2026,3,30),progress:10,status:'active',color:'#378ADD',icon:'chart',resources:['r5'],deps:['t6'],parentId:null,effort:3,notes:''},
-      {id:'t8',proj:'p2',label:'Beta testing',start:D(2026,3,30),end:D(2026,4,27),progress:0,status:'todo',color:'#B4B2A9',icon:'bug',resources:[],deps:['t7'],parentId:null,effort:3,notes:''},
-      {id:'m2',proj:'p2',label:'Release v1.0',start:D(2026,4,27),end:D(2026,4,27),progress:0,status:'milestone',color:'#534AB7',icon:'rocket',resources:[],deps:['t8'],parentId:null,isMilestone:true,effort:3,notes:''},
-      {id:'t9',proj:'p3',label:'Definizione strategia',start:D(2026,2,2),end:D(2026,2,16),progress:100,status:'done',color:'#639922',icon:'flag',resources:['r7'],deps:[],parentId:null,effort:3,notes:''},
-      {id:'t10',proj:'p3',label:'Produzione contenuti',start:D(2026,2,16),end:D(2026,3,16),progress:45,status:'standby',color:'#EF9F27',icon:'doc',resources:['r7','r1'],deps:['t9'],parentId:null,effort:3,notes:''},
-      {id:'t11',proj:'p3',label:'Lancio campagna',start:D(2026,3,16),end:D(2026,4,27),progress:0,status:'todo',color:'#B4B2A9',icon:'mail',resources:[],deps:['t10'],parentId:null,effort:3,notes:''},
+      {id:'t1',proj:'p1',label:'Wireframe & UX',start:D(2026,2,2),end:D(2026,2,16),progress:100,status:'done',color:'#639922',icon:'doc',resources:['r1','r2'],deps:[],parentId:null,effort:3,cards:[]},
+      {id:'t2',proj:'p1',label:'Design UI',start:D(2026,2,16),end:D(2026,3,2),progress:80,status:'active',color:'#378ADD',icon:'star',resources:['r2'],deps:['t1'],parentId:null,effort:3,cards:[]},
+      {id:'t2a',proj:'p1',label:'Homepage',start:D(2026,2,16),end:D(2026,2,23),progress:100,status:'done',color:'#639922',icon:'home',resources:['r2'],deps:[],parentId:'t2',effort:3,cards:[]},
+      {id:'t2b',proj:'p1',label:'Pagine interne',start:D(2026,2,23),end:D(2026,3,2),progress:60,status:'active',color:'#378ADD',icon:'doc',resources:['r2','r3'],deps:[],parentId:'t2',effort:3,cards:[]},
+      {id:'t3',proj:'p1',label:'Sviluppo frontend',start:D(2026,3,2),end:D(2026,3,23),progress:30,status:'active',color:'#378ADD',icon:'gear',resources:['r1'],deps:['t2'],parentId:null,effort:3,cards:[]},
+      {id:'t4',proj:'p1',label:'Test & QA',start:D(2026,3,23),end:D(2026,4,6),progress:0,status:'todo',color:'#B4B2A9',icon:'bug',resources:[],deps:['t3'],parentId:null,effort:3,cards:[]},
+      {id:'m1',proj:'p1',label:'Go-live sito',start:D(2026,4,6),end:D(2026,4,6),progress:0,status:'milestone',color:'#534AB7',icon:'rocket',resources:[],deps:['t4'],parentId:null,isMilestone:true,effort:3,cards:[]},
+      {id:'t5',proj:'p2',label:'Architettura & setup',start:D(2026,2,9),end:D(2026,2,23),progress:100,status:'done',color:'#639922',icon:'gear',resources:['r4'],deps:[],parentId:null,effort:3,cards:[]},
+      {id:'t6',proj:'p2',label:'Modulo autenticazione',start:D(2026,2,23),end:D(2026,3,9),progress:60,status:'active',color:'#378ADD',icon:'lock',resources:['r4'],deps:['t5'],parentId:null,effort:3,cards:[]},
+      {id:'t6a',proj:'p2',label:'Login / Register',start:D(2026,2,23),end:D(2026,3,2),progress:100,status:'done',color:'#639922',icon:'person',resources:['r4'],deps:[],parentId:'t6',effort:3,cards:[]},
+      {id:'t6b',proj:'p2',label:'OAuth Google',start:D(2026,3,2),end:D(2026,3,9),progress:20,status:'active',color:'#378ADD',icon:'link',resources:['r4','r5'],deps:[],parentId:'t6',effort:3,cards:[]},
+      {id:'t7',proj:'p2',label:'Dashboard & notifiche',start:D(2026,3,9),end:D(2026,3,30),progress:10,status:'active',color:'#378ADD',icon:'chart',resources:['r5'],deps:['t6'],parentId:null,effort:3,cards:[]},
+      {id:'t8',proj:'p2',label:'Beta testing',start:D(2026,3,30),end:D(2026,4,27),progress:0,status:'todo',color:'#B4B2A9',icon:'bug',resources:[],deps:['t7'],parentId:null,effort:3,cards:[]},
+      {id:'m2',proj:'p2',label:'Release v1.0',start:D(2026,4,27),end:D(2026,4,27),progress:0,status:'milestone',color:'#534AB7',icon:'rocket',resources:[],deps:['t8'],parentId:null,isMilestone:true,effort:3,cards:[]},
+      {id:'t9',proj:'p3',label:'Definizione strategia',start:D(2026,2,2),end:D(2026,2,16),progress:100,status:'done',color:'#639922',icon:'flag',resources:['r7'],deps:[],parentId:null,effort:3,cards:[]},
+      {id:'t10',proj:'p3',label:'Produzione contenuti',start:D(2026,2,16),end:D(2026,3,16),progress:45,status:'standby',color:'#EF9F27',icon:'doc',resources:['r7','r1'],deps:['t9'],parentId:null,effort:3,cards:[]},
+      {id:'t11',proj:'p3',label:'Lancio campagna',start:D(2026,3,16),end:D(2026,4,27),progress:0,status:'todo',color:'#B4B2A9',icon:'mail',resources:[],deps:['t10'],parentId:null,effort:3,cards:[]},
     ]
   }
 ];
@@ -1373,6 +1568,12 @@ function setTasks(arr){ curPage().tasks=arr; }
 /* Proxy: tasks e PROJECTS puntano sempre alla pagina corrente */
 let PROJECTS = getProjects();
 let tasks = getTasks();
+// ═══════════════════════════════════════════════════════════
+// PAGE HELPERS
+// curPage(): restituisce la pagina corrente
+// getProjects()/getTasks()/setTasks(): getters/setter sulla pagina corrente
+// syncPageData(): aggiorna i proxy PROJECTS e tasks dopo cambio pagina
+// ═══════════════════════════════════════════════════════════
 function syncPageData(){ PROJECTS=getProjects(); tasks=getTasks(); }
 
 // ─── PERSISTENZA SUPABASE ─────────────────────────────
@@ -1402,6 +1603,9 @@ function deserializeState(raw){
         ...t,
         start: new Date(t.start),
         end:   new Date(t.end),
+        // Migrazione: se il task ha note ma non cards, creo array vuoto
+        // La migrazione vera avviene in openCardsModal() al primo accesso
+        cards: t.cards || [],
       }))
     }));
     currentPageId = pages[0]?.id || currentPageId;
@@ -1433,6 +1637,15 @@ function setSaveStatus(state){
   }
 }
 
+// ═══════════════════════════════════════════════════════════
+// PERSISTENZA SUPABASE
+// Salvataggio/caricamento dei dati su Supabase.
+// - saveToSupabase(): serializza stato → upsert su planner_data
+// - loadFromSupabase(): carica JSON → deserializza stato
+// - scheduleSave(): debounce 1.5s per evitare troppe chiamate
+// - serializeState(): converte Date → ISO string per JSON
+// - deserializeState(): ricostruisce Date dagli ISO string
+// ═══════════════════════════════════════════════════════════
 async function saveToSupabase(){
   try {
     setSaveStatus('saving');
@@ -1472,6 +1685,14 @@ function scheduleSave(){
 // ─── REALTIME ─────────────────────────────────────────
 let realtimeChannel = null;
 
+// ═══════════════════════════════════════════════════════════
+// REALTIME SUPABASE
+// Sottoscrizione WebSocket: quando un altro utente salva,
+// il client riceve l'aggiornamento e fa rerender senza ricaricare.
+// - subscribeRealtime(): apre il canale WebSocket
+// - unsubscribeRealtime(): chiude il canale (es. al logout)
+// - showRealtimeToast(): notifica "X ha aggiornato il planner"
+// ═══════════════════════════════════════════════════════════
 async function subscribeRealtime(){
   const { data:{ user } } = await sb.auth.getUser();
   const myId = user?.id;
@@ -1598,6 +1819,13 @@ function renamePage(e, id){
 }
 
 // ─── ROWS ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// COSTRUZIONE RIGHE
+// buildRows(): costruisce l'array di righe per sidebar e SVG.
+// Ogni riga è {type: 'group'|'task', proj, task, indent}
+// - type='group': riga intestazione progetto
+// - type='task': riga task o subtask (indent=0 o 1)
+// ═══════════════════════════════════════════════════════════
 function buildRows(){
   const rows=[];
   getProjects().forEach(p=>{
@@ -1630,6 +1858,14 @@ function resDisplayName(idOrName){
 }
 
 // ─── SIDEBAR ──────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// RENDER SIDEBAR
+// Genera il DOM della sidebar sinistra:
+// - sb-head: search box + intestazioni colonne
+// - sb-rows: una riga per gruppo (progetto) e per task/subtask
+// Ogni riga task ha: icona, nome, badge %, bottoni azione (✎ ✕ 🔗 📋)
+// I bottoni progetto (gruppo) appaiono al hover: + ✎ ✕
+// ═══════════════════════════════════════════════════════════
 function renderSidebar(rows){
   const sb=document.getElementById('sb-rows');
   sb.innerHTML='';
@@ -1657,8 +1893,9 @@ function renderSidebar(rows){
       const resH=t.resources&&t.resources.length?`<span class="row-res">${t.resources.slice(0,2).map(r=>resDisplayName(r).split(' ')[0]).join(', ')}${t.resources.length>2?'+':''}</span>` :'';
       const pB=r.indent>0?`<button class="ra" title="Promuovi" onclick="promoteTask('${t.id}')">↑</button>`:'';
       const dB=r.indent===0&&!t.isMilestone?`<button class="ra" title="Converti subtask" onclick="openDemoteModal('${t.id}')">↓</button>`:'';
-      const hasNotes=t.notes&&t.notes.trim()&&t.notes!=='<p><br></p>';
-      const noteBtn=`<button class="ra${hasNotes?' notes-has-content':''}" title="Note" onclick="openNotesModal('${t.id}')" style="font-size:12px">📋</button>`;
+      const hasCards=t.cards&&t.cards.filter(c=>c.body&&c.body!=='<p><br></p>').length>0;
+      const cardsCount=t.cards?t.cards.length:0;
+      const noteBtn=`<button class="ra${hasCards?' notes-has-content':''}" title="${cardsCount>0?cardsCount+' card':'Note'}" onclick="openCardsModal('${t.id}')" style="font-size:12px">📋${cardsCount>0?`<span class='cards-count-badge' style='font-size:8px;margin-left:1px'>${cardsCount}</span>`:''}</button>`;
       const linkBtn=`<button class="ra link-btn" title="Copia link diretto" onclick="copyTaskLink('${t.id}')">🔗</button>`;
       div.innerHTML=`<div class="sb-task-part"><div style="width:${indent}px;flex-shrink:0"></div>${iconH}<span class="row-label" onclick="selectTask('${t.id}')" title="${t.label}">${t.label}</span><div class="row-actions">${pB}${dB}${linkBtn}${noteBtn}<button class="ra" onclick="openEditModal('${t.id}')">✎</button><button class="ra del" onclick="deleteTask('${t.id}')">✕</button></div></div><div class="sb-pct-cell">${pctBadge(t.progress,t.status)}</div>`;
     }
@@ -1667,6 +1904,14 @@ function renderSidebar(rows){
 }
 
 // ─── HEADER SVG ───────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// RENDER HEADER SVG
+// Disegna l'intestazione del calendario (SVG).
+// Si adatta alla vista corrente (currentView):
+// - 'day': mese bold + riga lettere + riga numeri con cerchio oggi
+// - 'week': mese bold + blocchi settimana (W10, 3-9 mar)
+// - 'month': anno + colonne mese abbreviate (Gen 31g)
+// ═══════════════════════════════════════════════════════════
 function renderHeader(){
   const svg=document.getElementById('header-svg');
   const W=svgW();
@@ -1831,6 +2076,18 @@ function renderHeader(){
 }
 
 
+// ═══════════════════════════════════════════════════════════
+// RENDER GANTT SVG
+// Disegna il corpo del Gantt (SVG):
+// 1. Sfondo: colori colonne weekend/festività
+// 2. Separatori riga
+// 3. Linea/colonna oggi (rossa)
+// 4. Barre task: pill arrotondate, colore da STATUS_COLOR_MAP
+//    - task principale: altezza ROW_H-8 (riempie la riga)
+//    - subtask: altezza 14px (più sottile)
+//    - milestone: rombo
+// 5. Frecce dipendenza: curve viola con punta di freccia
+// ═══════════════════════════════════════════════════════════
 // ─── GANTT SVG ────────────────────────────────────────
 function renderGantt(rows){
   const svg=document.getElementById('gantt-svg');
@@ -1991,6 +2248,12 @@ document.addEventListener('keydown', e=>{
   }
 });
 
+// ═══════════════════════════════════════════════════════════
+// CRUD TASK
+// deleteTask(id): elimina task + subtask, con confirm dialog
+// selectTask(id): apre il pannello dettaglio laterale
+// closeDetailPanel(): chiude il pannello dettaglio
+// ═══════════════════════════════════════════════════════════
 function deleteTask(id){
   const t=getT(id); if(!t) return;
   const label = t.label;
@@ -2066,6 +2329,14 @@ function updateParentOptions(){
   par.innerHTML=opts.map(t=>`<option value="${t.id}">${t.label}</option>`).join('');
 }
 
+// ═══════════════════════════════════════════════════════════
+// MODAL TASK (AGGIUNGI / MODIFICA)
+// openAddModal(projId): apre il modal in modalità creazione
+// openEditModal(id): apre il modal in modalità modifica
+// closeModal() / saveModal(): chiusura e salvataggio
+// Le sezioni del modal sono riordinabili via drag & drop.
+// L'ordine viene salvato in localStorage (MODAL_ORDER_KEY).
+// ═══════════════════════════════════════════════════════════
 function openAddModal(projId){
   editingId=null;
   document.getElementById('modal-title').textContent='Nuovo task';
@@ -2124,7 +2395,7 @@ function saveModal(){
   if(!name){document.getElementById('f-name').focus();return;}
   pushUndo();
   if(editingId){const t=getT(editingId);if(t)Object.assign(t,{label:name,proj,parentId,start:startVal,end:endVal,progress,status,color,icon,resources,deps,effort,isMilestone:type==='milestone'});}
-  else getTasks().push({id:uid(),proj,label:name,start:startVal,end:endVal,progress,status,color,icon,resources,deps,effort,parentId,isMilestone:type==='milestone',notes:''});
+  else getTasks().push({id:uid(),proj,label:name,start:startVal,end:endVal,progress,status,color,icon,resources,deps,effort,parentId,isMilestone:type==='milestone',notes:'',cards:[]});
   closeModal();rerender();
 }
 
@@ -2392,12 +2663,24 @@ function rerenderOnly(){
   renderPageTabs();
   renderNavProjects();
   renderSidebar(rows);
-  renderHeader();
-  renderGantt(rows);
   renderStatsBar();
   updateTaskBtnState();
   const hasProjects=getProjects().length>0;
   const hasTasks=getTasks().length>0;
+  /* Se siamo in modalità Kanban, aggiorna quella vista */
+  if(currentViewMode==='kanban'){
+    document.getElementById('gantt-outer').style.display='none';
+    document.getElementById('gantt-empty').style.display='none';
+    document.getElementById('legend').style.display='none';
+    document.getElementById('kanban-wrap').classList.add('active');
+    renderKanban();
+    return;
+  }
+  /* Altrimenti renderizza il Gantt normale */
+  renderHeader();
+  renderGantt(rows);
+  document.getElementById('kanban-wrap').classList.remove('active');
+  document.getElementById('legend').style.display='';
   document.getElementById('gantt-outer').style.display=(hasProjects&&hasTasks)?'flex':'none';
   document.getElementById('gantt-empty').style.display=(!hasProjects||!hasTasks)?'block':'none';
   ensureScrollSync();
@@ -2678,6 +2961,13 @@ function exportNotesPDF(){
   });
 }
 
+// ═══════════════════════════════════════════════════════════
+// RICERCA
+// onSearchInput(): filtra i task in tempo reale
+// onSearchKey(): gestisce Enter (naviga al primo risultato)
+// clearSearch(): pulisce il campo e nasconde i suggerimenti
+// jumpToTask(id): scrolla e flasha il task nella sidebar
+// ═══════════════════════════════════════════════════════════
 // ─── SEARCH ───────────────────────────────────────────
 let searchHighlightIndex = -1;
 
@@ -2891,6 +3181,15 @@ document.getElementById('res-manager-overlay').addEventListener('click',e=>{if(e
 const INITIAL_HASH = location.hash || sessionStorage.getItem('deepLinkHash') || '';
 if(location.hash.startsWith('#task/')) sessionStorage.setItem('deepLinkHash', location.hash);
 
+// ═══════════════════════════════════════════════════════════
+// DEEP LINKING
+// copyTaskLink(id): copia l'URL diretto al task negli appunti
+//   Formato: https://app.vercel.app/#task/[id]
+// handleDeepLink(): al caricamento, legge l'hash URL e
+//   naviga automaticamente al task indicato
+// INITIAL_HASH: hash catturato prima di qualsiasi operazione async
+// sessionStorage: backup dell'hash per resistere ai redirect 2FA
+// ═══════════════════════════════════════════════════════════
 function copyTaskLink(id){
   const url = `${location.origin}${location.pathname}#task/${id}`;
   navigator.clipboard.writeText(url).then(()=>{
@@ -2952,10 +3251,10 @@ function handleDeepLink(){
           freshRow.classList.add('search-match');
           setTimeout(()=>freshRow.classList.remove('search-match'), 3600);
         }
-        /* Apri automaticamente le note se presenti */
+        /* Apri automaticamente le card se ce ne sono */
         const t = getT(taskId);
-        if(t && t.notes && t.notes.trim() && t.notes !== '<p><br></p>'){
-          setTimeout(()=>openNotesModal(taskId), 600);
+        if(t && t.cards && t.cards.length>0){
+          setTimeout(()=>openCardsModal(taskId), 600);
         }
       });
     } else if(attempts < 15){
@@ -3140,6 +3439,422 @@ function applyModalSectionOrder(){
     saved.forEach(id=>{if(map[id])c.appendChild(map[id]);});
   }catch(_){}
 }
+
+// ═══════════════════════════════════════════════════════════
+// CARDS SYSTEM
+// Sostituisce il sistema note singola con array di card.
+// Ogni card ha: {id, title, body (HTML Quill), createdAt, author}
+// - openCardsModal(taskId): apre il pannello card del task
+// - renderCardsModal(): ridisegna la lista card
+// - addCard(): aggiunge una nuova card vuota
+// - removeCard(cardId): rimuove una card
+// - saveCards(): persiste le card nel task e chiude
+// - openNotesModal() è mantenuto per compatibilità backward
+// ═══════════════════════════════════════════════════════════
+
+let cardsTaskId = null;       // id del task correntemente aperto
+let cardsData   = [];         // copia locale delle card in editing
+let cardQuills  = {};         // mappa cardId → istanza Quill
+
+/**
+ * Genera un id univoco per una card.
+ * Formato: 'c' + timestamp + random 3 cifre
+ */
+function cardUid(){ return 'c'+Date.now()+Math.floor(Math.random()*1000); }
+
+/**
+ * Apre il modale card per un dato task.
+ * @param {string} taskId - id del task
+ */
+function openCardsModal(taskId){
+  cardsTaskId = taskId;
+  const t = getT(taskId); if(!t) return;
+
+  // Migrazione backward: se il task ha ancora .notes (vecchio formato)
+  // e non ha .cards, creiamo una card automaticamente
+  if((!t.cards||!t.cards.length) && t.notes && t.notes.trim() && t.notes!=='<p><br></p>'){
+    t.cards = [{
+      id: cardUid(),
+      title: 'Note migrate',
+      body: t.notes,
+      createdAt: new Date().toISOString(),
+      author: document.getElementById('user-email-label')?.textContent || ''
+    }];
+    t.notes = ''; // svuota il vecchio campo
+  }
+
+  // Clona le card per editing locale (non modifica l'originale finché non si salva)
+  cardsData = (t.cards||[]).map(c=>({...c}));
+  cardQuills = {}; // reset istanze Quill precedenti
+
+  // Intestazione modale
+  const proj = getProjects().find(p=>p.id===t.proj);
+  document.getElementById('cards-modal-title').textContent = '📋 ' + t.label;
+  document.getElementById('cards-modal-subtitle').textContent =
+    (proj?proj.label+' · ':'') + fmtDate(t.start) + ' → ' + fmtDate(t.end);
+
+  document.getElementById('cards-overlay').classList.add('open');
+  renderCardsModal();
+}
+
+/**
+ * Chiude il modale card senza salvare.
+ */
+function closeCardsModal(){
+  document.getElementById('cards-overlay').classList.remove('open');
+  cardsTaskId = null;
+  cardsData   = [];
+  cardQuills  = {};
+}
+
+/**
+ * Renderizza la lista card nel modale.
+ * Per ogni card crea un elemento DOM con editor Quill embedded.
+ */
+function renderCardsModal(){
+  const list = document.getElementById('cards-list');
+  list.innerHTML = '';
+  cardQuills = {};
+
+  const statusCol = STATUS_COLOR_MAP[getT(cardsTaskId)?.status] || '#94A3B8';
+
+  cardsData.forEach((card,idx)=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'card-item';
+    wrap.style.display = 'flex';
+
+    // Barra colorata laterale (colore status task)
+    const bar = document.createElement('div');
+    bar.className = 'card-item-bar';
+    bar.style.background = statusCol;
+    wrap.appendChild(bar);
+
+    // Contenitore interno
+    const inner = document.createElement('div');
+    inner.className = 'card-inner';
+
+    // Corpo card
+    const content = document.createElement('div');
+    content.className = 'card-content';
+
+    // Header: titolo + data
+    const header = document.createElement('div');
+    header.className = 'card-header';
+    const titleInput = document.createElement('input');
+    titleInput.className = 'card-title-input';
+    titleInput.type = 'text';
+    titleInput.value = card.title||'';
+    titleInput.placeholder = 'Titolo card…';
+    titleInput.oninput = ()=>{ cardsData[idx].title = titleInput.value; };
+    header.appendChild(titleInput);
+
+    // Metadati: data creazione + autore
+    const meta = document.createElement('div');
+    meta.className = 'card-meta';
+    const dt = card.createdAt ? new Date(card.createdAt).toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'numeric'}) : '';
+    meta.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1"/><path d="M5 3v2l1.5 1.5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>${dt}${card.author?' · '+card.author.split('@')[0]:''}`;
+
+    // Editor Quill per il corpo della card
+    const quillWrap = document.createElement('div');
+    quillWrap.className = 'card-quill-wrap';
+    const quillEl = document.createElement('div');
+    quillEl.id = 'card-quill-' + card.id;
+    quillWrap.appendChild(quillEl);
+
+    content.appendChild(header);
+    content.appendChild(meta);
+    content.appendChild(quillWrap);
+    inner.appendChild(content);
+
+    // Pulsante elimina card
+    const actions = document.createElement('div');
+    actions.className = 'card-actions';
+    const delBtn = document.createElement('button');
+    delBtn.className = 'card-action-btn';
+    delBtn.title = 'Elimina card';
+    delBtn.innerHTML = `<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 2.5h8M4 2.5V1.5h3v1M2.5 2.5l.5 7h5.5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+    delBtn.onclick = ()=>removeCard(card.id);
+    actions.appendChild(delBtn);
+    inner.appendChild(actions);
+
+    wrap.appendChild(inner);
+    list.appendChild(wrap);
+
+    // Inizializza Quill per questa card (dopo che il DOM è pronto)
+    requestAnimationFrame(()=>{
+      const q = new Quill('#card-quill-'+card.id, {
+        theme: 'snow',
+        placeholder: 'Scrivi note, link, annotazioni…',
+        modules:{toolbar:[
+          ['bold','italic','underline'],
+          [{list:'ordered'},{list:'bullet'}],
+          ['link','blockquote'],
+          ['clean']
+        ]}
+      });
+      if(card.body && card.body!=='<p><br></p>') q.root.innerHTML = card.body;
+      // Aggiorna cardsData al cambio del testo
+      q.on('text-change',()=>{ cardsData[idx].body = q.root.innerHTML; });
+      cardQuills[card.id] = q;
+    });
+  });
+
+  // Messaggio se non ci sono card
+  if(!cardsData.length){
+    const empty = document.createElement('div');
+    empty.style.cssText='text-align:center;padding:20px;color:var(--text3);font-size:13px';
+    empty.textContent = 'Nessuna card ancora. Aggiungine una qui sotto.';
+    list.appendChild(empty);
+  }
+}
+
+/**
+ * Aggiunge una nuova card vuota all'array e ridisegna.
+ */
+function addCard(){
+  const author = document.getElementById('user-email-label')?.textContent||'';
+  cardsData.push({
+    id: cardUid(),
+    title: '',
+    body: '',
+    createdAt: new Date().toISOString(),
+    author
+  });
+  renderCardsModal();
+  // Scrolla in fondo al modale per vedere la nuova card
+  setTimeout(()=>{
+    const modal = document.getElementById('cards-modal');
+    modal.scrollTop = modal.scrollHeight;
+  }, 150);
+}
+
+/**
+ * Rimuove una card dall'array locale e ridisegna.
+ * @param {string} cardId - id della card da rimuovere
+ */
+function removeCard(cardId){
+  if(!confirm('Eliminare questa card?')) return;
+  cardsData = cardsData.filter(c=>c.id!==cardId);
+  renderCardsModal();
+}
+
+/**
+ * Salva le card nel task e chiude il modale.
+ * Raccoglie i valori Quill più recenti prima di salvare.
+ */
+function saveCards(){
+  // Leggi i valori Quill correnti (potrebbero non essere aggiornati in cardsData)
+  cardsData.forEach(c=>{
+    if(cardQuills[c.id]) c.body = cardQuills[c.id].root.innerHTML;
+  });
+  const t = getT(cardsTaskId);
+  if(t){
+    t.cards = cardsData.map(c=>({...c})); // copia profonda
+    t.notes = ''; // pulizia campo legacy
+  }
+  closeCardsModal();
+  rerender();
+}
+
+/**
+ * Compatibilità: openNotesModal() ora apre il nuovo sistema card.
+ */
+function openNotesModal(id){ openCardsModal(id); }
+function closeNotesModal(){ closeCardsModal(); }
+function saveNotes(){ saveCards(); }
+
+// Chiudi cliccando fuori dal modale
+document.getElementById('cards-overlay').addEventListener('click',e=>{
+  if(e.target===e.currentTarget) closeCardsModal();
+});
+
+// ─── EXPORT CARD ──────────────────────────────────────
+/** Esporta le card del task in Word */
+function exportCardsWord(){
+  const t=getT(cardsTaskId);if(!t)return;
+  const proj=(getProjects().find(p=>p.id===t.proj)||{}).label||'';
+  const body=(t.cards||[]).map(c=>`<h2>${c.title||'Card'}</h2>${c.body||''}`).join('<hr>');
+  exportToWord(`<h1>${t.label}</h1><p><em>${proj} · ${fmtDate(t.start)} → ${fmtDate(t.end)}</em></p><hr>${body}`, t.label);
+}
+/** Esporta le card del task in PDF */
+function exportCardsPDF(){
+  const t=getT(cardsTaskId);if(!t)return;
+  const proj=(getProjects().find(p=>p.id===t.proj)||{}).label||'';
+  const body=(t.cards||[]).map(c=>`<h2>${c.title||'Card'}</h2>${c.body||''}`).join('<hr>');
+  exportNotesAsPDF(`<h1>${t.label}</h1><p>${proj} · ${fmtDate(t.start)} → ${fmtDate(t.end)}</p>${body}`, t.label);
+}
+
+// ═══════════════════════════════════════════════════════════
+// KANBAN BOARD
+// Vista alternativa al Gantt: task in colonne per status.
+// Colonne: Not started | On-going | Stand-by | Done
+// Drag & drop tra colonne → aggiorna task.status in tempo reale.
+// - setViewMode('gantt'|'kanban'): switch vista
+// - renderKanban(): disegna le colonne e le card
+// ═══════════════════════════════════════════════════════════
+
+let currentViewMode = 'gantt'; // 'gantt' | 'kanban'
+
+const KB_COLUMNS = [
+  { status:'todo',    label:'Non iniziati', color:'var(--status-todo)'    },
+  { status:'active',  label:'In corso',     color:'var(--status-ongoing)' },
+  { status:'standby', label:'Stand-by',     color:'var(--status-standby)' },
+  { status:'done',    label:'Completati',   color:'var(--status-done)'    },
+];
+
+/**
+ * Cambia tra vista Gantt e Kanban.
+ * @param {string} mode - 'gantt' o 'kanban'
+ */
+function setViewMode(mode){
+  currentViewMode = mode;
+
+  // Aggiorna stile pulsanti toggle
+  ['gantt','kanban'].forEach(m=>{
+    const btn=document.getElementById('vmode-'+m);
+    if(btn) btn.classList.toggle('active', m===mode);
+  });
+
+  // Mostra/nascondi le sezioni appropriate
+  const ganttSections = ['legend','gantt-skeleton','gantt-empty','gantt-outer'];
+  ganttSections.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display=(mode==='kanban')?'none':'';
+  });
+
+  const kanban = document.getElementById('kanban-wrap');
+  if(mode==='kanban'){
+    kanban.classList.add('active');
+    renderKanban();
+  } else {
+    kanban.classList.remove('active');
+    rerenderOnly(); // ridisegna il Gantt
+  }
+}
+
+/**
+ * Renderizza le colonne Kanban con le task card della pagina corrente.
+ * Supporta drag & drop: trascinare una card in un'altra colonna
+ * aggiorna immediatamente task.status.
+ */
+function renderKanban(){
+  const wrap = document.getElementById('kanban-wrap');
+  wrap.innerHTML = '';
+
+  const allTasks = getTasks().filter(t=>!t.isMilestone);
+
+  KB_COLUMNS.forEach(col=>{
+    // Filtra i task per questo status
+    const colTasks = allTasks.filter(t=>t.status===col.status);
+
+    // ── Colonna ──
+    const colEl = document.createElement('div');
+    colEl.className = 'kb-col';
+
+    // Header colonna: dot + nome + count
+    const header = document.createElement('div');
+    header.className = 'kb-col-header';
+    header.innerHTML = `
+      <div class="kb-col-dot" style="background:${col.color}"></div>
+      <div class="kb-col-title">${col.label}</div>
+      <div class="kb-col-count">${colTasks.length}</div>`;
+    colEl.appendChild(header);
+
+    // Contenitore card (droppable)
+    const cards = document.createElement('div');
+    cards.className = 'kb-cards';
+    cards.dataset.status = col.status;
+
+    // ── Drag & drop su colonna ──
+    cards.addEventListener('dragover', e=>{
+      e.preventDefault();
+      cards.classList.add('drag-over');
+    });
+    cards.addEventListener('dragleave', ()=>cards.classList.remove('drag-over'));
+    cards.addEventListener('drop', e=>{
+      e.preventDefault();
+      cards.classList.remove('drag-over');
+      const taskId = e.dataTransfer.getData('text/plain');
+      const t = getT(taskId);
+      if(t && t.status !== col.status){
+        pushUndo(); // supporta Ctrl+Z
+        t.status = col.status;
+        // Aggiorna anche il colore della barra in base al nuovo status
+        t.color = STATUS_COLOR_MAP[col.status]||t.color;
+        rerender(); // salva + ridisegna
+        // Torna alla vista kanban dopo rerender (rerender torna a gantt se siamo in kanban)
+        setTimeout(()=>setViewMode('kanban'),50);
+      }
+    });
+
+    if(!colTasks.length){
+      // Empty state colonna
+      const empty = document.createElement('div');
+      empty.className = 'kb-empty';
+      empty.textContent = 'Nessun task';
+      cards.appendChild(empty);
+    }
+
+    colTasks.forEach(t=>{
+      const proj = getProjects().find(p=>p.id===t.proj);
+      const card = document.createElement('div');
+      card.className = 'kb-card';
+      card.draggable = true;
+      card.dataset.taskId = t.id;
+      card.style.borderLeftColor = STATUS_COLOR_MAP[t.status]||'#eee';
+
+      // Avatars risorse (max 3)
+      const avatars = (t.resources||[]).slice(0,3).map(rid=>
+        `<div class="avatar" style="width:18px;height:18px;font-size:7px;border-radius:50%;background:${avatarColor(rid)};color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0">${avatarInitials(rid)}</div>`
+      ).join('');
+
+      // Barre effort
+      const effort = Math.max(1,Math.min(5,t.effort||3));
+      const effortDots = [1,2,3,4,5].map(i=>
+        `<div class="kb-effort-dot${i<=effort?' filled':''}" style="${i<=effort?'background:'+STATUS_COLOR_MAP[t.status]:''}"></div>`
+      ).join('');
+
+      // Conteggio card note
+      const cardCount = (t.cards||[]).filter(c=>c.body&&c.body!=='<p><br></p>').length;
+      const cardBadge = cardCount>0
+        ? `<span class="kb-card-cards-count" onclick="event.stopPropagation();openCardsModal('${t.id}')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1"/><path d="M3 4h4M3 6h2" stroke="currentColor" stroke-linecap="round"/></svg>${cardCount}</span>`
+        : '';
+
+      card.innerHTML = `
+        <div class="kb-card-proj" style="color:${proj?.color||'#888'}">${proj?.label||'—'}</div>
+        <div class="kb-card-title">${t.label}</div>
+        <div class="kb-card-meta">
+          <span class="kb-card-date">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="0.5" y="1.5" width="9" height="8" rx="1" stroke="currentColor" stroke-width="0.9"/><path d="M3 1v1M7 1v1M0.5 4h9" stroke="currentColor" stroke-width="0.9" stroke-linecap="round"/></svg>
+            ${fmtDate(t.start)} → ${fmtDate(t.end)}
+          </span>
+          ${cardBadge}
+          <div class="kb-card-avatars">${avatars}</div>
+        </div>
+        <div class="kb-card-effort">${effortDots}</div>`;
+
+      // Click sulla card → apre il modal di modifica
+      card.ondblclick = ()=>openEditModal(t.id);
+
+      // ── Drag events sulla card ──
+      card.addEventListener('dragstart', e=>{
+        card.classList.add('dragging');
+        e.dataTransfer.setData('text/plain', t.id);
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      card.addEventListener('dragend', ()=>card.classList.remove('dragging'));
+
+      cards.appendChild(card);
+    });
+
+    colEl.appendChild(cards);
+    wrap.appendChild(colEl);
+  });
+}
+
+// Aggiorna la vista kanban anche dopo il rerender normale
+// (se l'utente è in modalità kanban, renderKanban() viene richiamato)
+const _origRerenderOnly = rerenderOnly;
 
 function openWorkloadPanel(){
   /* Popola filtro pagine */
