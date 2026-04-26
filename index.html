@@ -446,8 +446,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .kb-col-count{font-size:12px;color:var(--text3);background:var(--bg3);border-radius:10px;padding:2px 9px;font-weight:600}
 .kb-col-add-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border:1.5px dashed var(--border2);border-radius:var(--radius-lg);background:transparent;color:var(--text3);cursor:pointer;font-size:12px;width:100%;transition:all .15s}
 .kb-col-add-btn:hover{border-color:var(--indigo);color:var(--indigo);background:var(--indigo-light)}
-.kb-cards{display:flex;flex-direction:column;gap:9px;min-height:100px;padding:4px 2px;flex:1}
-.kb-cards.drag-over{background:var(--indigo-light);border-radius:var(--radius-lg);border:2px dashed var(--indigo)}
+/* Drag drop fluido: transizione lenta, niente border pulsante */
+.kb-cards{display:flex;flex-direction:column;gap:9px;min-height:100px;padding:4px 2px;flex:1;transition:background .2s,border .2s}
+.kb-cards.drag-over{background:rgba(108,99,255,0.06);border-radius:var(--radius-lg);border:2px solid rgba(108,99,255,0.3);outline:none}
 .kb-card{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:14px 14px 10px;cursor:grab;box-shadow:var(--shadow-sm);transition:all .14s;border-left:4px solid transparent}
 .kb-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
 .kb-card.dragging{opacity:.4;cursor:grabbing}
@@ -3828,7 +3829,7 @@ function renderKanban(){
     const colEl=document.createElement('div');
     colEl.className='kb-col'+(col.isBacklog?' kb-backlog':'');
 
-    // Header
+    // Header con pulsante +
     const header=document.createElement('div');
     header.className='kb-col-header';
     const dotStyle=col.color.startsWith('var')
@@ -3837,18 +3838,30 @@ function renderKanban(){
     header.innerHTML=`
       <div class="kb-col-dot" style="${dotStyle}"></div>
       <div class="kb-col-title">${col.label}</div>
-      <div class="kb-col-count">${activeTasks.length}</div>`;
+      <div class="kb-col-count">${activeTasks.length}</div>
+      ${!col.isBacklog?`<button onclick="openAddModalWithStatus('${col.status}')" title="Aggiungi task in questa colonna" style="margin-left:auto;width:22px;height:22px;border-radius:50%;border:0.5px solid var(--border2);background:var(--bg);color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;transition:all .12s" onmouseover="this.style.background='var(--indigo)';this.style.color='#fff';this.style.borderColor='var(--indigo)'" onmouseout="this.style.background='var(--bg)';this.style.color='var(--text3)';this.style.borderColor='var(--border2)'">+</button>`:''}`;
     colEl.appendChild(header);
 
-    // Cards container (droppable)
+    // Cards container — fix flickering con depth counter
     const cards=document.createElement('div');
     cards.className='kb-cards';
     cards.dataset.status=col.status;
+    let dragDepth=0; // conta entrate/uscite per evitare flicker sui figli
 
-    cards.addEventListener('dragover',e=>{e.preventDefault();cards.classList.add('drag-over');});
-    cards.addEventListener('dragleave',()=>cards.classList.remove('drag-over'));
+    cards.addEventListener('dragenter',e=>{
+      e.preventDefault();
+      dragDepth++;
+      if(dragDepth===1) cards.classList.add('drag-over');
+    });
+    cards.addEventListener('dragover',e=>{e.preventDefault();}); // necessario per consentire drop
+    cards.addEventListener('dragleave',()=>{
+      dragDepth--;
+      if(dragDepth===0) cards.classList.remove('drag-over');
+    });
     cards.addEventListener('drop',e=>{
-      e.preventDefault();cards.classList.remove('drag-over');
+      e.preventDefault();
+      dragDepth=0;
+      cards.classList.remove('drag-over');
       const taskId=e.dataTransfer.getData('text/plain');
       const t=getT(taskId);
       if(t && t.status!==col.status){
@@ -3857,7 +3870,7 @@ function renderKanban(){
         t.color=col.color.startsWith('var')
           ? (STATUS_COLOR_MAP[col.status]||t.color)
           : col.color;
-        t.archived=false; // ripristina automaticamente se draggata
+        t.archived=false;
         rerender();
         setTimeout(()=>setViewMode('kanban'),50);
       }
@@ -3984,6 +3997,11 @@ function buildKbCard(t, col, isArchived){
     </div>`;
 
   if(!isArchived){
+    // Doppio click → apre il modal di modifica
+    card.addEventListener('dblclick', e=>{
+      e.stopPropagation();
+      openEditModal(t.id);
+    });
     card.addEventListener('dragstart',e=>{
       card.classList.add('dragging');
       e.dataTransfer.setData('text/plain',t.id);
@@ -3993,6 +4011,25 @@ function buildKbCard(t, col, isArchived){
   }
 
   return card;
+}
+
+/**
+ * Apre il modal di creazione task con lo status pre-compilato
+ * in base alla colonna Kanban da cui viene invocato.
+ * @param {string} status - status della colonna (todo/active/standby/done)
+ */
+function openAddModalWithStatus(status){
+  // Prima apriamo il modal normalmente
+  openAddModal(null);
+  // Poi impostiamo il valore status
+  requestAnimationFrame(()=>{
+    const sel=document.getElementById('f-status');
+    if(sel) sel.value=status;
+    // Aggiorna anche il colore barra in base allo status
+    const col=STATUS_TO_COLOR[status];
+    const colorInput=document.getElementById('f-color');
+    if(col&&colorInput) colorInput.value=col;
+  });
 }
 
 function openWorkloadPanel(){
