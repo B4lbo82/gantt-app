@@ -2349,17 +2349,45 @@ function updateParentOptions(){
 function openAddModal(projId){
   editingId=null;
   document.getElementById('modal-title').textContent='Nuovo task';
-  document.getElementById('f-proj').innerHTML=getProjects().map(p=>`<option value="${p.id}"${p.id===projId?' selected':''}>${p.label}</option>`).join('');
+
+  /* Progetto: se è specificato (es. da sidebar o kanban) pre-selezionalo,
+     altrimenti aggiungi un'opzione vuota come default */
+  const projOptions = getProjects().map(p=>
+    `<option value="${p.id}"${p.id===projId?' selected':''}>${p.label}</option>`
+  ).join('');
+  document.getElementById('f-proj').innerHTML = projId
+    ? projOptions
+    : `<option value="">— Seleziona progetto —</option>${projOptions}`;
+
   document.getElementById('f-type').value='task';
   document.getElementById('f-name').value='';
-  document.getElementById('f-start').value=toISO(TODAY);
-  document.getElementById('f-end').value=toISO(addDays(TODAY,7));
-  dpSyncDisplay('f-start');dpSyncDisplay('f-end');
-  document.getElementById('f-prog').value=0;document.getElementById('f-prog-val').textContent='0%';
+
+  /* Date: vuote di default per un nuovo task */
+  document.getElementById('f-start').value='';
+  document.getElementById('f-end').value='';
+  /* Resetta le label del date picker custom */
+  const st=document.getElementById('f-start-text');
+  const en=document.getElementById('f-end-text');
+  if(st){st.textContent='Seleziona data…';st.className='date-display-placeholder';}
+  if(en){en.textContent='Seleziona data…';en.className='date-display-placeholder';}
+
+  document.getElementById('f-prog').value=0;
+  document.getElementById('f-prog-val').textContent='0%';
   document.getElementById('f-status').value='todo';
   document.getElementById('f-color').value=STATUS_TO_COLOR['todo'];
-  modalResources=[];selectedIcon='none';modalDeps=[];
-  renderResourceTags();buildResourcePool();buildIconGrid();onTypeChange();buildDepsSelect();
+
+  /* Reset completo di risorse, icona e dipendenze */
+  modalResources=[];
+  selectedIcon='none';
+  modalDeps=[];  /* reset esplicito — previene il carry-over tra aperture */
+
+  renderResourceTags();
+  renderDepTags();   /* svuota anche i tag dipendenze visualizzati */
+  buildResourcePool();
+  buildIconGrid();
+  onTypeChange();
+  buildDepsSelect();
+
   document.getElementById('f-effort').value=3;
   buildEffortStars(3);
   document.getElementById('modal-overlay').classList.add('open');
@@ -2394,17 +2422,44 @@ function saveModal(){
   const proj=document.getElementById('f-proj').value;
   const type=document.getElementById('f-type').value;
   const parentId=type==='subtask'?document.getElementById('f-parent').value:null;
-  const startVal=fromISO(document.getElementById('f-start').value);
-  const endVal=type==='milestone'?new Date(startVal):fromISO(document.getElementById('f-end').value);
+  const startRaw=document.getElementById('f-start').value;
+  const endRaw=document.getElementById('f-end').value;
+
+  /* Validazioni: nome, progetto, date */
+  if(!name){
+    document.getElementById('f-name').focus();
+    document.getElementById('f-name').style.outline='2px solid var(--red)';
+    setTimeout(()=>document.getElementById('f-name').style.outline='',2000);
+    return;
+  }
+  if(!proj){
+    const sel=document.getElementById('f-proj');
+    sel.style.outline='2px solid var(--red)';
+    sel.focus();
+    setTimeout(()=>sel.style.outline='',2000);
+    return;
+  }
+  if(!startRaw && type!=='milestone'){
+    const d=document.getElementById('f-start-display');
+    if(d){d.style.outline='2px solid var(--red)';setTimeout(()=>d.style.outline='',2000);}
+    return;
+  }
+  if(!endRaw && type!=='milestone'){
+    const d=document.getElementById('f-end-display');
+    if(d){d.style.outline='2px solid var(--red)';setTimeout(()=>d.style.outline='',2000);}
+    return;
+  }
+
+  const startVal=fromISO(startRaw)||TODAY;
+  const endVal=type==='milestone'?new Date(startVal):(fromISO(endRaw)||addDays(startVal,1));
   const progress=parseInt(document.getElementById('f-prog').value)||0;
   const status=type==='milestone'?'milestone':document.getElementById('f-status').value;
   const color=STATUS_TO_COLOR[status]||document.getElementById('f-color').value;
   const icon=selectedIcon;const resources=[...modalResources];const deps=[...modalDeps];
   const effort=parseInt(document.getElementById('f-effort').value)||3;
-  if(!name){document.getElementById('f-name').focus();return;}
   pushUndo();
   if(editingId){const t=getT(editingId);if(t)Object.assign(t,{label:name,proj,parentId,start:startVal,end:endVal,progress,status,color,icon,resources,deps,effort,isMilestone:type==='milestone'});}
-  else getTasks().push({id:uid(),proj,label:name,start:startVal,end:endVal,progress,status,color,icon,resources,deps,effort,parentId,isMilestone:type==='milestone',notes:'',cards:[]});
+  else getTasks().push({id:uid(),proj,label:name,start:startVal,end:endVal,progress,status,color,icon,resources,deps,effort,parentId,isMilestone:type==='milestone',notes:'',cards:[],archived:false});
   closeModal();rerender();
 }
 
