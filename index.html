@@ -460,9 +460,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 /* Drag drop fluido: transizione lenta, niente border pulsante */
 .kb-cards{display:flex;flex-direction:column;gap:9px;min-height:100px;padding:4px 2px;flex:1;transition:background .2s,border .2s}
 .kb-cards.drag-over{background:rgba(108,99,255,0.06);border-radius:var(--radius-lg);border:2px solid rgba(108,99,255,0.3);outline:none}
-.kb-card{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:14px 14px 10px;cursor:grab;box-shadow:var(--shadow-sm);transition:all .14s;border-left:4px solid transparent}
+.kb-card{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:14px 14px 10px;cursor:grab;box-shadow:var(--shadow-sm);transition:box-shadow .14s,transform .14s;border-left:4px solid transparent}
 .kb-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
-.kb-card.dragging{opacity:.4;cursor:grabbing}
+.kb-card:active{cursor:grabbing}
+.kb-card.dragging{opacity:.4;cursor:grabbing;transform:none}
 .kb-card.kb-archived-card{opacity:.5;font-style:italic}
 .kb-card-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.35}
 .kb-card-proj{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;opacity:.75}
@@ -825,12 +826,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 
 <!-- Add project/task buttons above stats -->
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-  <button class="btn" style="background:#059669;color:#fff;border-color:#047857;box-shadow:0 2px 6px rgba(5,150,105,.25);height:32px" onclick="openAddProjectModal()">
-    <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+  <button class="btn" style="background:#059669;color:#fff;border-color:#047857;box-shadow:0 2px 6px rgba(5,150,105,.25);height:32px;display:inline-flex;align-items:center;gap:6px" onclick="openAddProjectModal()">
+    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" style="flex-shrink:0"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     Nuovo progetto
   </button>
-  <button id="btn-add-task" class="btn" style="background:#C2820A;color:#fff;border-color:#92600A;box-shadow:0 2px 6px rgba(194,130,10,.3);height:32px" onclick="openAddModal(null)">
-    <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+  <button id="btn-add-task" class="btn" style="background:#C2820A;color:#fff;border-color:#92600A;box-shadow:0 2px 6px rgba(194,130,10,.3);height:32px;display:inline-flex;align-items:center;gap:6px" onclick="openAddModal(null)">
+    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" style="flex-shrink:0"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     Aggiungi task
   </button>
   <!-- Toggle Gantt ↔ Kanban -->
@@ -2193,7 +2194,8 @@ function renderGantt(rows){
       h+=`<text x="${x+DAY_W/2+s/2+5}" y="${cy}" font-size="10" fill="${col}" dy=".35em" font-weight="700" font-family="-apple-system,sans-serif">${t.label}</text>`;
       return;
     }
-    const barH=isSub?14:ROW_H-8;const barY=cy-barH/2;const rx=isSub?7:6;
+    /* Tutti i task hanno la stessa altezza barra — solo l'opacità distingue i subtask */
+    const barH=ROW_H-8;const barY=cy-barH/2;const rx=6;
     if(!isSub&&w>4) h+=`<rect x="${x+1}" y="${barY+2}" width="${Math.max(2,w-2)}" height="${barH}" rx="${rx}" fill="${col}" opacity="0.15"/>`;
     h+=`<g class="task-bar" data-id="${t.id}"><rect x="${x+1}" y="${barY}" width="${Math.max(2,w-2)}" height="${barH}" rx="${rx}" fill="${col}" opacity="${isSub?0.55:1}" stroke="${sel?'rgba(0,0,0,0.25)':'none'}" stroke-width="${sel?2:0}"/>`;
     if(t.progress>0&&t.progress<100){
@@ -4092,7 +4094,9 @@ function renderKanban(){
     if(!activeTasks.length && !archivedTasks.length){
       const empty=document.createElement('div');
       empty.className='kb-empty';
-      empty.textContent=col.isBacklog?'Aggiungi idee e task futuri qui →':'Nessun task';
+      empty.textContent=col.isBacklog
+        ?'Aggiungi idee e task futuri in questa lista'
+        :'Nessun task';
       cards.appendChild(empty);
     }
 
@@ -4101,9 +4105,24 @@ function renderKanban(){
       cards.appendChild(buildKbCard(t, col, false));
     });
 
+    // Pulsante "+ Aggiungi" SEMPRE subito dopo l'ultima card (dentro cards div)
+    // Appare per tutte le colonne tranne "Completati" e "Done"
+    if(col.status!=='done'){
+      const addBtn=document.createElement('button');
+      addBtn.className='kb-col-add-btn';
+      const addLabel=col.isBacklog
+        ?'Aggiungi al backlog'
+        :`+ Aggiungi in ${col.label}`;
+      addBtn.innerHTML=`<svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="flex-shrink:0"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>${addLabel}`;
+      addBtn.onclick=col.isBacklog
+        ? ()=>addBacklogTask()
+        : ()=>openAddModalWithStatus(col.status);
+      cards.appendChild(addBtn);
+    }
+
     colEl.appendChild(cards);
 
-    // Sezione archiviati (collassabile)
+    // Sezione archiviati (collassabile) — sempre in fondo alla colonna
     if(archivedTasks.length){
       const archSec=document.createElement('div');
       archSec.className='kb-archived-section';
@@ -4113,27 +4132,15 @@ function renderKanban(){
       toggle.className='kb-archived-toggle';
       toggle.innerHTML=`<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><rect x="0.5" y="2.5" width="10" height="7" rx="1.5" stroke="currentColor" stroke-width="1"/><path d="M1 4.5h9M4 2.5V1M7 2.5V1" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
         ${isVisible?'Nascondi':'Mostra'} archivio (${archivedTasks.length})`;
-      toggle.onclick=()=>{
-        kbArchivedVisible[key]=!kbArchivedVisible[key];
-        renderKanban();
-      };
+      toggle.onclick=()=>{kbArchivedVisible[key]=!kbArchivedVisible[key];renderKanban();};
       archSec.appendChild(toggle);
       if(isVisible){
         const archList=document.createElement('div');
         archList.style.cssText='display:flex;flex-direction:column;gap:7px;margin-top:6px;opacity:.7';
-        archivedTasks.forEach(t=>archList.appendChild(buildKbCard(t, col, true)));
+        archivedTasks.forEach(t=>archList.appendChild(buildKbCard(t,col,true)));
         archSec.appendChild(archList);
       }
       colEl.appendChild(archSec);
-    }
-
-    // Pulsante "+ Aggiungi" per Backlog
-    if(col.isBacklog){
-      const addBtn=document.createElement('button');
-      addBtn.className='kb-col-add-btn';
-      addBtn.innerHTML=`<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Aggiungi al backlog`;
-      addBtn.onclick=()=>addBacklogTask();
-      colEl.appendChild(addBtn);
     }
 
     wrap.appendChild(colEl);
