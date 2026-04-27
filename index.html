@@ -3478,9 +3478,8 @@ function dpRenderDays(){
     const isSel=sel&&dt.getTime()===sel.getTime();
     const isToday=dt.getTime()===today.getTime();
     const dow=dt.getDay();const isWE=dow===0||dow===6;
-    /* Festività italiane: stesso set usato nel Gantt */
-    const isoK=`${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()}`;
-    const isFe=FEST.has(isoK);
+    /* Festività italiane: usa isoKey() che usa mese 1-based, coerente con FEST */
+    const isFe=FEST.has(isoKey(dt));
     let cls='dp-day';
     if(isSel)      cls+=' selected';
     else if(isToday) cls+=' today';
