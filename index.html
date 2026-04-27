@@ -727,7 +727,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
     <div class="nav-brand-icon">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2.5" rx="1.25" fill="white"/><rect x="1" y="7" width="9" height="2.5" rx="1.25" fill="white" opacity=".7"/><rect x="1" y="11" width="11" height="2.5" rx="1.25" fill="white" opacity=".5"/></svg>
     </div>
-    <span class="nav-brand-name">Planner</span>
+    <span class="nav-brand-name">Welcome AN Board!</span>
   </div>
 
   <div class="nav-section">Workspace</div>
@@ -875,15 +875,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 
 <!-- Empty state -->
 <div id="gantt-empty">
-  <svg width="64" height="64" viewBox="0 0 64 64" fill="none"><rect x="8" y="16" width="48" height="36" rx="6" stroke="var(--text3)" stroke-width="2" fill="none"/><path d="M8 26h48" stroke="var(--text3)" stroke-width="1.5"/><path d="M20 36h12M20 43h8" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/><circle cx="48" cy="42" r="10" fill="var(--indigo)" opacity=".12" stroke="var(--indigo)" stroke-width="1.5"/><path d="M48 38v4M46 42h4" stroke="var(--indigo)" stroke-width="1.5" stroke-linecap="round"/></svg>
-  <h3>Nessun progetto ancora</h3>
-  <p>Crea il primo progetto per iniziare a pianificare le attività.</p>
-  <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-    <button class="btn" onclick="openAddProjectModal()" style="background:#059669;color:#fff;border-color:#047857;height:34px;padding:0 18px;font-size:13px">
-      <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      Nuovo progetto
-    </button>
-  </div>
+  <!-- Il contenuto viene generato dinamicamente da updateEmptyState() in JS -->
 </div>
 
 <div id="gantt-outer">
@@ -2721,6 +2713,80 @@ function updateTaskBtnState(){
   btn.title=hasProj?'':'Prima crea un progetto per questa tab';
 }
 
+/**
+ * Aggiorna il contenuto dell'empty state in base alla situazione:
+ * - Nessun progetto → CTA "Nuovo progetto"
+ * - Progetti ma nessun task → CTA "Aggiungi task" + mostra il Gantt vuoto
+ */
+function updateEmptyState(){
+  const hasProjects = getProjects().length > 0;
+  const hasTasks    = getTasks().filter(t=>t.status!=='backlog'&&!t.archived).length > 0;
+  const emptyEl     = document.getElementById('gantt-empty');
+  const outerEl     = document.getElementById('gantt-outer');
+  if(!emptyEl||!outerEl) return;
+
+  if(currentViewMode==='kanban'){
+    emptyEl.style.display='none';
+    outerEl.style.display='none';
+    return;
+  }
+
+  if(!hasProjects){
+    /* Stato 1: nessun progetto — mostra solo CTA crea progetto */
+    emptyEl.style.display='block';
+    outerEl.style.display='none';
+    emptyEl.innerHTML=`
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <rect x="8" y="16" width="48" height="36" rx="6" stroke="var(--text3)" stroke-width="2" fill="none"/>
+        <path d="M8 26h48" stroke="var(--text3)" stroke-width="1.5"/>
+        <path d="M20 36h12M20 43h8" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="48" cy="42" r="10" fill="var(--indigo)" opacity=".12" stroke="var(--indigo)" stroke-width="1.5"/>
+        <path d="M48 38v4M46 42h4" stroke="var(--indigo)" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <h3>Nessun progetto</h3>
+      <p>Crea il primo progetto per questa tab per iniziare a pianificare.</p>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button class="btn" onclick="openAddProjectModal()" style="background:#059669;color:#fff;border-color:#047857;height:34px;padding:0 18px;font-size:13px;display:inline-flex;align-items:center;gap:6px">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" style="flex-shrink:0"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Crea progetto
+        </button>
+      </div>`;
+
+  } else if(!hasTasks){
+    /* Stato 2: progetto(i) creati ma nessun task —
+       mostra il Gantt (sidebar con progetti) + banner CTA in cima */
+    emptyEl.style.display='block';
+    outerEl.style.display='flex'; /* mostra sidebar+calendario anche senza task */
+    const projNames = getProjects().map(p=>
+      `<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:${p.color};flex-shrink:0"></span>${p.label}</span>`
+    ).join(' · ');
+    emptyEl.innerHTML=`
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <rect x="6" y="6" width="36" height="36" rx="8" stroke="var(--text3)" stroke-width="1.5" fill="none"/>
+        <path d="M6 18h36" stroke="var(--text3)" stroke-width="1.5"/>
+        <path d="M16 8v4M32 8v4" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="36" cy="36" r="8" fill="var(--indigo)" opacity=".12" stroke="var(--indigo)" stroke-width="1.5"/>
+        <path d="M36 32v4M34 36h4" stroke="var(--indigo)" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <h3>Progetto pronto, ora aggiungi i task</h3>
+      <p style="font-size:12px">${projNames}</p>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:4px">
+        <button class="btn" onclick="openAddModal(null)" style="background:#C2820A;color:#fff;border-color:#92600A;height:32px;padding:0 16px;font-size:13px;display:inline-flex;align-items:center;gap:6px">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" style="flex-shrink:0"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Aggiungi primo task
+        </button>
+      </div>`;
+    /* Margine ridotto — il gantt-outer è già visibile sotto */
+    emptyEl.style.padding='20px';
+    emptyEl.style.marginBottom='12px';
+
+  } else {
+    /* Stato 3: ha progetti E task — mostra solo il Gantt */
+    emptyEl.style.display='none';
+    outerEl.style.display='flex';
+  }
+}
+
 function rerenderOnly(){
   syncPageData();
   const rows=buildRows();
@@ -2729,9 +2795,7 @@ function rerenderOnly(){
   renderSidebar(rows);
   renderStatsBar();
   updateTaskBtnState();
-  const hasProjects=getProjects().length>0;
-  const hasTasks=getTasks().length>0;
-  /* Se siamo in modalità Kanban, aggiorna quella vista */
+
   if(currentViewMode==='kanban'){
     document.getElementById('gantt-outer').style.display='none';
     document.getElementById('gantt-empty').style.display='none';
@@ -2740,13 +2804,13 @@ function rerenderOnly(){
     renderKanban();
     return;
   }
-  /* Altrimenti renderizza il Gantt normale */
+
+  /* Gantt mode */
   renderHeader();
   renderGantt(rows);
   document.getElementById('kanban-wrap').classList.remove('active');
   document.getElementById('legend').style.display='';
-  document.getElementById('gantt-outer').style.display=(hasProjects&&hasTasks)?'flex':'none';
-  document.getElementById('gantt-empty').style.display=(!hasProjects||!hasTasks)?'block':'none';
+  updateEmptyState(); /* gestisce gantt-empty e gantt-outer */
   ensureScrollSync();
 }
 function rerender(){rerenderOnly();scheduleSave();}
