@@ -143,12 +143,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .nav-proj-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .nav-divider{height:0.5px;background:var(--nav-border);margin:8px 12px}
 .nav-bottom{margin-top:auto;padding:10px 6px;border-top:0.5px solid var(--nav-border)}
-.nav-user{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius);cursor:pointer;color:var(--nav-text);font-size:12px}
-.nav-user:hover{background:rgba(255,255,255,.06)}
-.nav-user-avatar{width:26px;height:26px;border-radius:50%;background:var(--indigo);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
-.nav-user-info{flex:1;min-width:0}
-.nav-user-email{font-size:11px;color:var(--nav-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nav-user-role{font-size:10px;color:var(--nav-text-muted)}
+.nav-user{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius);cursor:default;font-size:12px}
+.nav-user-avatar{width:28px;height:28px;border-radius:50%;background:var(--indigo);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.nav-user-info{flex:1;min-width:0;overflow:hidden}
+.nav-user-email{font-size:11px;color:#e0e7ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;display:block}
+.nav-user-role{font-size:10px;color:#818cf8;font-weight:600;display:block}
 .nav-logout{background:none;border:none;color:var(--nav-text-muted);cursor:pointer;font-size:11px;padding:2px 6px;border-radius:4px}
 .nav-logout:hover{color:#EF4444}
 
@@ -1102,7 +1101,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
         </div>
       </div>
 
-      <div class="modal-section" data-sec="resources">
+      <div class="modal-section" data-sec="resources" id="modal-sec-resources">
         <div class="modal-grip" title="Trascina per riordinare">
   <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
     <circle cx="3" cy="3" r="1.5"/><circle cx="9" cy="3" r="1.5"/>
@@ -1387,6 +1386,24 @@ async function doChallenge() {
 
 let currentUserRole = 'member'; // 'pm' | 'member' — impostato in enterApp
 
+/** Mappa ruolo → etichetta visibile in app */
+const ROLE_LABELS = {
+  'pm':              'Project Manager',
+  'developer':       'Developer',
+  'designer':        'Designer',
+  'content_manager': 'Content Manager',
+  'member':          'Member',
+};
+
+/**
+ * Restituisce l'etichetta leggibile del ruolo corrente.
+ * Se il ruolo non è in mappa, restituisce il valore grezzo capitalizzato.
+ */
+function roleLabel(){
+  return ROLE_LABELS[currentUserRole]
+    || currentUserRole.charAt(0).toUpperCase() + currentUserRole.slice(1);
+}
+
 /** Restituisce true se l'utente è Project Manager */
 const isPM = () => currentUserRole === 'pm';
 
@@ -1426,11 +1443,15 @@ function applyRoleRestrictions(){
     el.style.display = pm ? '' : 'none';
   });
 
-  /* Badge ruolo visibile nella nav */
+  /* Sezione "Risorse assegnate" nel modal task — solo PM */
+  const resSec = document.getElementById('modal-sec-resources');
+  if(resSec) resSec.style.display = pm ? '' : 'none';
+
+  /* Badge ruolo visibile nella nav — mostra l'etichetta specifica */
   const roleEl = document.querySelector('.nav-user-role');
   if(roleEl){
-    roleEl.textContent = pm ? 'Project Manager' : 'Member';
-    roleEl.style.color = pm ? '#a5b4fc' : 'var(--nav-text-muted)';
+    roleEl.textContent = roleLabel();
+    roleEl.style.color = isPM() ? '#a5b4fc' : '#818cf8';
   }
 }
 
@@ -1438,22 +1459,18 @@ async function enterApp() {
   const { data: { user } } = await sb.auth.getUser();
   const email = user?.email || '';
 
-  /* ── RUOLO UTENTE ───────────────────────────────────────
-     Il ruolo viene letto da user_metadata (impostato in Supabase
-     per ogni utente: {"role":"pm"} oppure {"role":"member"}).
-     Default: "member" se non specificato.
-     PM = project manager (accesso completo).
-     member = developer / designer / content (accesso limitato).
-  ─────────────────────────────────────────────────────── */
+  /* Legge il ruolo specifico dai metadata (pm, developer, designer, content_manager…).
+     Per i permessi usa isPM() che è true solo per 'pm'.
+     Per la visualizzazione usa roleLabel() che mostra l'etichetta completa. */
   const rawRole = user?.user_metadata?.role || 'member';
-  currentUserRole = rawRole === 'pm' ? 'pm' : 'member';
+  currentUserRole = rawRole; // mantiene il valore completo (es. 'designer')
 
   document.getElementById('user-email-label').textContent = email;
   document.getElementById('user-avatar').textContent = email.slice(0,2).toUpperCase();
 
   /* Aggiorna etichetta ruolo nella nav */
   const roleEl = document.querySelector('.nav-user-role');
-  if(roleEl) roleEl.textContent = currentUserRole === 'pm' ? 'Project Manager' : 'Member';
+  if(roleEl) roleEl.textContent = roleLabel();
 
   document.getElementById('auth-wrap').style.display = 'none';
   document.getElementById('app-wrap').style.display = 'block';
@@ -1796,14 +1813,23 @@ function setSaveStatus(state){
 async function saveToSupabase(){
   try {
     setSaveStatus('saving');
-    const { data:{ user } } = await sb.auth.getUser();
-    if(!user) return;
+    const { data:{ user }, error:userErr } = await sb.auth.getUser();
+    if(!user || userErr){
+      /* Nessun utente: resetta spinner invece di lasciarlo girare */
+      setSaveStatus('error');
+      console.warn('saveToSupabase: nessun utente autenticato', userErr);
+      return;
+    }
     const { error } = await sb.from('planner_data').upsert(
       { workspace_id:'shared', data: serializeState(), updated_by: user.id, updated_at: new Date().toISOString() },
       { onConflict: 'workspace_id' }
     );
-    setSaveStatus(error ? 'error' : 'saved');
-    if(error) console.error('Save error:', error);
+    if(error){
+      setSaveStatus('error');
+      console.error('Save error (RLS o rete):', error.message, error);
+    } else {
+      setSaveStatus('saved');
+    }
   } catch(e){
     setSaveStatus('error');
     console.error('Save exception:', e);
