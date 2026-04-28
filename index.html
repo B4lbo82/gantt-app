@@ -1443,6 +1443,11 @@ function applyRoleRestrictions(){
     el.style.display = pm ? '' : 'none';
   });
 
+  /* Pulsanti "+" per aggiungere nuove tab/pagine — solo PM */
+  document.querySelectorAll('[onclick="addPage()"]').forEach(el=>{
+    el.style.display = pm ? '' : 'none';
+  });
+
   /* Sezione "Risorse assegnate" nel modal task — solo PM */
   const resSec = document.getElementById('modal-sec-resources');
   if(resSec) resSec.style.display = pm ? '' : 'none';
@@ -1961,7 +1966,7 @@ function switchPage(id){
 }
 
 function addPage(){
-  const label = prompt('Nome della nuova pagina (es. Cliente B):','Nuova pagina');
+  if(!isPM()){ denyAccess('Solo i Project Manager possono aggiungere nuove tab cliente.'); return; }
   if(!label||!label.trim()) return;
   const id = 'pg'+Date.now();
   /* La nuova tab parte completamente vuota: nessun progetto pre-creato */
