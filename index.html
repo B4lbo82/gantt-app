@@ -60,6 +60,10 @@
     --amber-light:#2a1f04;--red-light:#2d0f0f;
   }
 }
+/* ═══════════════════════════════════════════
+   BASE RESET & BODY
+   Reset box-sizing e stili base del documento
+═══════════════════════════════════════════ */
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13px;font-weight:var(--fw-body)}
 
@@ -94,6 +98,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .app-shell{display:flex;height:100vh;overflow:hidden}
 
 /* ── LEFT NAV ─────────────────────────────── */
+/* ═══════════════════════════════════════════
+   LEFT NAVIGATION
+   Sidebar di navigazione sinistra (scura)
+   - nav-brand: logo + nome app
+   - nav-section: titoli sezioni (Workspace, Progetti, Team)
+   - nav-item: voci di menu singole
+   - nav-bottom: avatar utente + logout
+═══════════════════════════════════════════ */
 #left-nav{width:var(--nav-width);flex-shrink:0;background:var(--nav-bg);display:flex;flex-direction:column;border-right:0.5px solid var(--nav-border);overflow-y:auto;overflow-x:hidden;transition:width .25s ease}
 #left-nav.collapsed{width:44px;overflow:hidden}
 #left-nav.collapsed .nav-brand-name,
@@ -131,16 +143,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .nav-proj-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .nav-divider{height:0.5px;background:var(--nav-border);margin:8px 12px}
 .nav-bottom{margin-top:auto;padding:10px 6px;border-top:0.5px solid var(--nav-border)}
-.nav-user{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius);cursor:pointer;color:var(--nav-text);font-size:12px}
-.nav-user:hover{background:rgba(255,255,255,.06)}
-.nav-user-avatar{width:26px;height:26px;border-radius:50%;background:var(--indigo);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
-.nav-user-info{flex:1;min-width:0}
-.nav-user-email{font-size:11px;color:var(--nav-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nav-user-role{font-size:10px;color:var(--nav-text-muted)}
+.nav-user{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius);cursor:default;font-size:12px}
+.nav-user-avatar{width:28px;height:28px;border-radius:50%;background:var(--indigo);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.nav-user-info{flex:1;min-width:0;overflow:hidden}
+.nav-user-email{font-size:11px;color:#e0e7ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;display:block}
+.nav-user-role{font-size:10px;color:#818cf8;font-weight:600;display:block}
 .nav-logout{background:none;border:none;color:var(--nav-text-muted);cursor:pointer;font-size:11px;padding:2px 6px;border-radius:4px}
 .nav-logout:hover{color:#EF4444}
 
 /* ── MAIN CONTENT ─────────────────────────── */
+/* ═══════════════════════════════════════════
+   MAIN CONTENT AREA
+   Area principale: topbar + scrollable content
+═══════════════════════════════════════════ */
 #main-content{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
 #main-topbar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:0.5px solid var(--border);flex-shrink:0;min-height:48px;background:var(--bg)}
 #main-topbar h2{font-size:15px;font-weight:700;color:var(--text)}
@@ -165,6 +180,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .btn-group .btn:last-child{border-right:none}
 #gantt-container{border:0.5px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg)}
 #gantt-scroll{overflow-x:auto}
+/* ═══════════════════════════════════════════
+   GANTT LAYOUT
+   Layout a due colonne:
+   - #sidebar: lista task fissa a sinistra (non scrolla)
+   - #gantt-scroll: griglia calendario scrollabile orizzontalmente
+═══════════════════════════════════════════ */
 /* Gantt layout: sidebar fixed, chart scrolls */
 #gantt-container{display:flex;border:0.5px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg);box-shadow:var(--shadow-md)}
 #sidebar{flex-shrink:0;width:280px;min-width:160px;max-width:480px;border-right:3px solid var(--indigo);display:flex;flex-direction:column;position:relative;background:var(--bg);z-index:2;box-shadow:3px 0 10px rgba(108,99,255,0.1)}
@@ -228,6 +249,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .dep-line{fill:none;stroke:#888780;stroke-width:1.2;stroke-dasharray:4 3;opacity:0.5}
 .today-line{stroke:var(--red);stroke-width:1.5;stroke-dasharray:4 3;opacity:0.8}
 #tooltip{position:fixed;pointer-events:none;background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--text);opacity:0;transition:opacity .12s;z-index:1000;max-width:220px;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+/* ═══════════════════════════════════════════
+   MODALI
+   Backdrop semitrasparente + card modale centrale
+   .modal-backdrop: overlay scuro
+   .modal: contenitore bianco con scroll
+═══════════════════════════════════════════ */
 .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;align-items:flex-start;justify-content:center;padding-top:60px}
 .modal-backdrop.open{display:flex}
 .modal{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:20px;width:360px;max-width:96vw;max-height:80vh;overflow-y:auto}
@@ -321,7 +348,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .skel-bar{height:18px;border-radius:8px}
 /* Empty state */
 #gantt-empty{display:none;padding:60px 20px;text-align:center}
-#gantt-empty svg{margin:0 auto 14px;display:block;opacity:.3}
+#gantt-empty>svg{margin:0 auto 14px;display:block;opacity:.3}
 #gantt-empty h3{font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px}
 #gantt-empty p{font-size:13px;color:var(--text3);margin-bottom:18px}
 
@@ -332,6 +359,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .date-display.open{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(108,99,255,0.12)}
 .date-display-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--text3)}
 .date-display-placeholder{color:var(--text3)}
+/* ═══════════════════════════════════════════
+   DATE PICKER CUSTOM
+   Calendario popup per selezione date nelle form
+   - dp-header: navigazione mese/anno
+   - dp-days: griglia giorni 7x5
+   - dp-year-grid: griglia anni per selezione rapida
+═══════════════════════════════════════════ */
 #dp-popup{position:fixed;background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);box-shadow:0 8px 32px rgba(0,0,0,0.14);z-index:9000;width:280px;padding:0;display:none;overflow:hidden}
 .dp-header{display:flex;align-items:center;padding:12px 14px 8px;gap:4px}
 .dp-nav{width:28px;height:28px;border:none;border-radius:50%;background:var(--bg2);color:var(--text2);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
@@ -346,12 +380,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .dp-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:8px 10px 12px}
 .dp-day{height:32px;width:100%;border:none;border-radius:var(--radius);background:transparent;color:var(--text);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;font-weight:400}
 .dp-day:hover{background:var(--indigo-light);color:var(--indigo)}
-.dp-day.today{font-weight:700;color:var(--indigo)}
-.dp-day.selected{background:var(--indigo);color:#fff;font-weight:700}
+/* Oggi: cerchio rosso prominente */
+.dp-day.today{font-weight:700;color:#EF4444;background:rgba(239,68,68,0.08);border-radius:50%;outline:2px solid #EF4444;outline-offset:-2px}
+.dp-day.today:hover{background:rgba(239,68,68,0.15)}
+/* Selezionato: sfondo indigo pieno */
+.dp-day.selected{background:var(--indigo);color:#fff;font-weight:700;border-radius:50%}
 .dp-day.selected:hover{background:var(--indigo-dark)}
-.dp-day.other-month{color:var(--text3);opacity:.5}
-.dp-day.weekend{color:var(--indigo)}
-.dp-day.selected.weekend{color:#fff}
+/* Weekend: colore indigo tenue — NON uguale a oggi */
+.dp-day.weekend{color:var(--indigo);font-weight:500}
+.dp-day.weekend:hover{background:var(--indigo-light)}
+/* Festività: rosso + grassetto — più intenso del weekend ma distinto da oggi */
+.dp-day.holiday{color:#DC2626;font-weight:700;background:rgba(220,38,38,0.05)}
+.dp-day.holiday:hover{background:rgba(220,38,38,0.12)}
+/* Se oggi è anche weekend o festività, today ha priorità */
+.dp-day.today.weekend,.dp-day.today.holiday{color:#EF4444;background:rgba(239,68,68,0.08)}
+/* Giorno selezionato ha sempre sfondo indigo */
+.dp-day.selected.weekend,.dp-day.selected.holiday{color:#fff}
+.dp-day.other-month{color:var(--text3);opacity:.4}
 .dp-day:disabled{opacity:.3;cursor:default}
 /* Year picker overlay */
 .dp-year-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:10px}
@@ -359,7 +404,92 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .dp-year-item:hover{background:var(--indigo-light);color:var(--indigo)}
 .dp-year-item.selected{background:var(--indigo);color:#fff}
 
-/* ── MODAL HEADER & CLOSE ───────────────── */
+/* ═══════════════════════════════════════════
+   CARDS MODAL
+   Pannello note evoluto in sistema di card.
+   Ogni task può avere N card (titolo + corpo rich text + link + data).
+   - .card-item: singola card nella lista
+   - .card-header: titolo card + azioni (modifica/elimina)
+   - .card-body: contenuto rich text (Quill)
+   - .card-add-btn: pulsante per aggiungere nuova card
+═══════════════════════════════════════════ */
+#cards-modal{width:680px;max-width:96vw;max-height:90vh;overflow-y:auto;display:flex;flex-direction:column}
+.cards-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.card-item{border:0.5px solid var(--border2);border-radius:var(--radius-lg);background:var(--bg);overflow:hidden;transition:box-shadow .15s}
+.card-item:hover{box-shadow:var(--shadow-sm)}
+/* Barra colorata laterale che indica lo status del task */
+.card-item-bar{width:4px;flex-shrink:0;border-radius:2px 0 0 2px}
+.card-inner{display:flex;flex:1;min-width:0}
+.card-content{flex:1;padding:10px 12px;min-width:0}
+.card-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.card-title-input{flex:1;font-size:13px;font-weight:600;color:var(--text);border:none;background:transparent;outline:none;padding:0;min-width:0}
+.card-title-input::placeholder{color:var(--text3);font-weight:400}
+.card-meta{font-size:10px;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+/* Editor Quill dentro le card: stile compatto */
+.card-quill-wrap{min-height:60px;max-height:300px;overflow-y:auto}
+.card-quill-wrap .ql-toolbar{border-radius:var(--radius) var(--radius) 0 0;border-color:var(--border2);padding:4px 6px}
+.card-quill-wrap .ql-container{border-radius:0 0 var(--radius) var(--radius);border-color:var(--border2);font-size:12px;min-height:50px}
+.card-actions{display:flex;gap:4px;flex-shrink:0;padding:8px 8px 8px 0;align-items:flex-start}
+.card-action-btn{width:26px;height:26px;border:0.5px solid var(--border2);border-radius:50%;background:var(--bg2);color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .12s}
+.card-action-btn:hover{background:var(--red-light);border-color:var(--red);color:var(--red)}
+.card-add-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border:1.5px dashed var(--border2);border-radius:var(--radius-lg);background:transparent;color:var(--text3);cursor:pointer;font-size:13px;width:100%;transition:all .15s}
+.card-add-btn:hover{border-color:var(--indigo);color:var(--indigo);background:var(--indigo-light)}
+/* Badge "N card" nella sidebar accanto al pulsante note */
+.cards-count-badge{font-size:9px;background:var(--indigo);color:#fff;border-radius:8px;padding:1px 5px;font-weight:700}
+
+/* ═══════════════════════════════════════════
+   KANBAN BOARD
+   Vista alternativa al Gantt: colonne per status.
+   - #kanban-wrap: contenitore orizzontale delle colonne
+   - .kb-col: singola colonna (uno per status)
+   - .kb-col-header: intestazione colonna con nome + count
+   - .kb-cards: lista card nella colonna (droppable)
+   - .kb-card: singola task card nella colonna
+   Il drag & drop aggiorna lo status del task in tempo reale.
+═══════════════════════════════════════════ */
+#kanban-wrap{display:none;gap:12px;padding:4px 2px;overflow-x:auto;min-height:400px}
+#kanban-wrap.active{display:flex}
+.kb-col{flex:0 0 300px;display:flex;flex-direction:column;gap:10px}
+.kb-col-header{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius-lg);background:var(--bg2);border:0.5px solid var(--border)}
+.kb-col-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.kb-col-title{font-size:13px;font-weight:700;color:var(--text);flex:1;text-transform:uppercase;letter-spacing:.05em}
+.kb-col-count{font-size:12px;color:var(--text3);background:var(--bg3);border-radius:10px;padding:2px 9px;font-weight:600}
+.kb-col-add-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border:1.5px dashed var(--border2);border-radius:var(--radius-lg);background:transparent;color:var(--text3);cursor:pointer;font-size:12px;width:100%;transition:all .15s}
+.kb-col-add-btn:hover{border-color:var(--indigo);color:var(--indigo);background:var(--indigo-light)}
+/* Drag drop fluido: transizione lenta, niente border pulsante */
+.kb-cards{display:flex;flex-direction:column;gap:9px;min-height:100px;padding:4px 2px;flex:1;transition:background .2s,border .2s}
+.kb-cards.drag-over{background:rgba(108,99,255,0.06);border-radius:var(--radius-lg);border:2px solid rgba(108,99,255,0.3);outline:none}
+.kb-card{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:14px 14px 10px;cursor:grab;box-shadow:var(--shadow-sm);transition:box-shadow .14s,transform .14s;border-left:4px solid transparent}
+.kb-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.kb-card:active{cursor:grabbing}
+.kb-card.dragging{opacity:.4;cursor:grabbing;transform:none}
+.kb-card.kb-archived-card{opacity:.5;font-style:italic}
+.kb-card-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.35}
+.kb-card-proj{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;opacity:.75}
+.kb-card-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.kb-card-date{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.kb-card-avatars{display:flex;gap:3px;margin-left:auto}
+.kb-card-cards-count{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px;cursor:pointer;padding:2px 7px;border-radius:8px;transition:all .12s}
+.kb-card-cards-count:hover{color:var(--indigo);background:var(--indigo-light)}
+.kb-card-effort{margin-top:8px;display:flex;gap:3px}
+.kb-effort-dot{width:8px;height:5px;border-radius:3px;background:var(--border2)}
+.kb-effort-dot.filled{background:var(--indigo)}
+.kb-card-actions{display:flex;gap:5px;margin-top:10px;padding-top:8px;border-top:0.5px solid var(--border)}
+.kb-card-action{background:none;border:0.5px solid var(--border2);border-radius:var(--radius);padding:4px 9px;font-size:11px;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .12s}
+.kb-card-action:hover{background:var(--bg2);border-color:var(--indigo);color:var(--indigo)}
+.kb-card-action.archive-btn:hover{background:var(--amber-light);border-color:var(--amber);color:var(--amber)}
+.kb-card-action.restore-btn:hover{background:var(--status-done-bg);border-color:var(--status-done);color:var(--status-done)}
+.kb-archived-section{margin-top:8px}
+.kb-archived-toggle{background:none;border:none;font-size:11px;color:var(--text3);cursor:pointer;padding:5px 10px;display:flex;align-items:center;gap:6px;border-radius:var(--radius);width:100%;transition:all .12s}
+.kb-archived-toggle:hover{color:var(--indigo);background:var(--indigo-light)}
+.kb-col.kb-backlog .kb-col-header{background:var(--bg3);border-style:dashed;border-color:var(--border2)}
+.view-mode-toggle{display:flex;border:0.5px solid var(--border2);border-radius:var(--radius);overflow:hidden;background:var(--bg2)}
+.view-mode-btn{border:none;background:transparent;padding:0 10px;height:28px;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s}
+.view-mode-btn:hover{background:var(--bg3);color:var(--text)}
+.view-mode-btn.active{background:var(--indigo);color:#fff}
+.kb-empty{text-align:center;padding:28px 16px;color:var(--text3);font-size:13px;border:1px dashed var(--border2);border-radius:var(--radius-lg)}
+
+
 .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .modal-header-title{font-size:14px;font-weight:700;color:var(--text)}
 .modal-close-btn{width:28px;height:28px;border:0.5px solid var(--border2);border-radius:50%;background:var(--bg2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:all .12s;flex-shrink:0}
@@ -608,7 +738,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
     <div class="nav-brand-icon">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2.5" rx="1.25" fill="white"/><rect x="1" y="7" width="9" height="2.5" rx="1.25" fill="white" opacity=".7"/><rect x="1" y="11" width="11" height="2.5" rx="1.25" fill="white" opacity=".5"/></svg>
     </div>
-    <span class="nav-brand-name">Planner</span>
+    <span class="nav-brand-name">Welcome AN Board!</span>
   </div>
 
   <div class="nav-section">Workspace</div>
@@ -695,17 +825,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 
 <!-- Add project/task buttons above stats -->
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-  <button class="btn" style="background:#059669;color:#fff;border-color:#047857;box-shadow:0 2px 6px rgba(5,150,105,.25);height:32px" onclick="openAddProjectModal()">
-    <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+  <button class="btn" style="background:#059669;color:#fff;border-color:#047857;box-shadow:0 2px 6px rgba(5,150,105,.25);height:32px;display:inline-flex;align-items:center;gap:6px" onclick="openAddProjectModal()">
+    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" style="flex-shrink:0"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     Nuovo progetto
   </button>
-  <button id="btn-add-task" class="btn" style="background:#C2820A;color:#fff;border-color:#92600A;box-shadow:0 2px 6px rgba(194,130,10,.3);height:32px" onclick="openAddModal(null)">
-    <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+  <button id="btn-add-task" class="btn" style="background:#C2820A;color:#fff;border-color:#92600A;box-shadow:0 2px 6px rgba(194,130,10,.3);height:32px;display:inline-flex;align-items:center;gap:6px" onclick="openAddModal(null)">
+    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" style="flex-shrink:0"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     Aggiungi task
   </button>
+  <!-- Toggle Gantt ↔ Kanban -->
+  <div class="view-mode-toggle" title="Cambia vista">
+    <button class="view-mode-btn active" id="vmode-gantt" onclick="setViewMode('gantt')">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="2" rx="1" fill="currentColor" opacity=".5"/><rect x="1" y="5.5" width="7" height="2" rx="1" fill="currentColor"/><rect x="1" y="9" width="9" height="2" rx="1" fill="currentColor" opacity=".7"/></svg>
+      Gantt
+    </button>
+    <button class="view-mode-btn" id="vmode-kanban" onclick="setViewMode('kanban')">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="3" height="11" rx="1" fill="currentColor" opacity=".7"/><rect x="5" y="1" width="3" height="8" rx="1" fill="currentColor"/><rect x="9" y="1" width="3" height="9" rx="1" fill="currentColor" opacity=".8"/></svg>
+      Kanban
+    </button>
+  </div>
   <div style="flex:1"></div>
   <div id="stats-bar" style="margin-bottom:0"></div>
 </div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     KANBAN BOARD
+     Vista alternativa al Gantt: task organizzati in colonne per status.
+     Visibile solo quando setViewMode('kanban') è attivo.
+     Ogni colonna corrisponde a uno status (todo/active/standby/done).
+     Il drag & drop tra colonne aggiorna lo status del task.
+     Popolato da renderKanban() in JS.
+═══════════════════════════════════════════════════════════ -->
+<div id="kanban-wrap"></div>
 
 <div id="legend">
   <span style="font-weight:600;color:var(--text2)">Legenda:</span>
@@ -735,15 +886,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 
 <!-- Empty state -->
 <div id="gantt-empty">
-  <svg width="64" height="64" viewBox="0 0 64 64" fill="none"><rect x="8" y="16" width="48" height="36" rx="6" stroke="var(--text3)" stroke-width="2" fill="none"/><path d="M8 26h48" stroke="var(--text3)" stroke-width="1.5"/><path d="M20 36h12M20 43h8" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/><circle cx="48" cy="42" r="10" fill="var(--indigo)" opacity=".12" stroke="var(--indigo)" stroke-width="1.5"/><path d="M48 38v4M46 42h4" stroke="var(--indigo)" stroke-width="1.5" stroke-linecap="round"/></svg>
-  <h3>Nessun progetto ancora</h3>
-  <p>Crea il primo progetto per iniziare a pianificare le attività.</p>
-  <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-    <button class="btn" onclick="openAddProjectModal()" style="background:#059669;color:#fff;border-color:#047857;height:34px;padding:0 18px;font-size:13px">
-      <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      Nuovo progetto
-    </button>
-  </div>
+  <!-- Il contenuto viene generato dinamicamente da updateEmptyState() in JS -->
 </div>
 
 <div id="gantt-outer">
@@ -958,7 +1101,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
         </div>
       </div>
 
-      <div class="modal-section" data-sec="resources">
+      <div class="modal-section" data-sec="resources" id="modal-sec-resources">
         <div class="modal-grip" title="Trascina per riordinare">
   <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
     <circle cx="3" cy="3" r="1.5"/><circle cx="9" cy="3" r="1.5"/>
@@ -1040,28 +1183,59 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
   </div>
 </div>
 
-<!-- NOTES MODAL -->
-<div class="modal-backdrop" id="notes-overlay">
+<!-- ═══════════════════════════════════════════════════════════
+     CARDS MODAL
+     Sostituisce il vecchio editor note con un sistema di card.
+     Ogni card ha: titolo, corpo rich text, data creazione.
+     Le card sono associate al singolo task (t.cards[]).
+═══════════════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="cards-overlay">
+  <div class="modal" id="cards-modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-header-title" id="cards-modal-title">📋 Note & Card</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px" id="cards-modal-subtitle"></div>
+      </div>
+      <button class="modal-close-btn" onclick="closeCardsModal()" title="Chiudi">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <!-- Lista card esistenti: popolata dinamicamente da renderCardsModal() -->
+    <div id="cards-list" class="cards-list"></div>
+    <!-- Pulsante aggiungi nuova card -->
+    <button class="card-add-btn" onclick="addCard()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Aggiungi card
+    </button>
+    <div class="modal-btns" style="margin-top:14px">
+      <div class="notes-export-btns">
+        <button class="btn" onclick="exportCardsWord()">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="var(--indigo-dark)" stroke-width="1"/><path d="M3 4l1.5 4L6 5l1.5 3L9 4" stroke="var(--indigo-dark)" stroke-width="1" stroke-linecap="round"/></svg>Word
+        </button>
+        <button class="btn" onclick="exportCardsPDF()">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="var(--red)" stroke-width="1"/><path d="M3.5 3.5h3a1.5 1.5 0 010 3H3.5V3.5zM3.5 6.5h5" stroke="var(--red)" stroke-width="1"/></svg>PDF
+        </button>
+      </div>
+      <button class="btn" onclick="closeCardsModal()">Chiudi</button>
+      <button class="btn ok" onclick="saveCards()">Salva tutte le card</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     LEGACY NOTES MODAL (mantenuto per compatibilità export)
+     Visibile solo per exportNotesWord / exportNotesPDF
+     Non viene più aperto direttamente — ora si usa #cards-overlay
+═══════════════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="notes-overlay" style="display:none!important">
   <div class="modal" id="notes-modal">
-    <h3>
-      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M3 1h7l3 3v10H3V1z" stroke="var(--indigo)" stroke-width="1.3" fill="none" stroke-linejoin="round"/><path d="M10 1v3h3M5 6h5M5 8.5h5M5 11h3" stroke="var(--indigo)" stroke-width="1.1" stroke-linecap="round"/></svg>
-      <span id="notes-modal-title">Note</span>
-    </h3>
+    <h3><span id="notes-modal-title">Note</span></h3>
     <div class="notes-subtitle" id="notes-modal-subtitle"></div>
-    <div id="notes-editor-wrap">
+    <div id="notes-editor-wrap" style="display:none">
       <div id="notes-quill-editor"></div>
     </div>
     <div class="modal-btns">
-      <div class="notes-export-btns">
-        <button class="btn" onclick="exportNotesWord()">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="var(--indigo-dark)" stroke-width="1"/><path d="M3 4l1.5 4L6 5l1.5 3L9 4" stroke="var(--indigo-dark)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>Word
-        </button>
-        <button class="btn" onclick="exportNotesPDF()">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:3px"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="var(--red)" stroke-width="1"/><path d="M3.5 3.5h3a1.5 1.5 0 010 3H3.5V3.5zM3.5 6.5h5" stroke="var(--red)" stroke-width="1" stroke-linecap="round"/></svg>PDF
-        </button>
-      </div>
-      <button class="btn" onclick="closeNotesModal()">Annulla</button>
-      <button class="btn ok" onclick="saveNotes()">Salva note</button>
+      <button class="btn" onclick="document.getElementById('notes-overlay').classList.remove('open')">Chiudi</button>
     </div>
   </div>
 </div>
@@ -1193,22 +1367,127 @@ async function doChallenge() {
   await enterApp();
 }
 
+// ═══════════════════════════════════════════════════════════
+// SISTEMA RUOLI UTENTE
+// Due ruoli: 'pm' (Project Manager) e 'member' (tutti gli altri).
+// Il ruolo viene letto da user.user_metadata.role impostato in
+// Supabase Dashboard → Authentication → Users → Edit → Metadata.
+//
+// MATRICE PERMESSI:
+//   pm:     accesso completo
+//   member: può vedere tutto, creare task/note/kanban,
+//           NON può gestire progetti né il roster risorse,
+//           NON può eliminare task
+//
+// applyRoleRestrictions(): nasconde/disabilita gli elementi UI
+//   che il ruolo corrente non può usare.
+// isPM(): shorthand per il controllo ruolo.
+// ═══════════════════════════════════════════════════════════
+
+let currentUserRole = 'member'; // 'pm' | 'member' — impostato in enterApp
+
+/** Mappa ruolo → etichetta visibile in app */
+const ROLE_LABELS = {
+  'pm':              'Project Manager',
+  'developer':       'Developer',
+  'designer':        'Designer',
+  'content_manager': 'Content Manager',
+  'member':          'Member',
+};
+
+/**
+ * Restituisce l'etichetta leggibile del ruolo corrente.
+ * Se il ruolo non è in mappa, restituisce il valore grezzo capitalizzato.
+ */
+function roleLabel(){
+  return ROLE_LABELS[currentUserRole]
+    || currentUserRole.charAt(0).toUpperCase() + currentUserRole.slice(1);
+}
+
+/** Restituisce true se l'utente è Project Manager */
+const isPM = () => currentUserRole === 'pm';
+
+/**
+ * Mostra un messaggio di accesso negato quando un utente member
+ * cerca di eseguire un'azione riservata ai PM.
+ * @param {string} [msg] - messaggio opzionale
+ */
+function denyAccess(msg){
+  const text = msg || 'Questa azione è riservata ai Project Manager.';
+  const toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e1b4b;color:#a5b4fc;border:0.5px solid #4338ca;border-radius:var(--radius-lg);padding:10px 20px;font-size:13px;font-weight:500;z-index:9999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:slideInToast .2s ease';
+  toast.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#818cf8" stroke-width="1.2"/><path d="M8 5v4M8 11v.5" stroke="#818cf8" stroke-width="1.5" stroke-linecap="round"/></svg>${text}`;
+  document.body.appendChild(toast);
+  setTimeout(()=>{ toast.style.animation='fadeOutToast .3s ease forwards'; setTimeout(()=>toast.remove(),300); }, 2800);
+}
+
+/**
+ * Applica le restrizioni UI in base al ruolo corrente.
+ * Chiamata una volta al login e ad ogni cambio di tab/pagina.
+ * - Nasconde il Roster dalla nav se member
+ * - Disabilita i bottoni "Nuovo progetto"
+ * - Aggiunge badge ruolo nella nav
+ */
+function applyRoleRestrictions(){
+  const pm = isPM();
+
+  /* Nav: voce Roster — visibile solo ai PM */
+  document.querySelectorAll('.nav-item').forEach(el=>{
+    if(el.textContent.trim().startsWith('Roster')){
+      el.style.display = pm ? '' : 'none';
+    }
+  });
+
+  /* Bottone "Nuovo progetto" nella toolbar — visibile solo ai PM */
+  document.querySelectorAll('[onclick="openAddProjectModal()"]').forEach(el=>{
+    el.style.display = pm ? '' : 'none';
+  });
+
+  /* Sezione "Risorse assegnate" nel modal task — solo PM */
+  const resSec = document.getElementById('modal-sec-resources');
+  if(resSec) resSec.style.display = pm ? '' : 'none';
+
+  /* Badge ruolo visibile nella nav — mostra l'etichetta specifica */
+  const roleEl = document.querySelector('.nav-user-role');
+  if(roleEl){
+    roleEl.textContent = roleLabel();
+    roleEl.style.color = isPM() ? '#a5b4fc' : '#818cf8';
+  }
+}
+
 async function enterApp() {
   const { data: { user } } = await sb.auth.getUser();
   const email = user?.email || '';
+
+  /* Legge il ruolo specifico dai metadata (pm, developer, designer, content_manager…).
+     Per i permessi usa isPM() che è true solo per 'pm'.
+     Per la visualizzazione usa roleLabel() che mostra l'etichetta completa. */
+  const rawRole = user?.user_metadata?.role || 'member';
+  currentUserRole = rawRole; // mantiene il valore completo (es. 'designer')
+
   document.getElementById('user-email-label').textContent = email;
   document.getElementById('user-avatar').textContent = email.slice(0,2).toUpperCase();
+
+  /* Aggiorna etichetta ruolo nella nav */
+  const roleEl = document.querySelector('.nav-user-role');
+  if(roleEl) roleEl.textContent = roleLabel();
+
   document.getElementById('auth-wrap').style.display = 'none';
   document.getElementById('app-wrap').style.display = 'block';
-  /* Show skeleton while loading */
+
   document.getElementById('gantt-skeleton').style.display = 'block';
   document.getElementById('gantt-outer').style.display = 'none';
   document.getElementById('gantt-empty').style.display = 'none';
   await loadFromSupabase();
   await subscribeRealtime();
   document.getElementById('gantt-skeleton').style.display = 'none';
+
+  /* Applica le restrizioni UI in base al ruolo */
+  applyRoleRestrictions();
+
   rerender();
   handleDeepLink();
+  setTimeout(scrollToCurrentMonth, 150);
 }
 
 async function doLogout() {
@@ -1239,8 +1518,9 @@ document.getElementById('challenge-code').addEventListener('keydown', e => { if(
 // ─── GANTT CONFIG ─────────────────────────────────────
 const ROW_H=36, HDR_H=80, HANDLE_W=8;
 let DAY_W=22;
-const TODAY=new Date(2026,3,25); // 25 aprile 2026
-const START_DATE=new Date(2026,2,1); // 1 marzo 2026
+/* TODAY è la data reale del giorno corrente, calcolata dinamicamente a runtime */
+const TODAY=(()=>{const d=new Date();d.setHours(0,0,0,0);return d;})();
+const START_DATE=new Date(2026,2,1); // 1 marzo 2026 — inizio timeline
 const TOTAL_DAYS=365; // un anno intero scrollabile
 
 document.getElementById('today-label').textContent='Oggi: '+TODAY.toLocaleDateString('it-IT',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
@@ -1255,8 +1535,63 @@ const fromISO=s=>{const p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2])};
 const isoKey=dt=>dt.getFullYear()+'-'+(dt.getMonth()+1)+'-'+dt.getDate();
 const uid=()=>'t'+Date.now()+Math.random().toString(36).slice(2,6);
 
-const FEST=new Set(['2026-1-1','2026-1-6','2026-4-5','2026-4-6','2026-4-25','2026-5-1','2026-6-2','2026-8-15','2026-11-1','2026-12-8','2026-12-25','2026-12-26']);
-const isFest=dt=>FEST.has(isoKey(dt));
+// ═══════════════════════════════════════════════════════════
+// COSTANTI E CONFIGURAZIONE
+// FEST: giorni festivi italiani 2026 (formato YYYY-M-D)
+// START_DATE: inizio timeline | TODAY: data odierna
+// TOTAL_DAYS: giorni totali nella timeline (365 = 1 anno)
+// ROW_H: altezza riga px | HDR_H: altezza header px | HANDLE_W: larghezza maniglie resize
+// DAY_W: larghezza colonna giorno (varia con lo zoom: 32/16/8 px)
+// ═══════════════════════════════════════════════════════════
+/**
+ * Calcola le festività italiane per un dato anno.
+ * Include la Pasqua e la Pasquetta calcolate dinamicamente (algoritmo di Gauss).
+ * @param {number} year
+ * @returns {Set<string>} Set di chiavi YYYY-M-D (mese 1-based)
+ */
+function italianHolidaysForYear(year){
+  /* Algoritmo di Gauss per il calcolo della Pasqua (Western) */
+  const a=year%19, b=Math.floor(year/100), c=year%100;
+  const d=Math.floor(b/4), e=b%4;
+  const f=Math.floor((b+8)/25), g=Math.floor((b-f+1)/3);
+  const h=(19*a+b-d-g+15)%30;
+  const i=Math.floor(c/4), k=c%4;
+  const l=(32+2*e+2*i-h-k)%7;
+  const m=Math.floor((a+11*h+22*l)/451);
+  const easterMonth=Math.floor((h+l-7*m+114)/31);   // 1-based
+  const easterDay  =(h+l-7*m+114)%31+1;
+
+  /* Domenica di Pasqua */
+  const easter    = `${year}-${easterMonth}-${easterDay}`;
+  /* Lunedì di Pasquetta = Pasqua +1 giorno */
+  const em=new Date(year,easterMonth-1,easterDay+1);
+  const easterMonday=`${em.getFullYear()}-${em.getMonth()+1}-${em.getDate()}`;
+
+  return new Set([
+    `${year}-1-1`,   // Capodanno
+    `${year}-1-6`,   // Epifania
+    easter,           // Pasqua
+    easterMonday,     // Pasquetta
+    `${year}-4-25`,  // Festa della Liberazione
+    `${year}-5-1`,   // Festa del Lavoro
+    `${year}-6-2`,   // Festa della Repubblica
+    `${year}-8-15`,  // Ferragosto
+    `${year}-11-1`,  // Ognissanti
+    `${year}-12-8`,  // Immacolata Concezione
+    `${year}-12-25`, // Natale
+    `${year}-12-26`, // Santo Stefano
+  ]);
+}
+
+/* Cache per evitare ricalcoli ripetuti: anno → Set */
+const _festCache={};
+const isFest=dt=>{
+  const y=dt.getFullYear();
+  if(!_festCache[y]) _festCache[y]=italianHolidaysForYear(y);
+  return _festCache[y].has(isoKey(dt));
+};
+/* Mantieni FEST per compatibilità con il date picker che la usa direttamente */
+const FEST={has:key=>{const y=parseInt(key.split('-')[0]);if(!_festCache[y])_festCache[y]=italianHolidaysForYear(y);return _festCache[y].has(key);}};
 const isWE=dt=>{const d=dt.getDay();return d===0||d===6};
 const DAY_LBL=['d','l','m','m','g','v','s'];
 
@@ -1309,6 +1644,13 @@ COLOR_PRESETS.forEach(c=>{
 });
 
 // ─── RESOURCE POOL ────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// RESOURCE POOL
+// Pool centralizzato di tutte le risorse disponibili.
+// Ogni risorsa ha: id, name, role, category, color.
+// Categorie: Sviluppatori (6), Content Manager (4), Project Manager (4)
+// RES_BY_ID: dizionario {id → risorsa} per lookup veloce
+// ═══════════════════════════════════════════════════════════
 const RESOURCE_POOL = [
   // Sviluppatori (6)
   {id:'r1', name:'Marco Ferretti',   role:'Senior Dev',      category:'Sviluppatori', color:'#378ADD'},
@@ -1333,6 +1675,23 @@ RESOURCE_POOL.forEach(r=>RES_BY_ID[r.id]=r);
 const resById = id => RES_BY_ID[id] || {name:id, color:'#888', role:'', category:''};
 
 // ─── PAGES ────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// STRUTTURA DATI PRINCIPALE
+// pages[]: array di pagine (una per cliente/workspace)
+//   └─ page.id, page.label
+//   └─ page.projects[]: array progetti nella pagina
+//        └─ project.id, project.label, project.color
+//   └─ page.tasks[]: array task nella pagina
+//        └─ task.id, task.proj (FK → project.id)
+//        └─ task.label, task.start, task.end (Date)
+//        └─ task.progress (0-100), task.status (todo/active/standby/done/milestone)
+//        └─ task.resources[] (array di resource id)
+//        └─ task.deps[] (array di task id da cui dipende)
+//        └─ task.parentId (FK → task.id padre, per subtask)
+//        └─ task.effort (1-5), task.notes (HTML string)
+//        └─ task.isMilestone (bool), task.icon, task.color
+// currentPageId: id della pagina attualmente visualizzata
+// ═══════════════════════════════════════════════════════════
 let pages = [
   {
     id:'pg1', label:'Cliente A',
@@ -1342,23 +1701,23 @@ let pages = [
       {id:'p3',label:'Campagna Marketing',color:'#EF9F27'},
     ],
     tasks:[
-      {id:'t1',proj:'p1',label:'Wireframe & UX',start:D(2026,2,2),end:D(2026,2,16),progress:100,status:'done',color:'#639922',icon:'doc',resources:['r1','r2'],deps:[],parentId:null,effort:3,notes:''},
-      {id:'t2',proj:'p1',label:'Design UI',start:D(2026,2,16),end:D(2026,3,2),progress:80,status:'active',color:'#378ADD',icon:'star',resources:['r2'],deps:['t1'],parentId:null,effort:3,notes:''},
-      {id:'t2a',proj:'p1',label:'Homepage',start:D(2026,2,16),end:D(2026,2,23),progress:100,status:'done',color:'#639922',icon:'home',resources:['r2'],deps:[],parentId:'t2',effort:3,notes:''},
-      {id:'t2b',proj:'p1',label:'Pagine interne',start:D(2026,2,23),end:D(2026,3,2),progress:60,status:'active',color:'#378ADD',icon:'doc',resources:['r2','r3'],deps:[],parentId:'t2',effort:3,notes:''},
-      {id:'t3',proj:'p1',label:'Sviluppo frontend',start:D(2026,3,2),end:D(2026,3,23),progress:30,status:'active',color:'#378ADD',icon:'gear',resources:['r1'],deps:['t2'],parentId:null,effort:3,notes:''},
-      {id:'t4',proj:'p1',label:'Test & QA',start:D(2026,3,23),end:D(2026,4,6),progress:0,status:'todo',color:'#B4B2A9',icon:'bug',resources:[],deps:['t3'],parentId:null,effort:3,notes:''},
-      {id:'m1',proj:'p1',label:'Go-live sito',start:D(2026,4,6),end:D(2026,4,6),progress:0,status:'milestone',color:'#534AB7',icon:'rocket',resources:[],deps:['t4'],parentId:null,isMilestone:true,effort:3,notes:''},
-      {id:'t5',proj:'p2',label:'Architettura & setup',start:D(2026,2,9),end:D(2026,2,23),progress:100,status:'done',color:'#639922',icon:'gear',resources:['r4'],deps:[],parentId:null,effort:3,notes:''},
-      {id:'t6',proj:'p2',label:'Modulo autenticazione',start:D(2026,2,23),end:D(2026,3,9),progress:60,status:'active',color:'#378ADD',icon:'lock',resources:['r4'],deps:['t5'],parentId:null,effort:3,notes:''},
-      {id:'t6a',proj:'p2',label:'Login / Register',start:D(2026,2,23),end:D(2026,3,2),progress:100,status:'done',color:'#639922',icon:'person',resources:['r4'],deps:[],parentId:'t6',effort:3,notes:''},
-      {id:'t6b',proj:'p2',label:'OAuth Google',start:D(2026,3,2),end:D(2026,3,9),progress:20,status:'active',color:'#378ADD',icon:'link',resources:['r4','r5'],deps:[],parentId:'t6',effort:3,notes:''},
-      {id:'t7',proj:'p2',label:'Dashboard & notifiche',start:D(2026,3,9),end:D(2026,3,30),progress:10,status:'active',color:'#378ADD',icon:'chart',resources:['r5'],deps:['t6'],parentId:null,effort:3,notes:''},
-      {id:'t8',proj:'p2',label:'Beta testing',start:D(2026,3,30),end:D(2026,4,27),progress:0,status:'todo',color:'#B4B2A9',icon:'bug',resources:[],deps:['t7'],parentId:null,effort:3,notes:''},
-      {id:'m2',proj:'p2',label:'Release v1.0',start:D(2026,4,27),end:D(2026,4,27),progress:0,status:'milestone',color:'#534AB7',icon:'rocket',resources:[],deps:['t8'],parentId:null,isMilestone:true,effort:3,notes:''},
-      {id:'t9',proj:'p3',label:'Definizione strategia',start:D(2026,2,2),end:D(2026,2,16),progress:100,status:'done',color:'#639922',icon:'flag',resources:['r7'],deps:[],parentId:null,effort:3,notes:''},
-      {id:'t10',proj:'p3',label:'Produzione contenuti',start:D(2026,2,16),end:D(2026,3,16),progress:45,status:'standby',color:'#EF9F27',icon:'doc',resources:['r7','r1'],deps:['t9'],parentId:null,effort:3,notes:''},
-      {id:'t11',proj:'p3',label:'Lancio campagna',start:D(2026,3,16),end:D(2026,4,27),progress:0,status:'todo',color:'#B4B2A9',icon:'mail',resources:[],deps:['t10'],parentId:null,effort:3,notes:''},
+      {id:'t1',proj:'p1',label:'Wireframe & UX',start:D(2026,2,2),end:D(2026,2,16),progress:100,status:'done',color:'#639922',icon:'doc',resources:['r1','r2'],deps:[],parentId:null,effort:3,cards:[]},
+      {id:'t2',proj:'p1',label:'Design UI',start:D(2026,2,16),end:D(2026,3,2),progress:80,status:'active',color:'#378ADD',icon:'star',resources:['r2'],deps:['t1'],parentId:null,effort:3,cards:[]},
+      {id:'t2a',proj:'p1',label:'Homepage',start:D(2026,2,16),end:D(2026,2,23),progress:100,status:'done',color:'#639922',icon:'home',resources:['r2'],deps:[],parentId:'t2',effort:3,cards:[]},
+      {id:'t2b',proj:'p1',label:'Pagine interne',start:D(2026,2,23),end:D(2026,3,2),progress:60,status:'active',color:'#378ADD',icon:'doc',resources:['r2','r3'],deps:[],parentId:'t2',effort:3,cards:[]},
+      {id:'t3',proj:'p1',label:'Sviluppo frontend',start:D(2026,3,2),end:D(2026,3,23),progress:30,status:'active',color:'#378ADD',icon:'gear',resources:['r1'],deps:['t2'],parentId:null,effort:3,cards:[]},
+      {id:'t4',proj:'p1',label:'Test & QA',start:D(2026,3,23),end:D(2026,4,6),progress:0,status:'todo',color:'#B4B2A9',icon:'bug',resources:[],deps:['t3'],parentId:null,effort:3,cards:[]},
+      {id:'m1',proj:'p1',label:'Go-live sito',start:D(2026,4,6),end:D(2026,4,6),progress:0,status:'milestone',color:'#534AB7',icon:'rocket',resources:[],deps:['t4'],parentId:null,isMilestone:true,effort:3,cards:[]},
+      {id:'t5',proj:'p2',label:'Architettura & setup',start:D(2026,2,9),end:D(2026,2,23),progress:100,status:'done',color:'#639922',icon:'gear',resources:['r4'],deps:[],parentId:null,effort:3,cards:[]},
+      {id:'t6',proj:'p2',label:'Modulo autenticazione',start:D(2026,2,23),end:D(2026,3,9),progress:60,status:'active',color:'#378ADD',icon:'lock',resources:['r4'],deps:['t5'],parentId:null,effort:3,cards:[]},
+      {id:'t6a',proj:'p2',label:'Login / Register',start:D(2026,2,23),end:D(2026,3,2),progress:100,status:'done',color:'#639922',icon:'person',resources:['r4'],deps:[],parentId:'t6',effort:3,cards:[]},
+      {id:'t6b',proj:'p2',label:'OAuth Google',start:D(2026,3,2),end:D(2026,3,9),progress:20,status:'active',color:'#378ADD',icon:'link',resources:['r4','r5'],deps:[],parentId:'t6',effort:3,cards:[]},
+      {id:'t7',proj:'p2',label:'Dashboard & notifiche',start:D(2026,3,9),end:D(2026,3,30),progress:10,status:'active',color:'#378ADD',icon:'chart',resources:['r5'],deps:['t6'],parentId:null,effort:3,cards:[]},
+      {id:'t8',proj:'p2',label:'Beta testing',start:D(2026,3,30),end:D(2026,4,27),progress:0,status:'todo',color:'#B4B2A9',icon:'bug',resources:[],deps:['t7'],parentId:null,effort:3,cards:[]},
+      {id:'m2',proj:'p2',label:'Release v1.0',start:D(2026,4,27),end:D(2026,4,27),progress:0,status:'milestone',color:'#534AB7',icon:'rocket',resources:[],deps:['t8'],parentId:null,isMilestone:true,effort:3,cards:[]},
+      {id:'t9',proj:'p3',label:'Definizione strategia',start:D(2026,2,2),end:D(2026,2,16),progress:100,status:'done',color:'#639922',icon:'flag',resources:['r7'],deps:[],parentId:null,effort:3,cards:[]},
+      {id:'t10',proj:'p3',label:'Produzione contenuti',start:D(2026,2,16),end:D(2026,3,16),progress:45,status:'standby',color:'#EF9F27',icon:'doc',resources:['r7','r1'],deps:['t9'],parentId:null,effort:3,cards:[]},
+      {id:'t11',proj:'p3',label:'Lancio campagna',start:D(2026,3,16),end:D(2026,4,27),progress:0,status:'todo',color:'#B4B2A9',icon:'mail',resources:[],deps:['t10'],parentId:null,effort:3,cards:[]},
     ]
   }
 ];
@@ -1373,6 +1732,12 @@ function setTasks(arr){ curPage().tasks=arr; }
 /* Proxy: tasks e PROJECTS puntano sempre alla pagina corrente */
 let PROJECTS = getProjects();
 let tasks = getTasks();
+// ═══════════════════════════════════════════════════════════
+// PAGE HELPERS
+// curPage(): restituisce la pagina corrente
+// getProjects()/getTasks()/setTasks(): getters/setter sulla pagina corrente
+// syncPageData(): aggiorna i proxy PROJECTS e tasks dopo cambio pagina
+// ═══════════════════════════════════════════════════════════
 function syncPageData(){ PROJECTS=getProjects(); tasks=getTasks(); }
 
 // ─── PERSISTENZA SUPABASE ─────────────────────────────
@@ -1402,6 +1767,9 @@ function deserializeState(raw){
         ...t,
         start: new Date(t.start),
         end:   new Date(t.end),
+        // Migrazione: se il task ha note ma non cards, creo array vuoto
+        // La migrazione vera avviene in openCardsModal() al primo accesso
+        cards: t.cards || [],
       }))
     }));
     currentPageId = pages[0]?.id || currentPageId;
@@ -1433,17 +1801,35 @@ function setSaveStatus(state){
   }
 }
 
+// ═══════════════════════════════════════════════════════════
+// PERSISTENZA SUPABASE
+// Salvataggio/caricamento dei dati su Supabase.
+// - saveToSupabase(): serializza stato → upsert su planner_data
+// - loadFromSupabase(): carica JSON → deserializza stato
+// - scheduleSave(): debounce 1.5s per evitare troppe chiamate
+// - serializeState(): converte Date → ISO string per JSON
+// - deserializeState(): ricostruisce Date dagli ISO string
+// ═══════════════════════════════════════════════════════════
 async function saveToSupabase(){
   try {
     setSaveStatus('saving');
-    const { data:{ user } } = await sb.auth.getUser();
-    if(!user) return;
+    const { data:{ user }, error:userErr } = await sb.auth.getUser();
+    if(!user || userErr){
+      /* Nessun utente: resetta spinner invece di lasciarlo girare */
+      setSaveStatus('error');
+      console.warn('saveToSupabase: nessun utente autenticato', userErr);
+      return;
+    }
     const { error } = await sb.from('planner_data').upsert(
       { workspace_id:'shared', data: serializeState(), updated_by: user.id, updated_at: new Date().toISOString() },
       { onConflict: 'workspace_id' }
     );
-    setSaveStatus(error ? 'error' : 'saved');
-    if(error) console.error('Save error:', error);
+    if(error){
+      setSaveStatus('error');
+      console.error('Save error (RLS o rete):', error.message, error);
+    } else {
+      setSaveStatus('saved');
+    }
   } catch(e){
     setSaveStatus('error');
     console.error('Save exception:', e);
@@ -1472,6 +1858,14 @@ function scheduleSave(){
 // ─── REALTIME ─────────────────────────────────────────
 let realtimeChannel = null;
 
+// ═══════════════════════════════════════════════════════════
+// REALTIME SUPABASE
+// Sottoscrizione WebSocket: quando un altro utente salva,
+// il client riceve l'aggiornamento e fa rerender senza ricaricare.
+// - subscribeRealtime(): apre il canale WebSocket
+// - unsubscribeRealtime(): chiude il canale (es. al logout)
+// - showRealtimeToast(): notifica "X ha aggiornato il planner"
+// ═══════════════════════════════════════════════════════════
 async function subscribeRealtime(){
   const { data:{ user } } = await sb.auth.getUser();
   const myId = user?.id;
@@ -1570,9 +1964,10 @@ function addPage(){
   const label = prompt('Nome della nuova pagina (es. Cliente B):','Nuova pagina');
   if(!label||!label.trim()) return;
   const id = 'pg'+Date.now();
+  /* La nuova tab parte completamente vuota: nessun progetto pre-creato */
   pages.push({
     id, label:label.trim(),
-    projects:[{id:'pp'+Date.now(),label:'Progetto 1',color:'#378ADD'}],
+    projects:[],
     tasks:[]
   });
   switchPage(id);
@@ -1598,13 +1993,21 @@ function renamePage(e, id){
 }
 
 // ─── ROWS ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// COSTRUZIONE RIGHE
+// buildRows(): costruisce l'array di righe per sidebar e SVG.
+// Ogni riga è {type: 'group'|'task', proj, task, indent}
+// - type='group': riga intestazione progetto
+// - type='task': riga task o subtask (indent=0 o 1)
+// ═══════════════════════════════════════════════════════════
 function buildRows(){
   const rows=[];
+  // Esclude task backlog e archiviati dalla timeline Gantt
   getProjects().forEach(p=>{
     rows.push({type:'group',proj:p});
-    getTasks().filter(t=>t.proj===p.id&&!t.parentId).forEach(t=>{
+    getTasks().filter(t=>t.proj===p.id&&!t.parentId&&t.status!=='backlog'&&!t.archived).forEach(t=>{
       rows.push({type:'task',task:t,proj:p,indent:0});
-      getTasks().filter(s=>s.parentId===t.id).forEach(s=>rows.push({type:'task',task:s,proj:p,indent:1}));
+      getTasks().filter(s=>s.parentId===t.id&&!s.archived).forEach(s=>rows.push({type:'task',task:s,proj:p,indent:1}));
     });
   });
   return rows;
@@ -1630,6 +2033,14 @@ function resDisplayName(idOrName){
 }
 
 // ─── SIDEBAR ──────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// RENDER SIDEBAR
+// Genera il DOM della sidebar sinistra:
+// - sb-head: search box + intestazioni colonne
+// - sb-rows: una riga per gruppo (progetto) e per task/subtask
+// Ogni riga task ha: icona, nome, badge %, bottoni azione (✎ ✕ 🔗 📋)
+// I bottoni progetto (gruppo) appaiono al hover: + ✎ ✕
+// ═══════════════════════════════════════════════════════════
 function renderSidebar(rows){
   const sb=document.getElementById('sb-rows');
   sb.innerHTML='';
@@ -1644,8 +2055,8 @@ function renderSidebar(rows){
         <span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${proj.label}</span>
         <div class="row-actions" style="opacity:0">
           <button class="ra" title="Aggiungi task" onclick="openAddModal('${proj.id}')" style="font-size:12px">+</button>
-          <button class="ra" title="Rinomina progetto" onclick="openRenameProject('${proj.id}')">✎</button>
-          <button class="ra del" title="Elimina progetto" onclick="deleteProject('${proj.id}')">✕</button>
+          ${isPM()?`<button class="ra" title="Rinomina progetto" onclick="openRenameProject('${proj.id}')">✎</button>
+          <button class="ra del" title="Elimina progetto" onclick="deleteProject('${proj.id}')">✕</button>`:''}
         </div>
       </div><div class="sb-pct-cell"></div>`;
     } else {
@@ -1657,16 +2068,25 @@ function renderSidebar(rows){
       const resH=t.resources&&t.resources.length?`<span class="row-res">${t.resources.slice(0,2).map(r=>resDisplayName(r).split(' ')[0]).join(', ')}${t.resources.length>2?'+':''}</span>` :'';
       const pB=r.indent>0?`<button class="ra" title="Promuovi" onclick="promoteTask('${t.id}')">↑</button>`:'';
       const dB=r.indent===0&&!t.isMilestone?`<button class="ra" title="Converti subtask" onclick="openDemoteModal('${t.id}')">↓</button>`:'';
-      const hasNotes=t.notes&&t.notes.trim()&&t.notes!=='<p><br></p>';
-      const noteBtn=`<button class="ra${hasNotes?' notes-has-content':''}" title="Note" onclick="openNotesModal('${t.id}')" style="font-size:12px">📋</button>`;
+      const hasCards=t.cards&&t.cards.filter(c=>c.body&&c.body!=='<p><br></p>').length>0;
+      const cardsCount=t.cards?t.cards.length:0;
+      const noteBtn=`<button class="ra${hasCards?' notes-has-content':''}" title="${cardsCount>0?cardsCount+' card':'Note'}" onclick="openCardsModal('${t.id}')" style="font-size:12px">📋${cardsCount>0?`<span class='cards-count-badge' style='font-size:8px;margin-left:1px'>${cardsCount}</span>`:''}</button>`;
       const linkBtn=`<button class="ra link-btn" title="Copia link diretto" onclick="copyTaskLink('${t.id}')">🔗</button>`;
-      div.innerHTML=`<div class="sb-task-part"><div style="width:${indent}px;flex-shrink:0"></div>${iconH}<span class="row-label" onclick="selectTask('${t.id}')" title="${t.label}">${t.label}</span><div class="row-actions">${pB}${dB}${linkBtn}${noteBtn}<button class="ra" onclick="openEditModal('${t.id}')">✎</button><button class="ra del" onclick="deleteTask('${t.id}')">✕</button></div></div><div class="sb-pct-cell">${pctBadge(t.progress,t.status)}</div>`;
+      div.innerHTML=`<div class="sb-task-part"><div style="width:${indent}px;flex-shrink:0"></div>${iconH}<span class="row-label" onclick="selectTask('${t.id}')" title="${t.label}">${t.label}</span><div class="row-actions">${pB}${dB}${linkBtn}${noteBtn}<button class="ra" onclick="openEditModal('${t.id}')">✎</button>${isPM()?`<button class="ra del" onclick="deleteTask('${t.id}')">✕</button>`:''}</div></div><div class="sb-pct-cell">${pctBadge(t.progress,t.status)}</div>`;
     }
     sb.appendChild(div);
   });
 }
 
 // ─── HEADER SVG ───────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// RENDER HEADER SVG
+// Disegna l'intestazione del calendario (SVG).
+// Si adatta alla vista corrente (currentView):
+// - 'day': mese bold + riga lettere + riga numeri con cerchio oggi
+// - 'week': mese bold + blocchi settimana (W10, 3-9 mar)
+// - 'month': anno + colonne mese abbreviate (Gen 31g)
+// ═══════════════════════════════════════════════════════════
 function renderHeader(){
   const svg=document.getElementById('header-svg');
   const W=svgW();
@@ -1831,6 +2251,18 @@ function renderHeader(){
 }
 
 
+// ═══════════════════════════════════════════════════════════
+// RENDER GANTT SVG
+// Disegna il corpo del Gantt (SVG):
+// 1. Sfondo: colori colonne weekend/festività
+// 2. Separatori riga
+// 3. Linea/colonna oggi (rossa)
+// 4. Barre task: pill arrotondate, colore da STATUS_COLOR_MAP
+//    - task principale: altezza ROW_H-8 (riempie la riga)
+//    - subtask: altezza 14px (più sottile)
+//    - milestone: rombo
+// 5. Frecce dipendenza: curve viola con punta di freccia
+// ═══════════════════════════════════════════════════════════
 // ─── GANTT SVG ────────────────────────────────────────
 function renderGantt(rows){
   const svg=document.getElementById('gantt-svg');
@@ -1873,7 +2305,8 @@ function renderGantt(rows){
       h+=`<text x="${x+DAY_W/2+s/2+5}" y="${cy}" font-size="10" fill="${col}" dy=".35em" font-weight="700" font-family="-apple-system,sans-serif">${t.label}</text>`;
       return;
     }
-    const barH=isSub?14:ROW_H-8;const barY=cy-barH/2;const rx=isSub?7:6;
+    /* Tutti i task hanno la stessa altezza barra — solo l'opacità distingue i subtask */
+    const barH=ROW_H-8;const barY=cy-barH/2;const rx=6;
     if(!isSub&&w>4) h+=`<rect x="${x+1}" y="${barY+2}" width="${Math.max(2,w-2)}" height="${barH}" rx="${rx}" fill="${col}" opacity="0.15"/>`;
     h+=`<g class="task-bar" data-id="${t.id}"><rect x="${x+1}" y="${barY}" width="${Math.max(2,w-2)}" height="${barH}" rx="${rx}" fill="${col}" opacity="${isSub?0.55:1}" stroke="${sel?'rgba(0,0,0,0.25)':'none'}" stroke-width="${sel?2:0}"/>`;
     if(t.progress>0&&t.progress<100){
@@ -1892,11 +2325,13 @@ function renderGantt(rows){
     r.task.deps.forEach(depId=>{
       const dep=taskMap[depId];if(!dep) return;
       const di=rows.findIndex(rr=>rr.type==='task'&&rr.task.id===depId);if(di<0) return;
-      const x1=diffDays(START_DATE,dep.end)*DAY_W+DAY_W;
+      /* Bordo destro esatto della barra: inizio + durata */
+      const x1=diffDays(START_DATE,dep.start)*DAY_W + Math.max(1,diffDays(dep.start,dep.end))*DAY_W;
       const y1=di*ROW_H+ROW_H/2;
       const x2=diffDays(START_DATE,r.task.start)*DAY_W;
       const y2=i*ROW_H+ROW_H/2;
-      h+=`<path class="dep-line" d="M${x1},${y1} C${x1+16},${y1} ${x2-16},${y2} ${x2},${y2}" marker-end="url(#da)"/>`;
+      const ctrl=Math.max(20,Math.abs(x2-x1)*0.35);
+      h+=`<path class="dep-line" d="M${x1},${y1} C${x1+ctrl},${y1} ${x2-ctrl},${y2} ${x2},${y2}" marker-end="url(#da)"/>`;
     });
   });
   svg.innerHTML=h;
@@ -1991,7 +2426,14 @@ document.addEventListener('keydown', e=>{
   }
 });
 
+// ═══════════════════════════════════════════════════════════
+// CRUD TASK
+// deleteTask(id): elimina task + subtask, con confirm dialog
+// selectTask(id): apre il pannello dettaglio laterale
+// closeDetailPanel(): chiude il pannello dettaglio
+// ═══════════════════════════════════════════════════════════
 function deleteTask(id){
+  if(!isPM()){ denyAccess('Solo i Project Manager possono eliminare i task.'); return; }
   const t=getT(id); if(!t) return;
   const label = t.label;
   const hasSubs = getTasks().filter(s=>s.parentId===id).length;
@@ -2066,21 +2508,60 @@ function updateParentOptions(){
   par.innerHTML=opts.map(t=>`<option value="${t.id}">${t.label}</option>`).join('');
 }
 
+// ═══════════════════════════════════════════════════════════
+// MODAL TASK (AGGIUNGI / MODIFICA)
+// openAddModal(projId): apre il modal in modalità creazione
+// openEditModal(id): apre il modal in modalità modifica
+// closeModal() / saveModal(): chiusura e salvataggio
+// Le sezioni del modal sono riordinabili via drag & drop.
+// L'ordine viene salvato in localStorage (MODAL_ORDER_KEY).
+// ═══════════════════════════════════════════════════════════
 function openAddModal(projId){
   editingId=null;
   document.getElementById('modal-title').textContent='Nuovo task';
-  document.getElementById('f-proj').innerHTML=getProjects().map(p=>`<option value="${p.id}"${p.id===projId?' selected':''}>${p.label}</option>`).join('');
+
+  /* Progetto: se è specificato (es. da sidebar o kanban) pre-selezionalo,
+     altrimenti aggiungi un'opzione vuota come default */
+  const projOptions = getProjects().map(p=>
+    `<option value="${p.id}"${p.id===projId?' selected':''}>${p.label}</option>`
+  ).join('');
+  document.getElementById('f-proj').innerHTML = projId
+    ? projOptions
+    : `<option value="">— Seleziona progetto —</option>${projOptions}`;
+
   document.getElementById('f-type').value='task';
   document.getElementById('f-name').value='';
-  document.getElementById('f-start').value=toISO(TODAY);
-  document.getElementById('f-end').value=toISO(addDays(TODAY,7));
-  dpSyncDisplay('f-start');dpSyncDisplay('f-end');
-  document.getElementById('f-prog').value=0;document.getElementById('f-prog-val').textContent='0%';
+
+  /* Date: vuote di default per un nuovo task */
+  document.getElementById('f-start').value='';
+  document.getElementById('f-end').value='';
+  /* Resetta le label del date picker custom */
+  const st=document.getElementById('f-start-text');
+  const en=document.getElementById('f-end-text');
+  if(st){st.textContent='Seleziona data…';st.className='date-display-placeholder';}
+  if(en){en.textContent='Seleziona data…';en.className='date-display-placeholder';}
+
+  document.getElementById('f-prog').value=0;
+  document.getElementById('f-prog-val').textContent='0%';
   document.getElementById('f-status').value='todo';
   document.getElementById('f-color').value=STATUS_TO_COLOR['todo'];
-  modalResources=[];selectedIcon='none';modalDeps=[];
-  renderResourceTags();buildResourcePool();buildIconGrid();onTypeChange();buildDepsSelect();
+
+  /* Reset completo di risorse, icona e dipendenze */
+  modalResources=[];
+  selectedIcon='none';
+  modalDeps=[];  /* reset esplicito — previene il carry-over tra aperture */
+
+  renderResourceTags();
+  renderDepTags();   /* svuota anche i tag dipendenze visualizzati */
+  buildResourcePool();
+  buildIconGrid();
+  onTypeChange();
+  buildDepsSelect();
+
   document.getElementById('f-effort').value=3;
+  /* Reset il widget razzi per forzare la ricostruzione al prossimo buildEffortStars */
+  const effortWrap=document.getElementById('effort-stars');
+  if(effortWrap) effortWrap.innerHTML='';
   buildEffortStars(3);
   document.getElementById('modal-overlay').classList.add('open');
   applyModalSectionOrder();
@@ -2103,6 +2584,8 @@ function openEditModal(id){
   renderResourceTags();buildResourcePool();buildIconGrid();onTypeChange();updateParentOptions();renderDepTags();buildDepsSelect();
   const effortVal=t.effort||3;
   document.getElementById('f-effort').value=effortVal;
+  const effortWrap2=document.getElementById('effort-stars');
+  if(effortWrap2) effortWrap2.innerHTML='';
   buildEffortStars(effortVal);
   if(t.parentId)document.getElementById('f-parent').value=t.parentId;
   document.getElementById('modal-overlay').classList.add('open');
@@ -2114,17 +2597,44 @@ function saveModal(){
   const proj=document.getElementById('f-proj').value;
   const type=document.getElementById('f-type').value;
   const parentId=type==='subtask'?document.getElementById('f-parent').value:null;
-  const startVal=fromISO(document.getElementById('f-start').value);
-  const endVal=type==='milestone'?new Date(startVal):fromISO(document.getElementById('f-end').value);
+  const startRaw=document.getElementById('f-start').value;
+  const endRaw=document.getElementById('f-end').value;
+
+  /* Validazioni: nome, progetto, date */
+  if(!name){
+    document.getElementById('f-name').focus();
+    document.getElementById('f-name').style.outline='2px solid var(--red)';
+    setTimeout(()=>document.getElementById('f-name').style.outline='',2000);
+    return;
+  }
+  if(!proj){
+    const sel=document.getElementById('f-proj');
+    sel.style.outline='2px solid var(--red)';
+    sel.focus();
+    setTimeout(()=>sel.style.outline='',2000);
+    return;
+  }
+  if(!startRaw && type!=='milestone'){
+    const d=document.getElementById('f-start-display');
+    if(d){d.style.outline='2px solid var(--red)';setTimeout(()=>d.style.outline='',2000);}
+    return;
+  }
+  if(!endRaw && type!=='milestone'){
+    const d=document.getElementById('f-end-display');
+    if(d){d.style.outline='2px solid var(--red)';setTimeout(()=>d.style.outline='',2000);}
+    return;
+  }
+
+  const startVal=fromISO(startRaw)||TODAY;
+  const endVal=type==='milestone'?new Date(startVal):(fromISO(endRaw)||addDays(startVal,1));
   const progress=parseInt(document.getElementById('f-prog').value)||0;
   const status=type==='milestone'?'milestone':document.getElementById('f-status').value;
   const color=STATUS_TO_COLOR[status]||document.getElementById('f-color').value;
   const icon=selectedIcon;const resources=[...modalResources];const deps=[...modalDeps];
   const effort=parseInt(document.getElementById('f-effort').value)||3;
-  if(!name){document.getElementById('f-name').focus();return;}
   pushUndo();
   if(editingId){const t=getT(editingId);if(t)Object.assign(t,{label:name,proj,parentId,start:startVal,end:endVal,progress,status,color,icon,resources,deps,effort,isMilestone:type==='milestone'});}
-  else getTasks().push({id:uid(),proj,label:name,start:startVal,end:endVal,progress,status,color,icon,resources,deps,effort,parentId,isMilestone:type==='milestone',notes:''});
+  else getTasks().push({id:uid(),proj,label:name,start:startVal,end:endVal,progress,status,color,icon,resources,deps,effort,parentId,isMilestone:type==='milestone',notes:'',cards:[],archived:false});
   closeModal();rerender();
 }
 
@@ -2153,6 +2663,20 @@ let _scrollSyncDone=false;
 function ensureScrollSync(){
   if(_scrollSyncDone) return; _scrollSyncDone=true;
   /* no-op: sidebar is now separate from scroll, vertical sync not needed */
+}
+/**
+ * Scrolla il calendario al primo giorno del mese corrente.
+ * sia visibile a sinistra della viewport del gantt-scroll.
+ * Viene chiamato una sola volta al caricamento dell'app.
+ */
+function scrollToCurrentMonth(){
+  const scroll=document.getElementById('gantt-scroll');
+  if(!scroll) return;
+  /* Trova il primo giorno del mese corrente nella timeline */
+  const firstOfMonth=new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+  const dayOffset=diffDays(START_DATE, firstOfMonth);
+  if(dayOffset<0) return; /* il mese è prima dell'inizio della timeline */
+  scroll.scrollLeft = dayOffset * DAY_W;
 }
 
 // ─── SIDEBAR RESIZER ──────────────────────────────────
@@ -2196,29 +2720,58 @@ const EFFORT_LABELS=['','Minimo','Basso','Medio','Alto','Massimo'];
 const EFFORT_COLORS=['','#22C55E','#84CC16','#F59E0B','#EF4444','#DC2626'];
 
 function buildEffortStars(val){
+  /* val = valore da VISUALIZZARE (può essere hover temporaneo o valore salvato) */
   const wrap=document.getElementById('effort-stars');
   const lbl=document.getElementById('effort-label');
   if(!wrap||!lbl) return;
-  wrap.innerHTML='';
-  for(let i=1;i<=5;i++){
-    const s=document.createElement('div');
-    s.className='effort-star';
+
+  /* Prima chiamata: costruisce i 5 razzi una sola volta */
+  if(wrap.children.length===0){
+    for(let i=1;i<=5;i++){
+      const s=document.createElement('div');
+      s.className='effort-star';
+      s.dataset.idx=i;
+      /* Click: salva il valore e aggiorna visualizzazione */
+      s.addEventListener('click', ()=>{
+        document.getElementById('f-effort').value=i;
+        buildEffortStars(i); // aggiorna visivamente con il valore scelto
+      });
+      /* Hover: anteprima visiva temporanea senza cambiare il valore salvato */
+      s.addEventListener('mouseenter', ()=>{
+        renderEffortVisual(i); // solo visuale, non tocca l'input hidden
+      });
+      wrap.appendChild(s);
+    }
+    /* Mouse leave dal container: ripristina il valore salvato */
+    wrap.addEventListener('mouseleave', ()=>{
+      const saved=parseInt(document.getElementById('f-effort').value)||3;
+      renderEffortVisual(saved);
+      lbl.textContent=EFFORT_LABELS[saved]||'';
+      lbl.style.color=EFFORT_COLORS[saved]||'var(--text2)';
+    });
+  }
+
+  /* Aggiorna la visualizzazione + label */
+  renderEffortVisual(val);
+  lbl.textContent=EFFORT_LABELS[val]||'';
+  lbl.style.color=EFFORT_COLORS[val]||'var(--text2)';
+}
+
+/* Aggiorna solo l'aspetto grafico dei razzi senza toccare il DOM structure */
+function renderEffortVisual(val){
+  const wrap=document.getElementById('effort-stars');
+  if(!wrap) return;
+  [...wrap.children].forEach(s=>{
+    const i=parseInt(s.dataset.idx);
     const filled=i<=val;
     const c=filled?EFFORT_COLORS[val]:'#D1D5DB';
-    /* Rocket SVG — filled when active */
     s.innerHTML=`<svg width="18" height="18" viewBox="0 0 24 24" fill="${filled?c:'none'}" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 2C12 2 7 6 7 13l5 3 5-3c0-7-5-11-5-11z"/>
       <path d="M7 13c-2 1-3 3-3 3l3 1"/>
       <path d="M17 13c2 1 3 3 3 3l-3 1"/>
       <circle cx="12" cy="10" r="1.5" fill="white" stroke="none"/>
     </svg>`;
-    s.onclick=(()=>{const v=i;return()=>{document.getElementById('f-effort').value=v;buildEffortStars(v);}})();
-    s.onmouseenter=(()=>{const v=i;return()=>buildEffortStars(v);})();
-    wrap.appendChild(s);
-  }
-  wrap.onmouseleave=()=>buildEffortStars(parseInt(document.getElementById('f-effort').value)||3);
-  lbl.textContent=EFFORT_LABELS[val]||'';
-  lbl.style.color=EFFORT_COLORS[val]||'var(--text2)';
+  });
 }
 
 function effortBadge(effort){
@@ -2247,7 +2800,7 @@ let editingProjectId=null;
 const PROJ_COLORS=['#6C63FF','#22C55E','#F59E0B','#EF4444','#A855F7','#0891B2','#EC4899','#64748B'];
 
 function openAddProjectModal(){
-  editingProjectId=null;
+  if(!isPM()){ denyAccess('Solo i Project Manager possono creare nuovi progetti.'); return; }
   document.getElementById('project-modal-title').textContent='Nuovo progetto';
   document.getElementById('proj-name-input').value='';
   buildProjColorGrid('#6C63FF');
@@ -2255,7 +2808,7 @@ function openAddProjectModal(){
   setTimeout(()=>document.getElementById('proj-name-input').focus(),100);
 }
 function openRenameProject(id){
-  const pg=curPage();const proj=pg.projects.find(p=>p.id===id);if(!proj)return;
+  if(!isPM()){ denyAccess('Solo i Project Manager possono rinominare i progetti.'); return; }
   editingProjectId=id;
   document.getElementById('project-modal-title').textContent='Rinomina progetto';
   document.getElementById('proj-name-input').value=proj.label;
@@ -2291,7 +2844,7 @@ function saveProjectModal(){
   closeProjectModal();rerender();
 }
 function deleteProject(id){
-  const pg=curPage();const proj=pg.projects.find(p=>p.id===id);if(!proj)return;
+  if(!isPM()){ denyAccess('Solo i Project Manager possono eliminare i progetti.'); return; }
   if(!confirm(`Sei sicuro di voler eliminare il progetto "${proj.label}" e tutte le sue attività?`))return;
   pg.projects=pg.projects.filter(p=>p.id!==id);
   pg.tasks=pg.tasks.filter(t=>t.proj!==id);
@@ -2386,20 +2939,83 @@ function updateTaskBtnState(){
   btn.title=hasProj?'':'Prima crea un progetto per questa tab';
 }
 
+/**
+ * Aggiorna il contenuto dell'empty state in base alla situazione:
+ * - Nessun progetto → CTA "Nuovo progetto"
+ * - Progetti ma nessun task → CTA "Aggiungi task" + mostra il Gantt vuoto
+ */
+function updateEmptyState(){
+  const hasProjects = getProjects().length > 0;
+  const hasTasks    = getTasks().filter(t=>t.status!=='backlog'&&!t.archived).length > 0;
+  const emptyEl     = document.getElementById('gantt-empty');
+  const outerEl     = document.getElementById('gantt-outer');
+  if(!emptyEl||!outerEl) return;
+
+  if(currentViewMode==='kanban'){
+    emptyEl.style.display='none';
+    outerEl.style.display='none';
+    return;
+  }
+
+  if(!hasProjects){
+    /* Stato 1: nessun progetto — mostra solo CTA crea progetto */
+    emptyEl.style.display='block';
+    outerEl.style.display='none';
+    emptyEl.innerHTML=`
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <rect x="8" y="16" width="48" height="36" rx="6" stroke="var(--text3)" stroke-width="2" fill="none"/>
+        <path d="M8 26h48" stroke="var(--text3)" stroke-width="1.5"/>
+        <path d="M20 36h12M20 43h8" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="48" cy="42" r="10" fill="var(--indigo)" opacity=".12" stroke="var(--indigo)" stroke-width="1.5"/>
+        <path d="M48 38v4M46 42h4" stroke="var(--indigo)" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <h3>Nessun progetto</h3>
+      <p>Crea il primo progetto per questa tab per iniziare a pianificare.</p>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        ${isPM()?`<button class="btn" onclick="openAddProjectModal()" style="background:#059669;color:#fff;border-color:#047857;height:34px;padding:0 18px;font-size:13px;display:inline-flex;align-items:center;gap:6px">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none" style="flex-shrink:0"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Crea progetto
+        </button>`:`<p style="font-size:12px;color:var(--text3);margin-top:4px">Contatta un Project Manager per creare il primo progetto.</p>`}
+      </div>`;
+
+  } else if(!hasTasks){
+    /* Stato 2: progetti creati ma nessun task —
+       mostra subito il Gantt (sidebar visibile) senza banner ingombrante */
+    emptyEl.style.display='none';
+    outerEl.style.display='flex';
+
+  } else {
+    /* Stato 3: ha progetti E task — mostra solo il Gantt */
+    emptyEl.style.display='none';
+    outerEl.style.display='flex';
+  }
+}
+
 function rerenderOnly(){
   syncPageData();
   const rows=buildRows();
   renderPageTabs();
   renderNavProjects();
   renderSidebar(rows);
-  renderHeader();
-  renderGantt(rows);
   renderStatsBar();
   updateTaskBtnState();
-  const hasProjects=getProjects().length>0;
-  const hasTasks=getTasks().length>0;
-  document.getElementById('gantt-outer').style.display=(hasProjects&&hasTasks)?'flex':'none';
-  document.getElementById('gantt-empty').style.display=(!hasProjects||!hasTasks)?'block':'none';
+  applyRoleRestrictions(); /* aggiorna UI in base al ruolo ad ogni render */
+
+  if(currentViewMode==='kanban'){
+    document.getElementById('gantt-outer').style.display='none';
+    document.getElementById('gantt-empty').style.display='none';
+    document.getElementById('legend').style.display='none';
+    document.getElementById('kanban-wrap').classList.add('active');
+    renderKanban();
+    return;
+  }
+
+  /* Gantt mode */
+  renderHeader();
+  renderGantt(rows);
+  document.getElementById('kanban-wrap').classList.remove('active');
+  document.getElementById('legend').style.display='';
+  updateEmptyState(); /* gestisce gantt-empty e gantt-outer */
   ensureScrollSync();
 }
 function rerender(){rerenderOnly();scheduleSave();}
@@ -2678,6 +3294,13 @@ function exportNotesPDF(){
   });
 }
 
+// ═══════════════════════════════════════════════════════════
+// RICERCA
+// onSearchInput(): filtra i task in tempo reale
+// onSearchKey(): gestisce Enter (naviga al primo risultato)
+// clearSearch(): pulisce il campo e nasconde i suggerimenti
+// jumpToTask(id): scrolla e flasha il task nella sidebar
+// ═══════════════════════════════════════════════════════════
 // ─── SEARCH ───────────────────────────────────────────
 let searchHighlightIndex = -1;
 
@@ -2783,7 +3406,7 @@ document.addEventListener('click', e=>{
 let resManagerDraft = [];
 
 function openResManager(){
-  resManagerDraft = RESOURCE_POOL.map(r=>({...r}));
+  if(!isPM()){ denyAccess('Solo i Project Manager possono gestire il roster risorse.'); return; }
   renderResManagerBody();
   document.getElementById('res-manager-overlay').classList.add('open');
 }
@@ -2891,6 +3514,15 @@ document.getElementById('res-manager-overlay').addEventListener('click',e=>{if(e
 const INITIAL_HASH = location.hash || sessionStorage.getItem('deepLinkHash') || '';
 if(location.hash.startsWith('#task/')) sessionStorage.setItem('deepLinkHash', location.hash);
 
+// ═══════════════════════════════════════════════════════════
+// DEEP LINKING
+// copyTaskLink(id): copia l'URL diretto al task negli appunti
+//   Formato: https://app.vercel.app/#task/[id]
+// handleDeepLink(): al caricamento, legge l'hash URL e
+//   naviga automaticamente al task indicato
+// INITIAL_HASH: hash catturato prima di qualsiasi operazione async
+// sessionStorage: backup dell'hash per resistere ai redirect 2FA
+// ═══════════════════════════════════════════════════════════
 function copyTaskLink(id){
   const url = `${location.origin}${location.pathname}#task/${id}`;
   navigator.clipboard.writeText(url).then(()=>{
@@ -2952,10 +3584,10 @@ function handleDeepLink(){
           freshRow.classList.add('search-match');
           setTimeout(()=>freshRow.classList.remove('search-match'), 3600);
         }
-        /* Apri automaticamente le note se presenti */
+        /* Apri automaticamente le card se ce ne sono */
         const t = getT(taskId);
-        if(t && t.notes && t.notes.trim() && t.notes !== '<p><br></p>'){
-          setTimeout(()=>openNotesModal(taskId), 600);
+        if(t && t.cards && t.cards.length>0){
+          setTimeout(()=>openCardsModal(taskId), 600);
         }
       });
     } else if(attempts < 15){
@@ -3026,10 +3658,13 @@ function dpRenderDays(){
     const isSel=sel&&dt.getTime()===sel.getTime();
     const isToday=dt.getTime()===today.getTime();
     const dow=dt.getDay();const isWE=dow===0||dow===6;
+    /* Festività italiane: usa isoKey() che usa mese 1-based, coerente con FEST */
+    const isFe=FEST.has(isoKey(dt));
     let cls='dp-day';
-    if(isSel)cls+=' selected';
-    else if(isToday)cls+=' today';
-    if(isWE&&!isSel)cls+=' weekend';
+    if(isSel)      cls+=' selected';
+    else if(isToday) cls+=' today';
+    if(isFe && !isSel) cls+=' holiday';
+    else if(isWE && !isSel && !isToday) cls+=' weekend';
     html+=`<button class="${cls}" onclick="dpSelectDay(${d})">${d}</button>`;
   }
   const total=startDow+dim;const trailing=total%7===0?0:7-total%7;
@@ -3139,6 +3774,594 @@ function applyModalSectionOrder(){
     const map={};c.querySelectorAll('.modal-section').forEach(s=>map[s.dataset.sec]=s);
     saved.forEach(id=>{if(map[id])c.appendChild(map[id]);});
   }catch(_){}
+}
+
+// ═══════════════════════════════════════════════════════════
+// CARDS SYSTEM
+// Sostituisce il sistema note singola con array di card.
+// Ogni card ha: {id, title, body (HTML Quill), createdAt, author}
+// - openCardsModal(taskId): apre il pannello card del task
+// - renderCardsModal(): ridisegna la lista card
+// - addCard(): aggiunge una nuova card vuota
+// - removeCard(cardId): rimuove una card
+// - saveCards(): persiste le card nel task e chiude
+// - openNotesModal() è mantenuto per compatibilità backward
+// ═══════════════════════════════════════════════════════════
+
+let cardsTaskId = null;       // id del task correntemente aperto
+let cardsData   = [];         // copia locale delle card in editing
+let cardQuills  = {};         // mappa cardId → istanza Quill
+
+/**
+ * Genera un id univoco per una card.
+ * Formato: 'c' + timestamp + random 3 cifre
+ */
+function cardUid(){ return 'c'+Date.now()+Math.floor(Math.random()*1000); }
+
+/**
+ * Apre il modale card per un dato task.
+ * @param {string} taskId - id del task
+ */
+function openCardsModal(taskId){
+  cardsTaskId = taskId;
+  const t = getT(taskId); if(!t) return;
+
+  // Migrazione backward: se il task ha ancora .notes (vecchio formato)
+  // e non ha .cards, creiamo una card automaticamente
+  if((!t.cards||!t.cards.length) && t.notes && t.notes.trim() && t.notes!=='<p><br></p>'){
+    t.cards = [{
+      id: cardUid(),
+      title: 'Note migrate',
+      body: t.notes,
+      createdAt: new Date().toISOString(),
+      author: document.getElementById('user-email-label')?.textContent || ''
+    }];
+    t.notes = ''; // svuota il vecchio campo
+  }
+
+  // Clona le card per editing locale (non modifica l'originale finché non si salva)
+  cardsData = (t.cards||[]).map(c=>({...c}));
+  cardQuills = {}; // reset istanze Quill precedenti
+
+  // Intestazione modale
+  const proj = getProjects().find(p=>p.id===t.proj);
+  document.getElementById('cards-modal-title').textContent = '📋 ' + t.label;
+  document.getElementById('cards-modal-subtitle').textContent =
+    (proj?proj.label+' · ':'') + fmtDate(t.start) + ' → ' + fmtDate(t.end);
+
+  document.getElementById('cards-overlay').classList.add('open');
+  renderCardsModal();
+}
+
+/**
+ * Chiude il modale card senza salvare.
+ */
+function closeCardsModal(){
+  document.getElementById('cards-overlay').classList.remove('open');
+  cardsTaskId = null;
+  cardsData   = [];
+  cardQuills  = {};
+}
+
+/**
+ * Renderizza la lista card nel modale.
+ * Per ogni card crea un elemento DOM con editor Quill embedded.
+ */
+function renderCardsModal(){
+  const list = document.getElementById('cards-list');
+  list.innerHTML = '';
+  cardQuills = {};
+
+  const statusCol = STATUS_COLOR_MAP[getT(cardsTaskId)?.status] || '#94A3B8';
+
+  cardsData.forEach((card,idx)=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'card-item';
+    wrap.style.display = 'flex';
+
+    // Barra colorata laterale (colore status task)
+    const bar = document.createElement('div');
+    bar.className = 'card-item-bar';
+    bar.style.background = statusCol;
+    wrap.appendChild(bar);
+
+    // Contenitore interno
+    const inner = document.createElement('div');
+    inner.className = 'card-inner';
+
+    // Corpo card
+    const content = document.createElement('div');
+    content.className = 'card-content';
+
+    // Header: titolo + data
+    const header = document.createElement('div');
+    header.className = 'card-header';
+    const titleInput = document.createElement('input');
+    titleInput.className = 'card-title-input';
+    titleInput.type = 'text';
+    titleInput.value = card.title||'';
+    titleInput.placeholder = 'Titolo card…';
+    titleInput.oninput = ()=>{ cardsData[idx].title = titleInput.value; };
+    header.appendChild(titleInput);
+
+    // Metadati: data creazione + autore
+    const meta = document.createElement('div');
+    meta.className = 'card-meta';
+    const dt = card.createdAt ? new Date(card.createdAt).toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'numeric'}) : '';
+    meta.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1"/><path d="M5 3v2l1.5 1.5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>${dt}${card.author?' · '+card.author.split('@')[0]:''}`;
+
+    // Editor Quill per il corpo della card
+    const quillWrap = document.createElement('div');
+    quillWrap.className = 'card-quill-wrap';
+    const quillEl = document.createElement('div');
+    quillEl.id = 'card-quill-' + card.id;
+    quillWrap.appendChild(quillEl);
+
+    content.appendChild(header);
+    content.appendChild(meta);
+    content.appendChild(quillWrap);
+    inner.appendChild(content);
+
+    // Pulsante elimina card
+    const actions = document.createElement('div');
+    actions.className = 'card-actions';
+    const delBtn = document.createElement('button');
+    delBtn.className = 'card-action-btn';
+    delBtn.title = 'Elimina card';
+    delBtn.innerHTML = `<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 2.5h8M4 2.5V1.5h3v1M2.5 2.5l.5 7h5.5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+    delBtn.onclick = ()=>removeCard(card.id);
+    actions.appendChild(delBtn);
+    inner.appendChild(actions);
+
+    wrap.appendChild(inner);
+    list.appendChild(wrap);
+
+    // Inizializza Quill per questa card (dopo che il DOM è pronto)
+    requestAnimationFrame(()=>{
+      const q = new Quill('#card-quill-'+card.id, {
+        theme: 'snow',
+        placeholder: 'Scrivi note, link, annotazioni…',
+        modules:{toolbar:[
+          ['bold','italic','underline'],
+          [{list:'ordered'},{list:'bullet'}],
+          ['link','blockquote'],
+          ['clean']
+        ]}
+      });
+      if(card.body && card.body!=='<p><br></p>') q.root.innerHTML = card.body;
+      // Aggiorna cardsData al cambio del testo
+      q.on('text-change',()=>{ cardsData[idx].body = q.root.innerHTML; });
+      cardQuills[card.id] = q;
+    });
+  });
+
+  // Messaggio se non ci sono card
+  if(!cardsData.length){
+    const empty = document.createElement('div');
+    empty.style.cssText='text-align:center;padding:20px;color:var(--text3);font-size:13px';
+    empty.textContent = 'Nessuna card ancora. Aggiungine una qui sotto.';
+    list.appendChild(empty);
+  }
+}
+
+/**
+ * Aggiunge una nuova card vuota all'array e ridisegna.
+ */
+function addCard(){
+  const author = document.getElementById('user-email-label')?.textContent||'';
+  cardsData.push({
+    id: cardUid(),
+    title: '',
+    body: '',
+    createdAt: new Date().toISOString(),
+    author
+  });
+  renderCardsModal();
+  // Scrolla in fondo al modale per vedere la nuova card
+  setTimeout(()=>{
+    const modal = document.getElementById('cards-modal');
+    modal.scrollTop = modal.scrollHeight;
+  }, 150);
+}
+
+/**
+ * Rimuove una card dall'array locale e ridisegna.
+ * @param {string} cardId - id della card da rimuovere
+ */
+function removeCard(cardId){
+  if(!confirm('Eliminare questa card?')) return;
+  cardsData = cardsData.filter(c=>c.id!==cardId);
+  renderCardsModal();
+}
+
+/**
+ * Salva le card nel task e chiude il modale.
+ * Raccoglie i valori Quill più recenti prima di salvare.
+ */
+function saveCards(){
+  // Leggi i valori Quill correnti (potrebbero non essere aggiornati in cardsData)
+  cardsData.forEach(c=>{
+    if(cardQuills[c.id]) c.body = cardQuills[c.id].root.innerHTML;
+  });
+  const t = getT(cardsTaskId);
+  if(t){
+    t.cards = cardsData.map(c=>({...c})); // copia profonda
+    t.notes = ''; // pulizia campo legacy
+  }
+  closeCardsModal();
+  rerender();
+}
+
+/**
+ * Compatibilità: openNotesModal() ora apre il nuovo sistema card.
+ */
+function openNotesModal(id){ openCardsModal(id); }
+function closeNotesModal(){ closeCardsModal(); }
+function saveNotes(){ saveCards(); }
+
+// Chiudi cliccando fuori dal modale
+document.getElementById('cards-overlay').addEventListener('click',e=>{
+  if(e.target===e.currentTarget) closeCardsModal();
+});
+
+// ─── EXPORT CARD ──────────────────────────────────────
+/** Esporta le card del task in Word */
+function exportCardsWord(){
+  const t=getT(cardsTaskId);if(!t)return;
+  const proj=(getProjects().find(p=>p.id===t.proj)||{}).label||'';
+  const body=(t.cards||[]).map(c=>`<h2>${c.title||'Card'}</h2>${c.body||''}`).join('<hr>');
+  exportToWord(`<h1>${t.label}</h1><p><em>${proj} · ${fmtDate(t.start)} → ${fmtDate(t.end)}</em></p><hr>${body}`, t.label);
+}
+/** Esporta le card del task in PDF */
+function exportCardsPDF(){
+  const t=getT(cardsTaskId);if(!t)return;
+  const proj=(getProjects().find(p=>p.id===t.proj)||{}).label||'';
+  const body=(t.cards||[]).map(c=>`<h2>${c.title||'Card'}</h2>${c.body||''}`).join('<hr>');
+  exportNotesAsPDF(`<h1>${t.label}</h1><p>${proj} · ${fmtDate(t.start)} → ${fmtDate(t.end)}</p>${body}`, t.label);
+}
+
+// ═══════════════════════════════════════════════════════════
+// KANBAN BOARD
+// Vista alternativa al Gantt: task in colonne per status.
+// Colonne: Not started | On-going | Stand-by | Done
+// Drag & drop tra colonne → aggiorna task.status in tempo reale.
+// - setViewMode('gantt'|'kanban'): switch vista
+// - renderKanban(): disegna le colonne e le card
+// ═══════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════
+// KANBAN BOARD
+// Vista alternativa al Gantt: task in colonne per status.
+// Colonne: Backlog | Non iniziati | In corso | Stand-by | Done
+// Drag & drop tra colonne → aggiorna task.status in tempo reale.
+// Backlog: colonna speciale, i task lì NON appaiono nel Gantt.
+// Archivio: le card archiviate spariscono ma sono ripristinabili.
+// ═══════════════════════════════════════════════════════════
+
+let currentViewMode = 'gantt'; // 'gantt' | 'kanban'
+
+// Stato archivio archiviati visibili per colonna
+const kbArchivedVisible = {};
+
+const KB_COLUMNS = [
+  { status:'backlog',  label:'Backlog',       color:'#9CA3AF', isBacklog:true  },
+  { status:'todo',     label:'Non iniziati',  color:'var(--status-todo)'     },
+  { status:'active',   label:'In corso',      color:'var(--status-ongoing)'  },
+  { status:'standby',  label:'Stand-by',      color:'var(--status-standby)'  },
+  { status:'done',     label:'Completati',    color:'var(--status-done)'     },
+];
+
+/**
+ * Cambia tra vista Gantt e Kanban.
+ */
+function setViewMode(mode){
+  currentViewMode = mode;
+  ['gantt','kanban'].forEach(m=>{
+    const btn=document.getElementById('vmode-'+m);
+    if(btn) btn.classList.toggle('active', m===mode);
+  });
+  const ganttSections=['legend','gantt-skeleton','gantt-empty','gantt-outer'];
+  ganttSections.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display=(mode==='kanban')?'none':'';
+  });
+  const kanban=document.getElementById('kanban-wrap');
+  if(mode==='kanban'){
+    kanban.classList.add('active');
+    renderKanban();
+  } else {
+    kanban.classList.remove('active');
+    rerenderOnly();
+  }
+}
+
+/**
+ * Archivia un task (nasconde dalla board senza eliminarlo).
+ * Imposta task.archived = true e re-renderizza.
+ */
+function archiveKbTask(taskId){
+  const t=getT(taskId);
+  if(!t) return;
+  t.archived=true;
+  rerender();
+  setTimeout(()=>setViewMode('kanban'),50);
+}
+
+/**
+ * Ripristina un task archiviato.
+ */
+function restoreKbTask(taskId){
+  const t=getT(taskId);
+  if(!t) return;
+  t.archived=false;
+  rerender();
+  setTimeout(()=>setViewMode('kanban'),50);
+}
+
+/**
+ * Aggiunge un task diretto al backlog (senza date obbligatorie).
+ * Se ci sono progetti disponibili, usa il primo. Altrimenti crea comunque
+ * un task backlog senza progetto (proj='').
+ */
+function addBacklogTask(){
+  const title = prompt('Nome task backlog:');
+  if(!title||!title.trim()) return;
+  const projs = getProjects();
+  const projId = projs.length ? projs[0].id : '';
+  pushUndo();
+  getTasks().push({
+    id: uid(),
+    proj: projId,
+    label: title.trim(),
+    start: new Date(TODAY),
+    end: addDays(TODAY, 1),
+    progress: 0,
+    status: 'backlog',
+    color: '#9CA3AF',
+    icon: 'none',
+    resources: [],
+    deps: [],
+    effort: 3,
+    parentId: null,
+    isMilestone: false,
+    notes: '',
+    cards: [],
+    archived: false,
+  });
+  rerender();
+  setTimeout(()=>setViewMode('kanban'),50);
+}
+
+/**
+ * Renderizza le colonne Kanban con le task card.
+ * - Supporta backlog (task senza date nel Gantt)
+ * - Supporta archivio (task.archived = true)
+ * - Mostra azioni: Note, Modifica, Archivia/Ripristina
+ */
+function renderKanban(){
+  const wrap=document.getElementById('kanban-wrap');
+  wrap.innerHTML='';
+
+  // Tutti i task della pagina corrente (incluse milestones escluse)
+  const allTasks=getTasks().filter(t=>!t.isMilestone);
+
+  KB_COLUMNS.forEach(col=>{
+    const colTasks = allTasks.filter(t=>
+      t.status===col.status && !t.parentId // no subtask nel kanban
+    );
+    const activeTasks   = colTasks.filter(t=>!t.archived);
+    const archivedTasks = colTasks.filter(t=>t.archived);
+
+    // ── Colonna ──
+    const colEl=document.createElement('div');
+    colEl.className='kb-col'+(col.isBacklog?' kb-backlog':'');
+
+    // Header con pulsante +
+    const header=document.createElement('div');
+    header.className='kb-col-header';
+    const dotStyle=col.color.startsWith('var')
+      ? `background:${col.color}`
+      : `background:${col.color}`;
+    header.innerHTML=`
+      <div class="kb-col-dot" style="${dotStyle}"></div>
+      <div class="kb-col-title">${col.label}</div>
+      <div class="kb-col-count">${activeTasks.length}</div>
+      ${!col.isBacklog?`<button onclick="openAddModalWithStatus('${col.status}')" title="Aggiungi task in questa colonna" style="margin-left:auto;width:22px;height:22px;border-radius:50%;border:0.5px solid var(--border2);background:var(--bg);color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;transition:all .12s" onmouseover="this.style.background='var(--indigo)';this.style.color='#fff';this.style.borderColor='var(--indigo)'" onmouseout="this.style.background='var(--bg)';this.style.color='var(--text3)';this.style.borderColor='var(--border2)'">+</button>`:''}`;
+    colEl.appendChild(header);
+
+    // Cards container — fix flickering con depth counter
+    const cards=document.createElement('div');
+    cards.className='kb-cards';
+    cards.dataset.status=col.status;
+    let dragDepth=0; // conta entrate/uscite per evitare flicker sui figli
+
+    cards.addEventListener('dragenter',e=>{
+      e.preventDefault();
+      dragDepth++;
+      if(dragDepth===1) cards.classList.add('drag-over');
+    });
+    cards.addEventListener('dragover',e=>{e.preventDefault();}); // necessario per consentire drop
+    cards.addEventListener('dragleave',()=>{
+      dragDepth--;
+      if(dragDepth===0) cards.classList.remove('drag-over');
+    });
+    cards.addEventListener('drop',e=>{
+      e.preventDefault();
+      dragDepth=0;
+      cards.classList.remove('drag-over');
+      const taskId=e.dataTransfer.getData('text/plain');
+      const t=getT(taskId);
+      if(t && t.status!==col.status){
+        pushUndo();
+        t.status=col.status;
+        t.color=col.color.startsWith('var')
+          ? (STATUS_COLOR_MAP[col.status]||t.color)
+          : col.color;
+        t.archived=false;
+        rerender();
+        setTimeout(()=>setViewMode('kanban'),50);
+      }
+    });
+
+    // Empty state
+    if(!activeTasks.length && !archivedTasks.length){
+      const empty=document.createElement('div');
+      empty.className='kb-empty';
+      empty.textContent=col.isBacklog
+        ?'Aggiungi idee e task futuri in questa lista'
+        :'Nessun task';
+      cards.appendChild(empty);
+    }
+
+    // Task cards attivi
+    activeTasks.forEach(t=>{
+      cards.appendChild(buildKbCard(t, col, false));
+    });
+
+    // Pulsante "+ Aggiungi" SEMPRE subito dopo l'ultima card (dentro cards div)
+    // Appare per tutte le colonne tranne "Completati" e "Done"
+    if(col.status!=='done'){
+      const addBtn=document.createElement('button');
+      addBtn.className='kb-col-add-btn';
+      const addLabel=col.isBacklog
+        ?'Aggiungi al backlog'
+        :`+ Aggiungi in ${col.label}`;
+      addBtn.innerHTML=`<svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="flex-shrink:0"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>${addLabel}`;
+      addBtn.onclick=col.isBacklog
+        ? ()=>addBacklogTask()
+        : ()=>openAddModalWithStatus(col.status);
+      cards.appendChild(addBtn);
+    }
+
+    colEl.appendChild(cards);
+
+    // Sezione archiviati (collassabile) — sempre in fondo alla colonna
+    if(archivedTasks.length){
+      const archSec=document.createElement('div');
+      archSec.className='kb-archived-section';
+      const key=col.status;
+      const isVisible=kbArchivedVisible[key];
+      const toggle=document.createElement('button');
+      toggle.className='kb-archived-toggle';
+      toggle.innerHTML=`<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><rect x="0.5" y="2.5" width="10" height="7" rx="1.5" stroke="currentColor" stroke-width="1"/><path d="M1 4.5h9M4 2.5V1M7 2.5V1" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+        ${isVisible?'Nascondi':'Mostra'} archivio (${archivedTasks.length})`;
+      toggle.onclick=()=>{kbArchivedVisible[key]=!kbArchivedVisible[key];renderKanban();};
+      archSec.appendChild(toggle);
+      if(isVisible){
+        const archList=document.createElement('div');
+        archList.style.cssText='display:flex;flex-direction:column;gap:7px;margin-top:6px;opacity:.7';
+        archivedTasks.forEach(t=>archList.appendChild(buildKbCard(t,col,true)));
+        archSec.appendChild(archList);
+      }
+      colEl.appendChild(archSec);
+    }
+
+    wrap.appendChild(colEl);
+  });
+}
+
+/**
+ * Costruisce il DOM di una singola kb-card.
+ * @param {object} t - task
+ * @param {object} col - colonna corrente
+ * @param {boolean} isArchived
+ */
+function buildKbCard(t, col, isArchived){
+  const proj=getProjects().find(p=>p.id===t.proj);
+  const card=document.createElement('div');
+  card.className='kb-card'+(isArchived?' kb-archived-card':'');
+  card.draggable=!isArchived;
+  card.dataset.taskId=t.id;
+  const borderColor=col.color.startsWith('var')
+    ? `var(--status-${col.status==='active'?'ongoing':col.status})`
+    : col.color;
+  card.style.borderLeftColor=borderColor;
+
+  // Avatars risorse (max 3, più grandi)
+  const avatars=(t.resources||[]).slice(0,3).map(rid=>
+    `<div title="${resDisplayName(rid)}" style="width:24px;height:24px;border-radius:50%;background:${avatarColor(rid)};color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;border:2px solid var(--bg)">${avatarInitials(rid)}</div>`
+  ).join('');
+  const moreRes=(t.resources||[]).length>3
+    ? `<div style="width:24px;height:24px;border-radius:50%;background:var(--bg3);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;border:2px solid var(--bg)">+${(t.resources.length-3)}</div>` : '';
+
+  // Effort dots
+  const effort=Math.max(1,Math.min(5,t.effort||3));
+  const dots=[1,2,3,4,5].map(i=>
+    `<div class="kb-effort-dot${i<=effort?' filled':''}" style="${i<=effort?`background:${STATUS_COLOR_MAP[t.status]||'var(--indigo)'}`:''}" title="Effort ${effort}/5"></div>`
+  ).join('');
+
+  // Badge card note
+  const cardCount=(t.cards||[]).filter(c=>c.body&&c.body!=='<p><br></p>').length;
+  const noteBadge=cardCount>0
+    ?`<span class="kb-card-cards-count" onclick="event.stopPropagation();openCardsModal('${t.id}')">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.1"/><path d="M3.5 4.5h5M3.5 7h3" stroke="currentColor" stroke-linecap="round"/></svg>
+        ${cardCount} note
+      </span>` : '';
+
+  // Date (non mostrate per backlog)
+  const dateStr=col.isBacklog?''
+    :`<span class="kb-card-date"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><rect x="0.5" y="1.5" width="10" height="9" rx="1" stroke="currentColor" stroke-width="1"/><path d="M3 1v1.5M8 1v1.5M0.5 5h10" stroke="currentColor" stroke-linecap="round"/></svg>${fmtDate(t.start)}→${fmtDate(t.end)}</span>`;
+
+  card.innerHTML=`
+    ${proj?`<div class="kb-card-proj" style="color:${proj.color}">${proj.label}</div>`:''}
+    <div class="kb-card-title">${t.label}</div>
+    <div class="kb-card-effort">${dots}</div>
+    <div class="kb-card-meta">
+      ${dateStr}
+      ${noteBadge}
+      <div class="kb-card-avatars">${avatars}${moreRes}</div>
+    </div>
+    <div class="kb-card-actions">
+      <button class="kb-card-action" onclick="event.stopPropagation();openCardsModal('${t.id}')">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><rect x="0.5" y="0.5" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1"/><path d="M2.5 3.5h6M2.5 6h4" stroke="currentColor" stroke-linecap="round"/></svg>Note
+      </button>
+      <button class="kb-card-action" onclick="event.stopPropagation();openEditModal('${t.id}')">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M7 1.5l2.5 2.5L3 10.5H.5V8L7 1.5z" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/></svg>Modifica
+      </button>
+      ${!isArchived
+        ?`<button class="kb-card-action archive-btn" onclick="event.stopPropagation();archiveKbTask('${t.id}')" title="Archivia">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><rect x="0.5" y="3" width="10" height="7.5" rx="1.5" stroke="currentColor" stroke-width="1"/><path d="M0.5 3l1.5-2h7l1.5 2" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/><path d="M4 6h3" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>Archivia
+          </button>`
+        :`<button class="kb-card-action restore-btn" onclick="event.stopPropagation();restoreKbTask('${t.id}')" title="Ripristina">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2 5.5A3.5 3.5 0 115.5 9M2 3v2.5H4.5" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>Ripristina
+          </button>`
+      }
+    </div>`;
+
+  if(!isArchived){
+    // Doppio click → apre il modal di modifica
+    card.addEventListener('dblclick', e=>{
+      e.stopPropagation();
+      openEditModal(t.id);
+    });
+    card.addEventListener('dragstart',e=>{
+      card.classList.add('dragging');
+      e.dataTransfer.setData('text/plain',t.id);
+      e.dataTransfer.effectAllowed='move';
+    });
+    card.addEventListener('dragend',()=>card.classList.remove('dragging'));
+  }
+
+  return card;
+}
+
+/**
+ * Apre il modal di creazione task con lo status pre-compilato
+ * in base alla colonna Kanban da cui viene invocato.
+ * @param {string} status - status della colonna (todo/active/standby/done)
+ */
+function openAddModalWithStatus(status){
+  // Prima apriamo il modal normalmente
+  openAddModal(null);
+  // Poi impostiamo il valore status
+  requestAnimationFrame(()=>{
+    const sel=document.getElementById('f-status');
+    if(sel) sel.value=status;
+    // Aggiorna anche il colore barra in base allo status
+    const col=STATUS_TO_COLOR[status];
+    const colorInput=document.getElementById('f-color');
+    if(col&&colorInput) colorInput.value=col;
+  });
 }
 
 function openWorkloadPanel(){
