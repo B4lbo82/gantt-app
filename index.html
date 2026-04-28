@@ -1368,23 +1368,108 @@ async function doChallenge() {
   await enterApp();
 }
 
+// ═══════════════════════════════════════════════════════════
+// SISTEMA RUOLI UTENTE
+// Due ruoli: 'pm' (Project Manager) e 'member' (tutti gli altri).
+// Il ruolo viene letto da user.user_metadata.role impostato in
+// Supabase Dashboard → Authentication → Users → Edit → Metadata.
+//
+// MATRICE PERMESSI:
+//   pm:     accesso completo
+//   member: può vedere tutto, creare task/note/kanban,
+//           NON può gestire progetti né il roster risorse,
+//           NON può eliminare task
+//
+// applyRoleRestrictions(): nasconde/disabilita gli elementi UI
+//   che il ruolo corrente non può usare.
+// isPM(): shorthand per il controllo ruolo.
+// ═══════════════════════════════════════════════════════════
+
+let currentUserRole = 'member'; // 'pm' | 'member' — impostato in enterApp
+
+/** Restituisce true se l'utente è Project Manager */
+const isPM = () => currentUserRole === 'pm';
+
+/**
+ * Mostra un messaggio di accesso negato quando un utente member
+ * cerca di eseguire un'azione riservata ai PM.
+ * @param {string} [msg] - messaggio opzionale
+ */
+function denyAccess(msg){
+  const text = msg || 'Questa azione è riservata ai Project Manager.';
+  const toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e1b4b;color:#a5b4fc;border:0.5px solid #4338ca;border-radius:var(--radius-lg);padding:10px 20px;font-size:13px;font-weight:500;z-index:9999;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:slideInToast .2s ease';
+  toast.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#818cf8" stroke-width="1.2"/><path d="M8 5v4M8 11v.5" stroke="#818cf8" stroke-width="1.5" stroke-linecap="round"/></svg>${text}`;
+  document.body.appendChild(toast);
+  setTimeout(()=>{ toast.style.animation='fadeOutToast .3s ease forwards'; setTimeout(()=>toast.remove(),300); }, 2800);
+}
+
+/**
+ * Applica le restrizioni UI in base al ruolo corrente.
+ * Chiamata una volta al login e ad ogni cambio di tab/pagina.
+ * - Nasconde il Roster dalla nav se member
+ * - Disabilita i bottoni "Nuovo progetto"
+ * - Aggiunge badge ruolo nella nav
+ */
+function applyRoleRestrictions(){
+  const pm = isPM();
+
+  /* Nav: voce Roster — visibile solo ai PM */
+  document.querySelectorAll('.nav-item').forEach(el=>{
+    if(el.textContent.trim().startsWith('Roster')){
+      el.style.display = pm ? '' : 'none';
+    }
+  });
+
+  /* Bottone "Nuovo progetto" nella toolbar — visibile solo ai PM */
+  document.querySelectorAll('[onclick="openAddProjectModal()"]').forEach(el=>{
+    el.style.display = pm ? '' : 'none';
+  });
+
+  /* Badge ruolo visibile nella nav */
+  const roleEl = document.querySelector('.nav-user-role');
+  if(roleEl){
+    roleEl.textContent = pm ? 'Project Manager' : 'Member';
+    roleEl.style.color = pm ? '#a5b4fc' : 'var(--nav-text-muted)';
+  }
+}
+
 async function enterApp() {
   const { data: { user } } = await sb.auth.getUser();
   const email = user?.email || '';
+
+  /* ── RUOLO UTENTE ───────────────────────────────────────
+     Il ruolo viene letto da user_metadata (impostato in Supabase
+     per ogni utente: {"role":"pm"} oppure {"role":"member"}).
+     Default: "member" se non specificato.
+     PM = project manager (accesso completo).
+     member = developer / designer / content (accesso limitato).
+  ─────────────────────────────────────────────────────── */
+  const rawRole = user?.user_metadata?.role || 'member';
+  currentUserRole = rawRole === 'pm' ? 'pm' : 'member';
+
   document.getElementById('user-email-label').textContent = email;
   document.getElementById('user-avatar').textContent = email.slice(0,2).toUpperCase();
+
+  /* Aggiorna etichetta ruolo nella nav */
+  const roleEl = document.querySelector('.nav-user-role');
+  if(roleEl) roleEl.textContent = currentUserRole === 'pm' ? 'Project Manager' : 'Member';
+
   document.getElementById('auth-wrap').style.display = 'none';
   document.getElementById('app-wrap').style.display = 'block';
-  /* Show skeleton while loading */
+
   document.getElementById('gantt-skeleton').style.display = 'block';
   document.getElementById('gantt-outer').style.display = 'none';
   document.getElementById('gantt-empty').style.display = 'none';
   await loadFromSupabase();
   await subscribeRealtime();
   document.getElementById('gantt-skeleton').style.display = 'none';
+
+  /* Applica le restrizioni UI in base al ruolo */
+  applyRoleRestrictions();
+
   rerender();
   handleDeepLink();
-  /* Posiziona il calendario sul mese corrente al primo caricamento */
   setTimeout(scrollToCurrentMonth, 150);
 }
 
@@ -1944,8 +2029,8 @@ function renderSidebar(rows){
         <span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${proj.label}</span>
         <div class="row-actions" style="opacity:0">
           <button class="ra" title="Aggiungi task" onclick="openAddModal('${proj.id}')" style="font-size:12px">+</button>
-          <button class="ra" title="Rinomina progetto" onclick="openRenameProject('${proj.id}')">✎</button>
-          <button class="ra del" title="Elimina progetto" onclick="deleteProject('${proj.id}')">✕</button>
+          ${isPM()?`<button class="ra" title="Rinomina progetto" onclick="openRenameProject('${proj.id}')">✎</button>
+          <button class="ra del" title="Elimina progetto" onclick="deleteProject('${proj.id}')">✕</button>`:''}
         </div>
       </div><div class="sb-pct-cell"></div>`;
     } else {
@@ -1961,7 +2046,7 @@ function renderSidebar(rows){
       const cardsCount=t.cards?t.cards.length:0;
       const noteBtn=`<button class="ra${hasCards?' notes-has-content':''}" title="${cardsCount>0?cardsCount+' card':'Note'}" onclick="openCardsModal('${t.id}')" style="font-size:12px">📋${cardsCount>0?`<span class='cards-count-badge' style='font-size:8px;margin-left:1px'>${cardsCount}</span>`:''}</button>`;
       const linkBtn=`<button class="ra link-btn" title="Copia link diretto" onclick="copyTaskLink('${t.id}')">🔗</button>`;
-      div.innerHTML=`<div class="sb-task-part"><div style="width:${indent}px;flex-shrink:0"></div>${iconH}<span class="row-label" onclick="selectTask('${t.id}')" title="${t.label}">${t.label}</span><div class="row-actions">${pB}${dB}${linkBtn}${noteBtn}<button class="ra" onclick="openEditModal('${t.id}')">✎</button><button class="ra del" onclick="deleteTask('${t.id}')">✕</button></div></div><div class="sb-pct-cell">${pctBadge(t.progress,t.status)}</div>`;
+      div.innerHTML=`<div class="sb-task-part"><div style="width:${indent}px;flex-shrink:0"></div>${iconH}<span class="row-label" onclick="selectTask('${t.id}')" title="${t.label}">${t.label}</span><div class="row-actions">${pB}${dB}${linkBtn}${noteBtn}<button class="ra" onclick="openEditModal('${t.id}')">✎</button>${isPM()?`<button class="ra del" onclick="deleteTask('${t.id}')">✕</button>`:''}</div></div><div class="sb-pct-cell">${pctBadge(t.progress,t.status)}</div>`;
     }
     sb.appendChild(div);
   });
@@ -2322,6 +2407,7 @@ document.addEventListener('keydown', e=>{
 // closeDetailPanel(): chiude il pannello dettaglio
 // ═══════════════════════════════════════════════════════════
 function deleteTask(id){
+  if(!isPM()){ denyAccess('Solo i Project Manager possono eliminare i task.'); return; }
   const t=getT(id); if(!t) return;
   const label = t.label;
   const hasSubs = getTasks().filter(s=>s.parentId===id).length;
@@ -2688,7 +2774,7 @@ let editingProjectId=null;
 const PROJ_COLORS=['#6C63FF','#22C55E','#F59E0B','#EF4444','#A855F7','#0891B2','#EC4899','#64748B'];
 
 function openAddProjectModal(){
-  editingProjectId=null;
+  if(!isPM()){ denyAccess('Solo i Project Manager possono creare nuovi progetti.'); return; }
   document.getElementById('project-modal-title').textContent='Nuovo progetto';
   document.getElementById('proj-name-input').value='';
   buildProjColorGrid('#6C63FF');
@@ -2696,7 +2782,7 @@ function openAddProjectModal(){
   setTimeout(()=>document.getElementById('proj-name-input').focus(),100);
 }
 function openRenameProject(id){
-  const pg=curPage();const proj=pg.projects.find(p=>p.id===id);if(!proj)return;
+  if(!isPM()){ denyAccess('Solo i Project Manager possono rinominare i progetti.'); return; }
   editingProjectId=id;
   document.getElementById('project-modal-title').textContent='Rinomina progetto';
   document.getElementById('proj-name-input').value=proj.label;
@@ -2732,7 +2818,7 @@ function saveProjectModal(){
   closeProjectModal();rerender();
 }
 function deleteProject(id){
-  const pg=curPage();const proj=pg.projects.find(p=>p.id===id);if(!proj)return;
+  if(!isPM()){ denyAccess('Solo i Project Manager possono eliminare i progetti.'); return; }
   if(!confirm(`Sei sicuro di voler eliminare il progetto "${proj.label}" e tutte le sue attività?`))return;
   pg.projects=pg.projects.filter(p=>p.id!==id);
   pg.tasks=pg.tasks.filter(t=>t.proj!==id);
@@ -2860,10 +2946,10 @@ function updateEmptyState(){
       <h3>Nessun progetto</h3>
       <p>Crea il primo progetto per questa tab per iniziare a pianificare.</p>
       <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-        <button class="btn" onclick="openAddProjectModal()" style="background:#059669;color:#fff;border-color:#047857;height:34px;padding:0 18px;font-size:13px;display:inline-flex;align-items:center;gap:6px">
+        ${isPM()?`<button class="btn" onclick="openAddProjectModal()" style="background:#059669;color:#fff;border-color:#047857;height:34px;padding:0 18px;font-size:13px;display:inline-flex;align-items:center;gap:6px">
           <svg width="11" height="11" viewBox="0 0 11 11" fill="none" style="flex-shrink:0"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           Crea progetto
-        </button>
+        </button>`:`<p style="font-size:12px;color:var(--text3);margin-top:4px">Contatta un Project Manager per creare il primo progetto.</p>`}
       </div>`;
 
   } else if(!hasTasks){
@@ -2887,6 +2973,7 @@ function rerenderOnly(){
   renderSidebar(rows);
   renderStatsBar();
   updateTaskBtnState();
+  applyRoleRestrictions(); /* aggiorna UI in base al ruolo ad ogni render */
 
   if(currentViewMode==='kanban'){
     document.getElementById('gantt-outer').style.display='none';
@@ -3293,7 +3380,7 @@ document.addEventListener('click', e=>{
 let resManagerDraft = [];
 
 function openResManager(){
-  resManagerDraft = RESOURCE_POOL.map(r=>({...r}));
+  if(!isPM()){ denyAccess('Solo i Project Manager possono gestire il roster risorse.'); return; }
   renderResManagerBody();
   document.getElementById('res-manager-overlay').classList.add('open');
 }
