@@ -1967,6 +1967,7 @@ function switchPage(id){
 
 function addPage(){
   if(!isPM()){ denyAccess('Solo i Project Manager possono aggiungere nuove tab cliente.'); return; }
+  const label = prompt('Nome della nuova pagina (es. Cliente B):','Nuova pagina');
   if(!label||!label.trim()) return;
   const id = 'pg'+Date.now();
   /* La nuova tab parte completamente vuota: nessun progetto pre-creato */
