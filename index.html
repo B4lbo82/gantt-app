@@ -482,7 +482,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 .kb-archived-section{margin-top:8px}
 .kb-archived-toggle{background:none;border:none;font-size:11px;color:var(--text3);cursor:pointer;padding:5px 10px;display:flex;align-items:center;gap:6px;border-radius:var(--radius);width:100%;transition:all .12s}
 .kb-archived-toggle:hover{color:var(--indigo);background:var(--indigo-light)}
-.kb-col.kb-backlog .kb-col-header{background:var(--bg3);border-style:dashed;border-color:var(--border2)}
+/* ── KANBAN STATUS TINTS ─────────────────────────────────
+   Card e header ereditano l'hue del proprio status.
+   Card bg: 6-7% opacity | header: 10-12% | border-left pieno
+──────────────────────────────────────────────────────── */
+.kb-col.kb-backlog .kb-col-header{background:rgba(148,163,184,0.10);border-style:dashed;border-color:rgba(148,163,184,0.25)}
+.kb-col[data-status="todo"]    .kb-col-header{background:rgba(148,163,184,0.10);border-color:rgba(148,163,184,0.25)}
+.kb-col[data-status="active"]  .kb-col-header{background:rgba(108,99,255,0.12);border-color:rgba(108,99,255,0.30)}
+.kb-col[data-status="standby"] .kb-col-header{background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.30)}
+.kb-col[data-status="done"]    .kb-col-header{background:rgba(34,197,94,0.10);border-color:rgba(34,197,94,0.28)}
+/* Card tint */
+.kb-card[data-status="backlog"]{background:rgba(148,163,184,0.06)!important;border-left-color:#94A3B8!important}
+.kb-card[data-status="todo"]   {background:rgba(148,163,184,0.06)!important;border-left-color:#94A3B8!important}
+.kb-card[data-status="active"] {background:rgba(108,99,255,0.08)!important;border-left-color:#6C63FF!important}
+.kb-card[data-status="standby"]{background:rgba(245,158,11,0.08)!important;border-left-color:#F59E0B!important}
+.kb-card[data-status="done"]   {background:rgba(34,197,94,0.07)!important;border-left-color:#22C55E!important}
+/* Project tag tint per status */
+.kb-proj-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.kb-card[data-status="active"]  .kb-proj-tag{background:rgba(108,99,255,0.20);color:#a5b4fc}
+.kb-card[data-status="standby"] .kb-proj-tag{background:rgba(245,158,11,0.20);color:#fcd34d}
+.kb-card[data-status="done"]    .kb-proj-tag{background:rgba(34,197,94,0.20);color:#6ee7b7}
+.kb-card[data-status="todo"]    .kb-proj-tag{background:rgba(148,163,184,0.15);color:#94A3B8}
+.kb-card[data-status="backlog"] .kb-proj-tag{background:rgba(148,163,184,0.15);color:#94A3B8}
+/* Client tag neutro */
+.kb-client-tag{font-size:10px;font-weight:700;background:rgba(255,255,255,0.07);color:var(--text2);padding:2px 8px;border-radius:10px;border:0.5px solid rgba(255,255,255,0.1)}
 .view-mode-toggle{display:flex;border:0.5px solid var(--border2);border-radius:var(--radius);overflow:hidden;background:var(--bg2)}
 .view-mode-btn{border:none;background:transparent;padding:0 10px;height:28px;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s}
 .view-mode-btn:hover{background:var(--bg3);color:var(--text)}
@@ -4202,6 +4225,7 @@ function renderKanban(){
     // ── Colonna ──
     const colEl=document.createElement('div');
     colEl.className='kb-col'+(col.isBacklog?' kb-backlog':'');
+    colEl.dataset.status=col.status;
 
     // Header con pulsante +
     const header=document.createElement('div');
@@ -4317,6 +4341,7 @@ function buildKbCard(t, col, isArchived){
   const proj=getProjects().find(p=>p.id===t.proj);
   const card=document.createElement('div');
   card.className='kb-card'+(isArchived?' kb-archived-card':'');
+  card.dataset.status=t.status; // per CSS tint
   card.draggable=!isArchived;
   card.dataset.taskId=t.id;
   const borderColor=col.color.startsWith('var')
@@ -4350,7 +4375,7 @@ function buildKbCard(t, col, isArchived){
     :`<span class="kb-card-date"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><rect x="0.5" y="1.5" width="10" height="9" rx="1" stroke="currentColor" stroke-width="1"/><path d="M3 1v1.5M8 1v1.5M0.5 5h10" stroke="currentColor" stroke-linecap="round"/></svg>${fmtDate(t.start)}→${fmtDate(t.end)}</span>`;
 
   card.innerHTML=`
-    ${proj?`<div class="kb-card-proj" style="color:${proj.color}">${proj.label}</div>`:''}
+    ${proj?`<div class="kb-card-proj kb-proj-tag" style="color:${proj.color};background:${proj.color}1a;margin-bottom:6px">${proj.label}</div>`:''}
     <div class="kb-card-title">${t.label}</div>
     <div class="kb-card-effort">${dots}</div>
     <div class="kb-card-meta">
@@ -4561,6 +4586,7 @@ function renderGlobalBoard(){
 function buildGBCard(t, pg, proj, col){
   const card = document.createElement('div');
   card.className = 'kb-card';
+  card.dataset.status = t.status; // per CSS tint
   card.draggable = true;
   card.style.borderLeftColor = col.color.startsWith('var')
     ? `var(--status-${col.status==='active'?'ongoing':col.status})`
@@ -4590,8 +4616,8 @@ function buildGBCard(t, pg, proj, col){
   card.innerHTML = `
     <!-- Badge cliente + progetto -->
     <div style="display:flex;align-items:center;gap:5px;margin-bottom:6px;flex-wrap:wrap">
-      <span style="font-size:10px;font-weight:700;background:var(--bg3);color:var(--text2);padding:2px 7px;border-radius:10px">${pg.label}</span>
-      ${proj ? `<span style="font-size:10px;font-weight:600;color:${proj.color};background:${proj.color}18;padding:2px 7px;border-radius:10px">${proj.label}</span>` : ''}
+      <span class="kb-client-tag">${pg.label}</span>
+      ${proj ? `<span class="kb-proj-tag" style="color:${proj.color};background:${proj.color}1a">${proj.label}</span>` : ''}
     </div>
     <div class="kb-card-title">${t.label}</div>
     <div class="kb-card-effort">${dots}</div>
