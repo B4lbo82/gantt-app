@@ -3450,6 +3450,10 @@ let resManagerDraft = [];
 
 function openResManager(){
   if(!isPM()){ denyAccess('Solo i Project Manager possono gestire il roster risorse.'); return; }
+  /* Ricarica sempre da RESOURCE_POOL fresco (dati Supabase già in memoria) */
+  Object.keys(RES_BY_ID).forEach(k=>delete RES_BY_ID[k]);
+  RESOURCE_POOL.forEach(r=>RES_BY_ID[r.id]=r);
+  resManagerDraft = RESOURCE_POOL.map(r=>({...r}));
   renderResManagerBody();
   document.getElementById('res-manager-overlay').classList.add('open');
 }
