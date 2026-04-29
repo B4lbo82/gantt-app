@@ -757,6 +757,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 
   <div class="nav-divider"></div>
   <div class="nav-section">Team</div>
+  <a class="nav-item" onclick="openGlobalBoard()">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="3.5" height="12" rx="1" fill="currentColor" opacity=".5"/><rect x="5.5" y="1" width="3.5" height="9" rx="1" fill="currentColor"/><rect x="10" y="1" width="3.5" height="11" rx="1" fill="currentColor" opacity=".75"/></svg>
+    Board Globale
+  </a>
   <a class="nav-item" onclick="openWorkloadPanel()">
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="7" width="3" height="6" rx="1" fill="currentColor" opacity=".6"/><rect x="5.5" y="4" width="3" height="9" rx="1" fill="currentColor"/><rect x="10" y="2" width="3" height="11" rx="1" fill="currentColor" opacity=".8"/></svg>
     Workload
@@ -1223,7 +1227,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════
-     LEGACY NOTES MODAL (mantenuto per compatibilità export)
+     GLOBAL BOARD MODAL
+     Vista Kanban riepilogativa di TUTTI i task di TUTTI i clienti.
+     - Aggrega task da ogni page/tab
+     - Mostra badge cliente + progetto su ogni card
+     - Drag & drop per aggiornare status (cross-page)
+     - Nessun pulsante "aggiungi" (view riepilogativa)
+     - Filtro per cliente opzionale
+═══════════════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="global-board-overlay">
+  <div class="modal" id="global-board-modal" style="width:96vw;max-width:1400px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;padding:0">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:0.5px solid var(--border2);flex-shrink:0">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="1" width="4" height="16" rx="1.5" fill="var(--indigo)" opacity=".5"/><rect x="7" y="1" width="4" height="12" rx="1.5" fill="var(--indigo)"/><rect x="13" y="1" width="4" height="14" rx="1.5" fill="var(--indigo)" opacity=".75"/></svg>
+      <h3 style="font-size:15px;font-weight:700;color:var(--text);margin:0">Board Globale</h3>
+      <span style="font-size:12px;color:var(--text3)" id="gb-task-count"></span>
+      <div style="flex:1"></div>
+      <!-- Filtro per cliente -->
+      <select id="gb-filter-client" onchange="renderGlobalBoard()" style="font-size:12px;padding:5px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);height:30px">
+        <option value="all">Tutti i clienti</option>
+      </select>
+      <!-- Filtro per progetto -->
+      <select id="gb-filter-project" onchange="renderGlobalBoard()" style="font-size:12px;padding:5px 10px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);color:var(--text);height:30px">
+        <option value="all">Tutti i progetti</option>
+      </select>
+      <button class="modal-close-btn" onclick="closeGlobalBoard()" title="Chiudi">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <!-- Kanban columns -->
+    <div id="gb-board" style="display:flex;gap:12px;padding:16px 20px;overflow-x:auto;overflow-y:auto;flex:1;align-items:flex-start"></div>
+  </div>
+</div> (mantenuto per compatibilità export)
      Visibile solo per exportNotesWord / exportNotesPDF
      Non viene più aperto direttamente — ora si usa #cards-overlay
 ═══════════════════════════════════════════════════════════ -->
@@ -4369,6 +4406,231 @@ function openAddModalWithStatus(status){
     if(col&&colorInput) colorInput.value=col;
   });
 }
+
+// ═══════════════════════════════════════════════════════════
+// GLOBAL BOARD
+// Vista Kanban riepilogativa che aggrega i task di tutte le
+// pagine (clienti). Ogni card mostra il badge cliente + progetto.
+// Drag & drop aggiorna lo status del task nella sua pagina.
+// Nessun pulsante "aggiungi" — view riepilogativa.
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * Apre la Board Globale e popola i filtri cliente/progetto.
+ */
+function openGlobalBoard(){
+  /* Popola filtro clienti */
+  const clientSel = document.getElementById('gb-filter-client');
+  clientSel.innerHTML = '<option value="all">Tutti i clienti</option>';
+  pages.forEach(pg=>{
+    const opt = document.createElement('option');
+    opt.value = pg.id; opt.textContent = pg.label;
+    clientSel.appendChild(opt);
+  });
+
+  /* Popola filtro progetti (tutti) */
+  populateGBProjectFilter();
+
+  document.getElementById('global-board-overlay').classList.add('open');
+  renderGlobalBoard();
+}
+
+function closeGlobalBoard(){
+  document.getElementById('global-board-overlay').classList.remove('open');
+}
+
+/**
+ * Aggiorna il filtro progetti in base al cliente selezionato.
+ */
+function populateGBProjectFilter(){
+  const clientId = document.getElementById('gb-filter-client').value;
+  const projSel  = document.getElementById('gb-filter-project');
+  projSel.innerHTML = '<option value="all">Tutti i progetti</option>';
+
+  const targetPages = clientId === 'all' ? pages : pages.filter(p=>p.id===clientId);
+  targetPages.forEach(pg=>{
+    (pg.projects||[]).forEach(proj=>{
+      const opt = document.createElement('option');
+      opt.value = proj.id;
+      opt.textContent = `${pg.label} › ${proj.label}`;
+      projSel.appendChild(opt);
+    });
+  });
+}
+
+/**
+ * Renderizza la board globale.
+ * Raccoglie tutti i task da tutte le pagine, applica i filtri,
+ * e li distribuisce nelle colonne Kanban.
+ */
+function renderGlobalBoard(){
+  populateGBProjectFilter();
+
+  const clientId  = document.getElementById('gb-filter-client').value;
+  const projectId = document.getElementById('gb-filter-project').value;
+  const board     = document.getElementById('gb-board');
+  board.innerHTML = '';
+
+  /* Raccogli tutti i task con contesto (page + project) */
+  let allTasks = [];
+  pages.forEach(pg=>{
+    if(clientId !== 'all' && pg.id !== clientId) return;
+    (pg.tasks||[]).forEach(t=>{
+      if(t.isMilestone || t.parentId || t.archived) return; // no subtask/milestone/archiviati
+      const proj = (pg.projects||[]).find(p=>p.id===t.proj);
+      if(projectId !== 'all' && t.proj !== projectId) return;
+      allTasks.push({ t, pg, proj });
+    });
+  });
+
+  /* Aggiorna contatore */
+  document.getElementById('gb-task-count').textContent =
+    `${allTasks.length} task${allTasks.length !== 1 ? '' : ''}`;
+
+  /* Colonne */
+  KB_COLUMNS.filter(c=>c.status!=='backlog').forEach(col=>{
+    const colTasks = allTasks.filter(({t})=>t.status===col.status);
+
+    const colEl = document.createElement('div');
+    colEl.className = 'kb-col';
+    colEl.style.minWidth = '300px';
+
+    /* Header */
+    const dotStyle = col.color.startsWith('var') ? `background:${col.color}` : `background:${col.color}`;
+    const header = document.createElement('div');
+    header.className = 'kb-col-header';
+    header.innerHTML = `
+      <div class="kb-col-dot" style="${dotStyle}"></div>
+      <div class="kb-col-title">${col.label}</div>
+      <div class="kb-col-count">${colTasks.length}</div>`;
+    colEl.appendChild(header);
+
+    /* Cards container (droppable) */
+    const cards = document.createElement('div');
+    cards.className = 'kb-cards';
+    cards.dataset.status = col.status;
+    let dragDepth = 0;
+
+    cards.addEventListener('dragenter', e=>{ e.preventDefault(); dragDepth++; if(dragDepth===1) cards.classList.add('drag-over'); });
+    cards.addEventListener('dragover',  e=>{ e.preventDefault(); });
+    cards.addEventListener('dragleave', ()=>{ dragDepth--; if(dragDepth===0) cards.classList.remove('drag-over'); });
+    cards.addEventListener('drop', e=>{
+      e.preventDefault(); dragDepth=0; cards.classList.remove('drag-over');
+      const payload = e.dataTransfer.getData('text/plain');
+      if(!payload) return;
+      try {
+        const {taskId, pageId} = JSON.parse(payload);
+        /* Trova il task nella pagina corretta */
+        const pg = pages.find(p=>p.id===pageId);
+        if(!pg) return;
+        const t = (pg.tasks||[]).find(t=>t.id===taskId);
+        if(!t || t.status===col.status) return;
+        pushUndo();
+        t.status = col.status;
+        t.color  = STATUS_COLOR_MAP[col.status] || t.color;
+        rerender(); /* salva e aggiorna il Gantt */
+        setTimeout(()=>renderGlobalBoard(), 80);
+      } catch(err){ console.warn('GB drop error', err); }
+    });
+
+    if(!colTasks.length){
+      const empty = document.createElement('div');
+      empty.className = 'kb-empty';
+      empty.textContent = 'Nessun task';
+      cards.appendChild(empty);
+    }
+
+    colTasks.forEach(({t, pg, proj})=>{
+      cards.appendChild(buildGBCard(t, pg, proj, col));
+    });
+
+    colEl.appendChild(cards);
+    board.appendChild(colEl);
+  });
+}
+
+/**
+ * Costruisce una singola card per la Board Globale.
+ * Mostra badge cliente, progetto, date, effort, avatars.
+ * Drag & drop passa {taskId, pageId} per identificare il task cross-page.
+ */
+function buildGBCard(t, pg, proj, col){
+  const card = document.createElement('div');
+  card.className = 'kb-card';
+  card.draggable = true;
+  card.style.borderLeftColor = col.color.startsWith('var')
+    ? `var(--status-${col.status==='active'?'ongoing':col.status})`
+    : col.color;
+
+  /* Avatars (max 3) */
+  const avatars = (t.resources||[]).slice(0,3).map(rid=>
+    `<div title="${resDisplayName(rid)}" style="width:22px;height:22px;border-radius:50%;background:${avatarColor(rid)};color:#fff;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0;border:2px solid var(--bg)">${avatarInitials(rid)}</div>`
+  ).join('');
+  const moreRes = (t.resources||[]).length>3
+    ? `<div style="width:22px;height:22px;border-radius:50%;background:var(--bg3);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:8px;border:2px solid var(--bg)">+${t.resources.length-3}</div>` : '';
+
+  /* Effort dots */
+  const effort = Math.max(1,Math.min(5,t.effort||3));
+  const dots = [1,2,3,4,5].map(i=>
+    `<div class="kb-effort-dot${i<=effort?' filled':''}" style="${i<=effort?`background:${STATUS_COLOR_MAP[t.status]||'var(--indigo)'}`:''}" title="Effort ${effort}/5"></div>`
+  ).join('');
+
+  /* Badge note */
+  const cardCount = (t.cards||[]).filter(c=>c.body&&c.body!=='<p><br></p>').length;
+  const noteBadge = cardCount>0
+    ? `<span class="kb-card-cards-count" onclick="event.stopPropagation();openCardsModal('${t.id}')">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.1"/><path d="M3.5 4.5h5M3.5 7h3" stroke="currentColor" stroke-linecap="round"/></svg>
+        ${cardCount}
+      </span>` : '';
+
+  card.innerHTML = `
+    <!-- Badge cliente + progetto -->
+    <div style="display:flex;align-items:center;gap:5px;margin-bottom:6px;flex-wrap:wrap">
+      <span style="font-size:10px;font-weight:700;background:var(--bg3);color:var(--text2);padding:2px 7px;border-radius:10px">${pg.label}</span>
+      ${proj ? `<span style="font-size:10px;font-weight:600;color:${proj.color};background:${proj.color}18;padding:2px 7px;border-radius:10px">${proj.label}</span>` : ''}
+    </div>
+    <div class="kb-card-title">${t.label}</div>
+    <div class="kb-card-effort">${dots}</div>
+    <div class="kb-card-meta">
+      <span class="kb-card-date">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="0.5" y="1.5" width="9" height="8" rx="1" stroke="currentColor" stroke-width="0.9"/><path d="M3 1v1M7 1v1M0.5 4h9" stroke="currentColor" stroke-width="0.9" stroke-linecap="round"/></svg>
+        ${fmtDate(t.start)}→${fmtDate(t.end)}
+      </span>
+      ${noteBadge}
+      <div class="kb-card-avatars">${avatars}${moreRes}</div>
+    </div>
+    <div class="kb-card-actions">
+      <button class="kb-card-action" onclick="event.stopPropagation();openCardsModal('${t.id}')">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><rect x="0.5" y="0.5" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1"/><path d="M2.5 3.5h6M2.5 6h4" stroke="currentColor" stroke-linecap="round"/></svg>Note
+      </button>
+      <button class="kb-card-action" onclick="event.stopPropagation();switchPage('${pg.id}');closeGlobalBoard();setTimeout(()=>openEditModal('${t.id}'),300)">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M7 1.5l2.5 2.5L3 10.5H.5V8L7 1.5z" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/></svg>Modifica
+      </button>
+    </div>`;
+
+  /* Doppio click → modifica nella pagina del task */
+  card.addEventListener('dblclick', e=>{
+    e.stopPropagation();
+    switchPage(pg.id);
+    closeGlobalBoard();
+    setTimeout(()=>openEditModal(t.id), 300);
+  });
+
+  /* Drag — passa pageId + taskId come payload JSON */
+  card.addEventListener('dragstart', e=>{
+    card.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', JSON.stringify({taskId:t.id, pageId:pg.id}));
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  card.addEventListener('dragend', ()=>card.classList.remove('dragging'));
+
+  return card;
+}
+
+/* Chiudi cliccando fuori */
+document.getElementById('global-board-overlay').addEventListener('click', e=>{
+  if(e.target===e.currentTarget) closeGlobalBoard();
+});
 
 function openWorkloadPanel(){
   /* Popola filtro pagine */
