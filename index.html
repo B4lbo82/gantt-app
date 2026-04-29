@@ -4522,6 +4522,7 @@ function renderGlobalBoard(){
 
     const colEl = document.createElement('div');
     colEl.className = 'kb-col';
+    colEl.dataset.status = col.status; // per CSS tint header
     colEl.style.minWidth = '300px';
 
     /* Header */
