@@ -1918,6 +1918,7 @@ async function loadFromSupabase(){
 
 /* Auto-save con debounce 1.5s dopo ogni modifica */
 function scheduleSave(){
+  if(_suppressSave) return;    // ← aggiungi solo questa riga
   clearTimeout(saveTimer);
   saveTimer = setTimeout(saveToSupabase, 1500);
 }
@@ -2016,7 +2017,9 @@ function renderPageTabs(){
     </div>`).join('');
 }
 
+let _suppressSave = false;
 function switchPage(id){
+  _suppressSave = true;        // blocca qualsiasi salvataggio
   currentPageId=id;
   syncPageData();
   selectedTask=null;
@@ -2025,6 +2028,7 @@ function switchPage(id){
   clearSearch();
   renderPageTabs();
   rerenderOnly();
+  _suppressSave = false;       // riabilita i salvataggi
 }
 
 function addPage(){
